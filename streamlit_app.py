@@ -59,7 +59,6 @@ if menu == "Give Feedback 😊😐☹️":
         else:
             new_feedback.to_csv(feedback_file, index=False)
         lottie_success = load_lottieurl("https://assets8.lottiefiles.com/packages/lf20_jbrw3hcz.json")
-v")
         st.success("🎉 Thank you for your feedback!🤗🤩")
         st_lottie(lottie_success, height=200, key="success")
         
