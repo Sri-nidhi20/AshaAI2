@@ -73,7 +73,7 @@ if menu == "New Chat ➕":
             response = query_flant5(user_input)
             st.session_state.chat.append(("AshaAI", response))
             time.sleep(1)
-            st.experimental_rerun()
+            
 
 # ----------------------------- Chat History Section ----------------------------- #
 elif menu == "Chat History 🔨":
