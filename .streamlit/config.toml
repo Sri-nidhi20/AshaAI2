@@ -5,3 +5,15 @@ backgroundColor="#ff99c2"      # very light pink background
 secondaryBackgroundColor="#c0c0c0"  # slightly deeper pink for sidebar
 textColor="#2c003e"            # deep purple text for contrast
 font="sans serif"
+# Sidebar customizations
+[theme.sidebar]
+backgroundColor = "#FFCCE5"  # Soft pink background for sidebar
+textColor = "#000000"  # Black text color
+borderWidth = 1
+borderColor = "#FF0099"  # Border color for sidebar
+
+# Set the width of the sidebar (optional)
+[server]
+headless = true
+enableCORS = false
+port = 8501
