@@ -20,7 +20,7 @@ def load_lottieurl(url):
 st.set_page_config(page_title="AshaAI Chatbot", layout="wide")
 feedback_file = "/tmp/feedback.csv"  # For feedback storage
 
-logo = Image.open("ashaai_logo.png")
+logo = Image.open("ashaai_logo.jpg")
 st.image(logo, width=150)
 st.markdown("<h2 style='text-align:center;'>Welcome to AshaAI 💙 - your Career companion</h2>", unsafe_allow_html=True)
 
