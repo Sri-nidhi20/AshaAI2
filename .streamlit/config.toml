@@ -1,4 +1,7 @@
-[theme]            # Soft Pink
-backgroundColor = "#FC6C85"          # Light Pink Background
-textColor = "Black"
-font = "sans serif"
+[theme]
+base="light"
+primaryColor="#ff69b4"         # pink for buttons/sliders
+backgroundColor="#fff0f5"      # very light pink background
+secondaryBackgroundColor="#ffe6f0"  # slightly deeper pink for sidebar
+textColor="#2c003e"            # deep purple text for contrast
+font="sans serif"
