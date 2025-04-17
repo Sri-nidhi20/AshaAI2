@@ -25,7 +25,7 @@ menu = st.sidebar.radio("AshaAI Menu", [
 if menu == "give feedback":
     emoji_map = {
         1: "😞",
-        2: "☹",
+        2: "😕",
         3: "😐",
         4: "😊",
         5: "😁"
