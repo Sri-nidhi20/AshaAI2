@@ -58,7 +58,7 @@ if menu == "Give Feedback 😊😐☹️":
             new_feedback.to_csv(feedback_file, mode='a', header=False, index=False)
         else:
             new_feedback.to_csv(feedback_file, index=False)
-        lottie_success = load_lottieurl("https://app.lottiefiles.com/1ef42e69-3d1c-4044-aff1-7e9a8b8b9387.json")
+        lottie_success = load_lottieurl("C:\Users\kukut\Downloads\Animation - 1744865782828.json")
         st.success("🎉 Thank you for your feedback!🤗🤩")
         st_lottie(lottie_success, height=200, key="success")
         
