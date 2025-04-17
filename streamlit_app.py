@@ -98,7 +98,27 @@ elif menu == "Admin Dashboard 📊":
 
 # New Chat
 elif menu == "New Chat ➕":
-    st.write("NEW CHAT!!!")
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+
+    user_input = st.text_input("Type your message here...")
+
+    if user_input:
+        # Append user input
+        st.session_state.chat_history.append(("user", user_input))
+
+        # 👇 Placeholder for real chatbot logic
+        response = "Hi! I'm AshaAI. I'm still learning to respond. Stay tuned!"
+
+        # Append bot response
+        st.session_state.chat_history.append(("bot", response))
+
+    # Display chat history
+    for sender, message in st.session_state.chat_history:
+        if sender == "user":
+            st.markdown(f"**You:** {message}")
+        else:
+            st.markdown(f"**AshaAI:** {message}")
 
 # Chat History
 elif menu == "Chat History 🗨":
