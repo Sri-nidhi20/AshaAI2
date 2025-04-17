@@ -98,6 +98,8 @@ elif menu == "Admin Dashboard 📊":
 
 # New Chat
 elif menu == "New Chat ➕":
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
 
     user_input = st.chat_input("Type your message here...")
 
