@@ -48,7 +48,6 @@ if menu == "give feedback":
         else:
             new_feedback.to_csv("feedback.csv", index=False)
         st.success("🎉 Thank you for your feedback!")
-        st.experimental_rerun()
 
 elif menu == "admin dashboard":
     admin_email = st.text_input("Enter Admin Email to access Dashboard")
