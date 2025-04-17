@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import pytz
 import os
 import matplotlib.pyplot as plt
 
@@ -41,10 +40,8 @@ if menu == "give feedback":
     ])
 
     if st.button("Submit Feedback"):
-        ist = pytz.timestamp('Asia/Kolkata')
-        timestamp = datetime.now(ist)
         new_feedback = pd.DataFrame({
-            'timestamp': [timestamp],
+            'timestamp': [date.now()],
             'rating': [rating],
             'comment': [comment],
             'user_email': [email],
