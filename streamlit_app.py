@@ -13,16 +13,16 @@ st.write("Welcome to AshaAI! Let's chat.")
 
 # Sidebar menu
 menu = st.sidebar.radio("AshaAI Menu", [
-    "New Chat",
-    "Chat history",
-    "Search chats",
-    "give feedback",
-    "admin dashboard",
-    "about ashaai"
+    "New Chat ➕",
+    "Chat History 🗨",
+    "Search Chats 🔍",
+    "Give Feedback 😊😐☹️",
+    "Admin Dashboard 📊",
+    "About AshaAI 👩🤖"
 ])
 
 # Give feedback
-if menu == "give feedback":
+if menu == "Give Feedback 😊😐☹️":
     emoji_map = {
         1: "😞",
         2: "😕",
@@ -55,7 +55,7 @@ if menu == "give feedback":
         st.balloons()
 
 # Admin Dashboard
-elif menu == "admin dashboard":
+elif menu == "Admin Dashboard 📊":
     admin_email = st.text_input("Enter Admin Email to access Dashboard")
     if "@ashaai.com" in admin_email:
         st.subheader("-----Welcome ADMIN! ✨-----")
@@ -89,17 +89,17 @@ elif menu == "admin dashboard":
         st.warning("Access Denied. ADMIN ONLY..")
 
 # New Chat
-elif menu == "New Chat":
+elif menu == "New Chat ➕":
     st.write("NEW CHAT!!!")
 
 # Chat History
-elif menu == "Chat history":
+elif menu == "Chat History 🗨":
     st.write("Chat history pops out")
 
 # Search Chats
-elif menu == "Search chats":
+elif menu == "Search Chats 🔍":
     st.write("Search history chats")
 
 # About
-elif menu == "about ashaai":
+elif menu == "About AshaAI 👩🤖":
     st.markdown("Display a few lines about the bot’s mission, built by Nidhi 💛")
