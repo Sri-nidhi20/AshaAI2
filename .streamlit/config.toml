@@ -1,7 +1,7 @@
 [theme]
 base="light"
 primaryColor="#000080"         # pink for buttons/sliders
-backgroundColor="#ff3385"      # very light pink background
+backgroundColor="#ff80b3"      # very light pink background
 secondaryBackgroundColor="#aad9f9"  # slightly deeper pink for sidebar
 textColor="#2c003e"            # deep purple text for contrast
 font="sans serif"
