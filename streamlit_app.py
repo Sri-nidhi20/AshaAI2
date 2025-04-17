@@ -41,7 +41,7 @@ if menu == "give feedback":
 
     if st.button("Submit Feedback"):
         new_feedback = pd.DataFrame({
-            'timestamp': [datetime.now(ist).strftime("%d-%b-%Y")],
+            'timestamp': [datetime.now().strftime("%d-%b-%Y")],
             'rating': [rating],
             'comment': [comment],
             'user_email': [email],
