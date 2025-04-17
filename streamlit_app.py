@@ -54,31 +54,38 @@ elif menu == "admin dashboard":
     admin_email = st.text_input("Enter Admin Email to access Dashboard")
     if "@ashaai.com" in admin_email:
         st.subheader("-----Welcome ADMIN! ✨-----")
-        df = pd.read_csv("feedback.csv")
-        st.header("📊 Feedback Summary")
-        st.metric("Total Feedbacks", len(df))
-        st.metric("Average Rating", round(df['rating'].mean(), 2))
-        #histogram
-        fig, ax = plt.subplots()
-        ax.hist(df['rating'], bins=[0.5, 1.5, 2.5, 3.5, 4.5, 5.5], edgecolor='black', color='purple')
-        ax.set_title("AshaAI User Ratings")
-        ax.set_xlabel("Rating")
-        ax.set_ylabel("Frequency")
-        ax.set_xticks([1, 2, 3, 4, 5])
-        st.pyplot(fig)
-        #view full table
-        st.subheader("All Feedback Entries")
-        st.dataframe(df)
-        #delete feedback by row number
-        row_to_delete = st.number_input("Enter row number to delete (0-based)", min_value=0, max_value=len(df)-1)
-        if st.button("Delete Entry"):
-            df = df.drop(index=row_to_delete)
-            df.to_csv("feedback.csv", index=False)
-            st.success("Deleted Successfully!")
-            if st.button("Refresh"):
-                st.experimental_rerun()
+        
+        if os.path.exists("feedback.csv"):
+            df = pd.read_csv("feedback.csv")
+            st.header("📊 Feedback Summary")
+            st.metric("Total Feedbacks", len(df))
+            st.metric("Average Rating", round(df['rating'].mean(), 2))
+
+            # Histogram
+            fig, ax = plt.subplots()
+            ax.hist(df['rating'], bins=[0.5, 1.5, 2.5, 3.5, 4.5, 5.5], edgecolor='black', color='purple')
+            ax.set_title("AshaAI User Ratings")
+            ax.set_xlabel("Rating")
+            ax.set_ylabel("Frequency")
+            ax.set_xticks([1, 2, 3, 4, 5])
+            st.pyplot(fig)
+
+            st.subheader("All Feedback Entries")
+            st.dataframe(df)
+
+            # Delete
+            row_to_delete = st.number_input("Enter row number to delete (0-based)", min_value=0, max_value=len(df)-1)
+            if st.button("Delete Entry"):
+                df = df.drop(index=row_to_delete)
+                df.to_csv("feedback.csv", index=False)
+                st.success("Deleted Successfully!")
+                if st.button("Refresh"):
+                    st.experimental_rerun()
+        else:
+            st.warning("⚠️ No feedback data available yet!")
     else:
         st.warning("Access Denied. ADMIN ONLY..")
+
 #new chat
 elif menu == "New Chat":
     st.write("NEW CHAT!!!")
