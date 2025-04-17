@@ -53,7 +53,6 @@ if menu == "give feedback":
             new_feedback.to_csv(feedback_file, index=False)
         st.success("🎉 Thank you for your feedback!")
         st.balloons()
-        st.snow()
 
 # Admin Dashboard
 elif menu == "admin dashboard":
