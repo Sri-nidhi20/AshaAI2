@@ -1,56 +1,93 @@
 import streamlit as st
-from openai import OpenAI
+import pandas as pd
+from datetime import datetime
+import os
+import matplotlib.pyplot as plt
 
-# Show title and description.
-st.title("💬 Chatbot")
-st.write(
-    "This is a simple chatbot that uses OpenAI's GPT-3.5 model to generate responses. "
-    "To use this app, you need to provide an OpenAI API key, which you can get [here](https://platform.openai.com/account/api-keys). "
-    "You can also learn how to build this app step by step by [following our tutorial](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps)."
-)
+# Add other components of your app
+st.title("AshaAI Chatbot 💙")
+st.write("Welcome to AshaAI! Let's chat.")
 
-# Ask user for their OpenAI API key via `st.text_input`.
-# Alternatively, you can store the API key in `./.streamlit/secrets.toml` and access it
-# via `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
-openai_api_key = st.text_input("OpenAI API Key", type="password")
-if not openai_api_key:
-    st.info("Please add your OpenAI API key to continue.", icon="🗝️")
-else:
 
-    # Create an OpenAI client.
-    client = OpenAI(api_key=openai_api_key)
 
-    # Create a session state variable to store the chat messages. This ensures that the
-    # messages persist across reruns.
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
-    # Display the existing chat messages via `st.chat_message`.
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-
-    # Create a chat input field to allow the user to enter a message. This will display
-    # automatically at the bottom of the page.
-    if prompt := st.chat_input("What is up?"):
-
-        # Store and display the current prompt.
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
-        # Generate a response using the OpenAI API.
-        stream = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": m["role"], "content": m["content"]}
-                for m in st.session_state.messages
-            ],
-            stream=True,
-        )
-
-        # Stream the response to the chat using `st.write_stream`, then store it in 
-        # session state.
-        with st.chat_message("assistant"):
-            response = st.write_stream(stream)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+menu = st.sidebar.radio("AshaAI Menu", [
+    "New Chat",
+    "Chat history",
+    "Search chats",
+    "give feedback",
+    "admin dashboard",
+    "about ashaai"
+    
+])
+if menu == "give feedback":
+    emoji_map = {
+        1: "😞",
+        2: "☹",
+        3: "😐",
+        4: "😊",
+        5: "😁"
+    }
+    #collect input
+    rating = st.slider("Rate AshaAI (1-5)",1, 5)
+    #display emoji based on slider value
+    st.markdown(f"Your Rating: {emoji_map[rating]}")
+    comment = st.text_input("Your thoughts(optional)")
+    email = st.text_input("Email (optional)")
+    feature = st.selectbox("Which part are you giving feedback for?",
+                          ["Resume Parser", "Job Matching", "Motivation", "Course Suggestions", "Interactiveness", "Overall chat experience"])
+    #save to CSV
+    if st.button("Submit Feedback"):
+        new_feedback = pd.DataFrame({
+            'timestamp': [datetime.now()],
+            'rating': [rating],
+            'comment': [comment],
+            'user_email': [email],
+            'feature': [feature],
+        })
+        if os.path.exists("feedback.csv"):
+            new_feedback.to_csv("feedback.csv", mode='a', header=False, index=False)
+        else:
+            new_feedback.to_csv("feedback.csv", index=False)
+        st.success("🎉 Thank you for your feedback!")
+#admin dashboard
+elif menu == "admin dashboard":
+    admin_email = st.text_input("Enter Admin Email to access Dashboard")
+    if "@ashaai.com" in admin_email:
+        st.subheader("-----Welcome ADMIN! ✨-----")
+        df = pd.read_csv("feedback.csv")
+        st.header("📊 Feedback Summary")
+        st.metric("Total Feedbacks", len(df))
+        st.metric("Average Rating", round(df['rating'].mean(), 2))
+        #histogram
+        fig, ax = plt.subplots()
+        ax.hist(df['rating'], bins=[0.5, 1.5, 2.5, 3.5, 4.5, 5.5], edgecolor='black', color='purple')
+        ax.set_title("AshaAI User Ratings")
+        ax.set_xlabel("Rating")
+        ax.set_ylabel("Frequency")
+        ax.set_xticks([1, 2, 3, 4, 5])
+        st.pyplot(fig)
+        #view full table
+        st.subheader("All Feedback Entries")
+        st.dataframe(df)
+        #delete feedback by row number
+        row_to_delete = st.number_input("Enter row number to delete (0-based)", min_value=0, max_value=len(df)-1)
+        if st.button("Delete Entry"):
+            df = df.drop(index=row_to_delete)
+            df.to_csv("feedback.csv", index=False)
+            st.success("Deleted Successfully!")
+            if st.button("Refresh"):
+                st.experimental_rerun()
+    else:
+        st.warning("Access Denied. ADMIN ONLY..")
+#new chat
+elif menu == "New Chat":
+    st.write("NEW CHAT!!!")
+#chat history
+elif menu == "Chat history":
+    st.write("Chat history pops out")
+#search chats
+elif menu == "Search chats":
+    st.write("Search history chats")
+#about asha ai
+elif menu == "about ashaai":
+    st.markdown("Display a few lines about the bot’s mission, built by Nidhi 💛")
