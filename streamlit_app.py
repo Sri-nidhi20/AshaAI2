@@ -60,7 +60,7 @@ if menu == "Give Feedback 😊😐☹️":
             new_feedback.to_csv(feedback_file, index=False)
         lottie_success = load_lottieurl("https://lottie.host/73099729-1a0e-4d04-b13c-129c1e9ad3aa/WEt2VVYpfi.json")
         st.success("🎉 Thank you for your feedback!🤗🤩")
-        st_lottie(lottie_success, height=200, key="success")
+        st_lottie(lottie_success, height=500, key="success")
         
 # Admin Dashboard
 elif menu == "Admin Dashboard 📊":
