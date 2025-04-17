@@ -1,6 +1,4 @@
-[theme]
-primaryColor = "#F8C8D8"             # Soft Pink
+[theme]            # Soft Pink
 backgroundColor = "Pink"          # Light Pink Background
-secondaryBackgroundColor = "#F1E2E2"
-textColor = "#2F4F4F"
+textColor = "Black"
 font = "sans serif"
