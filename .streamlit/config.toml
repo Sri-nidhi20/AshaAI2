@@ -1,6 +1,6 @@
 [theme]
 primaryColor = "#F8C8D8"             # Soft Pink
-backgroundColor = "#FCDADA"          # Light Pink Background
+backgroundColor = "#F8C8D8"          # Light Pink Background
 secondaryBackgroundColor = "#F1E2E2"
 textColor = "#2F4F4F"
 font = "sans serif"
