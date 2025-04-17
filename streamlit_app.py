@@ -3,6 +3,13 @@ import pandas as pd
 from datetime import datetime
 import os
 import matplotlib.pyplot as plt
+from streamlit_lottie import st_lottie
+import requests
+def load_lottieurl(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
 
 # File path for feedback (works even in restricted environments like Streamlit Cloud)
 feedback_file = "/tmp/feedback.csv"
@@ -51,9 +58,10 @@ if menu == "Give Feedback 😊😐☹️":
             new_feedback.to_csv(feedback_file, mode='a', header=False, index=False)
         else:
             new_feedback.to_csv(feedback_file, index=False)
+        lottie_success = load_lottieurl("https://app.lottiefiles.com/1ef42e69-3d1c-4044-aff1-7e9a8b8b9387.json")
         st.success("🎉 Thank you for your feedback!🤗🤩")
-        st.balloons()
-
+        st_lottie(lottie_success, height=200, key="success")
+        
 # Admin Dashboard
 elif menu == "Admin Dashboard 📊":
     admin_email = st.text_input("Enter Admin Email to access Dashboard")
