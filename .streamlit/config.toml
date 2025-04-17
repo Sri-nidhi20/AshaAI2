@@ -1,4 +1,4 @@
 [theme]            # Soft Pink
-backgroundColor = "Pink"          # Light Pink Background
+backgroundColor = "#FC6C85"          # Light Pink Background
 textColor = "Black"
 font = "sans serif"
