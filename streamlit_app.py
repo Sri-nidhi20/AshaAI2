@@ -20,15 +20,6 @@ def load_lottieurl(url):
 # ----------------------------- Load Environment Variables ----------------------------- #
 load_dotenv()
 HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
-API_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta"
-headers = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
-
-def query(payload):
-    response = requests.post(API_URL, headers=headers, json=payload)
-    return response.json()
-
-output = query({"inputs": "Who are you?"})
-print(output)
 
 # ----------------------------- Model Setup (Zephyr-7B) ----------------------------- #
 @st.cache_resource(show_spinner="Loading AshaAI brain...")
