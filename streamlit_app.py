@@ -20,6 +20,7 @@ def load_chat_model():
     model_id = "HuggingFaceH4/zephyr-7b-beta"
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(model_id, device_map = "auto")
+    print("Model and tokenizer loaded successfully!")
     return pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 chat_model = load_chat_model()
