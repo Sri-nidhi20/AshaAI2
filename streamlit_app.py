@@ -21,7 +21,7 @@ def load_chat_model():
     model_id = "HuggingFaceH4/zephyr-7b-beta"
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(
-        "HuggingFaceH4/zephyr-7b-beta",
+        HuggingFaceH4/zephyr-7b-beta,
         device_map = "auto",
         torch_dtype = torch.bfloat16,
         trust_remote_code = True,
