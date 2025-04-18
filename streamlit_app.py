@@ -17,6 +17,8 @@ def load_lottieurl(url):
         return None
     return r.json()
 
+
+st.set_page_config(page_title = "AshaAI Chatbot", layout = "wide")
 # ----------------------------- Load Environment Variables ----------------------------- #
 load_dotenv()
 HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
@@ -26,13 +28,13 @@ HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 
 def load_chat_model():
     model_id = "HuggingFaceH4/zephyr-7b-beta"
-    tokenizer = AutoTokenizer.from_pretrained(model_id, use_auth_toke = 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)
+    tokenizer = AutoTokenizer.from_pretrained(model_id, use_auth_toke = "HUGGINGFACE_API_KEY")
     model = AutoModelForCausalLM.from_pretrained(
         "HuggingFaceH4/zephyr-7b-beta",
         device_map = "auto",
         torch_dtype = torch.bfloat16,
         trust_remote_code = True,
-        use_auth_token = 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
+        use_auth_token = "HUGGINGFACE_API_KEY"
     ) 
     return pipeline("text-generation", model=model, tokenizer=tokenizer)
 try:
