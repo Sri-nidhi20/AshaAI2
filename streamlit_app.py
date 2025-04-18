@@ -8,21 +8,36 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from streamlit_lottie import st_lottie
 from PIL import Image
+from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 
 # ----------------------------- Load Environment Variables ----------------------------- #
 load_dotenv()
 HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 
-# ----------------------------- Helper: Load Lottie Animation ----------------------------- #
-def load_lottieurl(url):
-    r = requests.get(url)
-    if r.status_code != 200:
-        return None
-    return r.json()
+# ----------------------------- Model Setup (Zephyr-7B) ----------------------------- #
+@st.cache_resource(show_spinner="Loading AshaAI brain...")
+def load_chat_model():
+    model_id = "HuggingFaceH4/zephyr-7b-beta"
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    model = AutoModelForCausalLM.from_pretrained(model_id, device_map="auto")
+    return pipeline("text-generation", model=model, tokenizer=tokenizer)
 
-# ----------------------------- Config & Constants ----------------------------- #
+chat_model = load_chat_model()
+
+system_prompt = """
+You are AshaAI, a smart, empathetic, and supportive career assistant designed to help women.
+You offer job guidance, resume tips, motivation, and recommend career options.
+Be helpful, kind, and informative, just like ChatGPT but more human.
+"""
+
+def generate_response(user_input):
+    prompt = f"{system_prompt}\nUser: {user_input}\nAshaAI:"
+    response = chat_model(prompt, max_new_tokens=200, do_sample=True, temperature=0.7)
+    return response[0]['generated_text'].split("AshaAI:")[-1].strip()
+
+# ----------------------------- UI Config & Constants ----------------------------- #
 st.set_page_config(page_title="AshaAI Chatbot", layout="wide")
-feedback_file = "feedback.csv"  # Works for local + cloud
+feedback_file = "feedback.csv"
 
 logo = Image.open("ashaai_logo.jpg")
 st.image(logo, width=150)
@@ -37,21 +52,6 @@ menu = st.sidebar.radio("AshaAI Menu", [
     "Admin Dashboard 📊",
     "About AshaAI 👩‍🤖"
 ])
-
-# ----------------------------- Hugging Face Inference API ----------------------------- #
-def query_flant5(prompt):
-    headers = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
-    API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-small"
-    data = {"inputs": prompt}
-    try:
-        response = requests.post(API_URL, headers=headers, json=data)
-        result = response.json()
-        if isinstance(result, list) and "generated_text" in result[0]:
-            return result[0]["generated_text"]
-        else:
-            return "Sorry, I couldn't process that right now."
-    except:
-        return "Error connecting to Hugging Face API."
 
 # ----------------------------- New Chat Section ----------------------------- #
 if menu == "New Chat ➕":
@@ -70,10 +70,10 @@ if menu == "New Chat ➕":
     if user_input:
         st.session_state.chat.append(("user", user_input))
         with st.spinner("AshaAI is thinking..."):
-            response = query_flant5(user_input)
-            st.session_state.chat.append(("AshaAI", response))
+            reply = generate_response(user_input)
+            st.session_state.chat.append(("AshaAI", reply))
             time.sleep(1)
-            
+            st.experimental_rerun()
 
 # ----------------------------- Chat History Section ----------------------------- #
 elif menu == "Chat History 🔨":
@@ -143,7 +143,7 @@ elif menu == "Admin Dashboard 📊":
     else:
         st.warning("Access Denied. ADMIN ONLY..")
 
-# ----------------------------- Search Chat Section (Placeholder) ----------------------------- #
+# ----------------------------- Search Chat Section ----------------------------- #
 elif menu == "Search Chats 🔍":
     st.subheader("🔍 Search Your Chats (Coming Soon)")
 
