@@ -24,12 +24,24 @@ API_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-b
 headers = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
 
 def query(payload):
-    response = requests.post(API_URL, headers=headers, json=payload)
-    return response.json()
+    headers = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
+    API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-small"  # or any model you use
 
-output = query({"inputs": "Who are you?"})
-print(output)
-# ----------------------------- Model Setup (Zephyr-7B) ----------------------------- #
+    response = requests.post(API_URL, headers=headers, json=payload)
+
+    # Safe guard: Check status before parsing
+    if response.status_code != 200:
+        st.error(f"❌ API Error: {response.status_code} - {response.text}")
+        return {"error": "API error"}
+
+    try:
+        return response.json()
+    except Exception as e:
+        st.error("❌ Failed to parse response from Hugging Face.")
+        st.text(response.text)
+        return {"error": "Invalid JSON"}
+
+#------------------ Model Setup (Zephyr-7B) ----------------------------- #
 @st.cache_resource(show_spinner="Loading AshaAI brain...")
 
 def load_chat_model():
