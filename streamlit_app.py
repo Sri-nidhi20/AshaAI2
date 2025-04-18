@@ -16,11 +16,17 @@ HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 
 # ----------------------------- Model Setup (Zephyr-7B) ----------------------------- #
 @st.cache_resource(show_spinner="Loading AshaAI brain...")
+0s.environ['HF_HOME'] = '/data/shared_models/'
+os.environ['HF_ENDPOINT'] = 'https://hf-mirror.com'
 def load_chat_model():
     model_id = "HuggingFaceH4/zephyr-7b-beta"
     tokenizer = AutoTokenizer.from_pretrained(model_id)
-    model = AutoModelForCausalLM.from_pretrained(model_id, device_map = "auto")
-    print("Model and tokenizer loaded successfully!")
+    model = AutoModelForCausalLM.from_pretrained(
+        HuggingFaceH4/zephyr-7b-beta,
+        device_map = "auto",
+        torch_dtype = torch.bfloat16,
+        trust_remote_code = True,
+    ) 
     return pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 chat_model = load_chat_model()
