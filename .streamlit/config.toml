@@ -9,7 +9,6 @@ font="sans serif"
 [theme.sidebar]
 backgroundColor = "#FFCCE5"  # Soft pink background for sidebar
 textColor = "#000000"  # Black text color
-borderWidth = 1
 borderColor = "#FF0099"  # Border color for sidebar
 
 # Set the width of the sidebar (optional)
