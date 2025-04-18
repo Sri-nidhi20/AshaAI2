@@ -1,4 +1,5 @@
 import streamlit as st
+st.set_page_config(page_title = "AshaAI Chatbot", layout = "wide")
 from dotenv import load_dotenv
 import os
 import requests
@@ -16,9 +17,6 @@ def load_lottieurl(url):
     if r.status_code != 200:
         return None
     return r.json()
-
-
-st.set_page_config(page_title = "AshaAI Chatbot", layout = "wide")
 # ----------------------------- Load Environment Variables ----------------------------- #
 load_dotenv()
 HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
