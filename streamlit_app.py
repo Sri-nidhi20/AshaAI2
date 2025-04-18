@@ -10,6 +10,12 @@ import matplotlib.pyplot as plt
 from streamlit_lottie import st_lottie
 from PIL import Image
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+#------------------------------Helper: Load Lottie Animation----------------------------#
+def load_lottieurl(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
 
 # ----------------------------- Load Environment Variables ----------------------------- #
 load_dotenv()
@@ -20,16 +26,20 @@ HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 
 def load_chat_model():
     model_id = "HuggingFaceH4/zephyr-7b-beta"
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    tokenizer = AutoTokenizer.from_pretrained(model_id, use_auth_toke = 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)
     model = AutoModelForCausalLM.from_pretrained(
         "HuggingFaceH4/zephyr-7b-beta",
         device_map = "auto",
         torch_dtype = torch.bfloat16,
         trust_remote_code = True,
+        use_auth_token = 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
     ) 
     return pipeline("text-generation", model=model, tokenizer=tokenizer)
+try:
+    chat_model = load_chat_model()
+except Exception as e:
+    st.error(f"Model loading failed: {e}")
 
-chat_model = load_chat_model()
 
 system_prompt = """
 You are AshaAI, a smart, empathetic, and supportive career assistant designed to help women.
