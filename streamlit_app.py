@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 import requests
 import time
+import torch
 import pandas as pd
 from datetime import datetime
 import matplotlib.pyplot as plt
