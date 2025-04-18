@@ -46,13 +46,13 @@ def query(payload):
 
 def load_chat_model():
     model_id = "HuggingFaceH4/zephyr-7b-beta"
-    tokenizer = AutoTokenizer.from_pretrained(model_id, use_auth_toke = "HUGGINGFACE_API_KEY")
+    tokenizer = AutoTokenizer.from_pretrained(model_id, use_auth_token = HUGGINGFACE_API_KEY)
     model = AutoModelForCausalLM.from_pretrained(
         "HuggingFaceH4/zephyr-7b-beta",
         device_map = "auto",
         torch_dtype = torch.bfloat16,
         trust_remote_code = True,
-        use_auth_token = "HUGGINGFACE_API_KEY"
+        use_auth_token = HUGGINGFACE_API_KEY
     ) 
     return pipeline("text-generation", model=model, tokenizer=tokenizer)
 try:
@@ -68,12 +68,13 @@ Be helpful, kind, and informative, just like ChatGPT but more human.
 """
 
 def generate_response(user_input):
-    prompt = f"{system_prompt}\nUser: {user_input}\nAshaAI:"
-    response = chat_model(prompt, max_new_tokens=200, do_sample=True, temperature=0.7)
-    return response[0]['generated_text'].split("AshaAI:")[-1].strip()
+    try:
+        prompt = f"{system_prompt}\nUser: {user_input}\nAshaAI:"
+        response = chat_model(prompt, max_new_tokens=200, do_sample=True, temperature=0.7)
+        return response[0]['generated_text'].split("AshaAI:")[-1].strip()
+    except Exception as e:
+        return f"⚠️ Sorry, I had trouble generating a response: {e}"
 
-# ----------------------------- UI Config & Constants ----------------------------- #
-st.set_page_config(page_title="AshaAI Chatbot", layout="wide")
 feedback_file = "feedback.csv"
 
 logo = Image.open("ashaai_logo.jpg")
