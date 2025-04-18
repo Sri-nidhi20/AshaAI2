@@ -20,7 +20,7 @@ def load_lottieurl(url):
 # ----------------------------- Load Environment Variables ----------------------------- #
 load_dotenv()
 HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
-API_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta"
+API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-small"
 headers = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
 
 def query(payload):
@@ -46,13 +46,13 @@ def query(payload):
 
 def load_chat_model():
     model_id = "HuggingFaceH4/zephyr-7b-beta"
-    tokenizer = AutoTokenizer.from_pretrained(model_id, use_auth_token = HUGGINGFACE_API_KEY)
+    tokenizer = AutoTokenizer.from_pretrained(model_id, token = HUGGINGFACE_API_KEY)
     model = AutoModelForCausalLM.from_pretrained(
         "HuggingFaceH4/zephyr-7b-beta",
         device_map = "auto",
         torch_dtype = torch.bfloat16,
         trust_remote_code = True,
-        use_auth_token = HUGGINGFACE_API_KEY
+        token = HUGGINGFACE_API_KEY
     ) 
     return pipeline("text-generation", model=model, tokenizer=tokenizer)
 try:
