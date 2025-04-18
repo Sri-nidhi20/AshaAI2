@@ -7,3 +7,4 @@ requests
 Pillow
 python-dotenv
 huggingface_hub[hf_xet]
+torch
