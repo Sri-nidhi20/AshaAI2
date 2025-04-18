@@ -6,4 +6,4 @@ transformers
 requests
 Pillow
 python-dotenv
-accelerate
+huggingface_hub[hf_xet]
