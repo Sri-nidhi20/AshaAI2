@@ -4,5 +4,6 @@ pandas
 streamlit-lottie
 transformers
 requests
-pillow
+Pillow
 python-dotenv
+accelerate
