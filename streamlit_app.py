@@ -1,4 +1,3 @@
-# streamlit_app.py
 import streamlit as st
 import google.generativeai as genai
 import os
@@ -10,12 +9,15 @@ from streamlit_lottie import st_lottie
 from PIL import Image
 import time
 import json
+from io import BytesIO
+import base64
 
 # ------------------ CONFIG ------------------ #
 st.set_page_config(page_title="AshaAI Chatbot", layout="wide")
 genai.configure(api_key=st.secrets.get("GEMINI_API_KEY"))
 model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
 feedback_file = "feedback.csv"
+feedback_file = "response_feedback.csv"
 history_file = "chat_history.json"
 
 # ------------------ UTILS ------------------ #
@@ -34,6 +36,21 @@ def query_gemini(prompt):
             return "Error: AshaAI is experiencing high demand. Please wait a few moments and try again."
         else:
             return f"Error: {str(e)}"
+def save_response_feedback(timestamp, chat_turn, feedback_type, response_text, user_prompt):
+    new_feedback = pd.DataFrame({
+        'timestamp': [timestamp],
+        'chat_turn': [chat_turn],
+        'feedback_type': [feedback_type],
+        'response_text': [response_text],
+        'user_prompt': [user_prompt]
+    })
+    if os.path.exists(feedback_fie):
+        new_feedback.to_csv(feedback_file, mode='a', header=False, index=False)
+    else:
+        new_feedback.to_csv(feedback_file, index = False)
+def text_to_speech(text):
+    url = f"https://tts.micmonster.com/api/tts?text={requests.utils.quote(text)}&lang=en&voice=Amy"
+    return url
 
 # ------------------ HEADER ------------------ #
 try:
@@ -69,7 +86,22 @@ if menu == "New Chat ➕":
             st.markdown(f"**👩‍💼 You:** {msg}")
         else:
             st.markdown(f"**👩 AshaAI:** {msg}")
-
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                if st.button("👍 Good", key = f"good_{i}"):
+                    save_response_ffedback(datetime.now().strftime("%d-%b-%y %H:%M:%S"), i, "good", msg, st.session_state.chat[i-1][1] if i>0 and st.session_state.chat[i-1][0] == "user" else "N/A")
+                    st.success("Thank you for the response!")
+            with col2:
+                if st.button("👎 Bad", key=f"Bad_{i}"):
+                  save_response_feedback(datetime.now().strftime("%d-%b-%Y %H:%M:%S"), i, "bad", msg, st.session_state.chat[i-1][1] if i > 0 and st.session_state.chat[i-1][0] == "user" else "N/A")
+                  st.error("Thank you for your feedback. We'll work on improving.") 
+            with col3:
+                share_url = f"mailto:?subject=AshaAI Response&body={msg}"
+                st.markdown(f'<a href="{share_url}" target="_blank">📤 Share</a>', unsafe_allow_html=True)
+            with col4:
+                tts_url = text_to_speech_url(msg)
+                st.audio(tts_url, format="audio/mpeg", start_time=0, key=f"listen_{i}")
+         
     # Capture new input
     user_input = st.chat_input(
         "Your Question...",
