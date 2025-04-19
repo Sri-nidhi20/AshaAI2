@@ -8,6 +8,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from streamlit_lottie import st_lottie
 from PIL import Image
+import time
 
 # ------------------ CONFIG ------------------ #
 st.set_page_config(page_title="AshaAI Chatbot", layout="wide")
@@ -81,9 +82,9 @@ if menu == "New Chat ➕":
     # Display chat messages
     for sender, msg in st.session_state.chat:
         if sender == "user":
-            st.markdown(f"**👩 You:** {msg}")
+            st.markdown(f"**👩‍💼 You:** {msg}")
         else:
-            st.markdown(f"**🤖 AshaAI:** {msg}")
+            st.markdown(f"**👩 AshaAI:** {msg}")
 
     # Capture new input
     user_input = st.chat_input("Your Question...")
@@ -95,9 +96,16 @@ if menu == "New Chat ➕":
         st.session_state.chat.append(("user", st.session_state.pending_input))
         with st.spinner("AshaAI is thinking..."):
             reply = query_gemini(st.session_state.pending_input)
-        st.session_state.chat.append(("AshaAI", reply))
+        #the cool typing effect
+        full_response = reply
+        placeholder = st.empty()
+        typed_response = ""
+        for char in full_response:
+            typed_response += char
+            placeholde.markdown(f"**👩 AshaAI:** {typed_response}")
+            time.sleep(0.02)
+        st.session_state.chat.append(("AshaAI", full_response))
         st.session_state.pending_input = None
-        st.rerun()
 
 # ------------------ CHAT HISTORY ------------------ #
 elif menu == "Chat History 🗨":
@@ -105,9 +113,9 @@ elif menu == "Chat History 🗨":
     if "chat" in st.session_state and st.session_state.chat:
         for role, text in st.session_state.chat:
             if role == "user":
-                st.markdown(f"**👩 You:** {text}")
+                st.markdown(f"**👩‍💼 You:** {text}")
             else:
-                st.markdown(f"**🤖 AshaAI:** {text}")
+                st.markdown(f"**👩 AshaAI:** {text}")
     else:
         st.info("No previous chats available yet.")
 
