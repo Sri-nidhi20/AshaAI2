@@ -2,10 +2,8 @@
 
 import streamlit as st
 import google.generativeai as genai
-from dotenv import load_dotenv
 import os
 import requests
-import time
 import pandas as pd
 from datetime import datetime
 import matplotlib.pyplot as plt
