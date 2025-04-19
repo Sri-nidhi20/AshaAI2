@@ -1,100 +1,61 @@
+# streamlit_app.py
+
 import streamlit as st
-st.set_page_config(page_title = "AshaAI Chatbot", layout = "wide")
 from dotenv import load_dotenv
 import os
 import requests
 import time
-import torch
 import pandas as pd
 from datetime import datetime
 import matplotlib.pyplot as plt
 from streamlit_lottie import st_lottie
 from PIL import Image
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
-#------------------------------Helper: Load Lottie Animation----------------------------#
+
+# ------------------ CONFIG ------------------ #
+st.set_page_config(page_title="AshaAI Chatbot", layout="wide")
+load_dotenv()
+HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
+API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-small"
+HEADERS = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
+feedback_file = "feedback.csv"
+
+# ------------------ UTILS ------------------ #
 def load_lottieurl(url):
     r = requests.get(url)
     if r.status_code != 200:
         return None
     return r.json()
-# ----------------------------- Load Environment Variables ----------------------------- #
-load_dotenv()
-HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
-API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-small"
-headers = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
 
-def query(payload):
-    headers = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
-    API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-small"  # or any model you use
-
-    response = requests.post(API_URL, headers=headers, json=payload)
-
-    # Safe guard: Check status before parsing
-    if response.status_code != 200:
-        st.error(f"❌ API Error: {response.status_code} - {response.text}")
-        return {"error": "API error"}
-
+def query_flant5(prompt):
+    data = {"inputs": prompt}
     try:
-        return response.json()
+        response = requests.post(API_URL, headers=HEADERS, json=data)
+        result = response.json()
+        if isinstance(result, list) and "generated_text" in result[0]:
+            return result[0]["generated_text"]
+        else:
+            return "Sorry, I couldn't generate a response."
     except Exception as e:
-        st.error("❌ Failed to parse response from Hugging Face.")
-        st.text(response.text)
-        return {"error": "Invalid JSON"}
+        return f"Error: {str(e)}"
 
-#------------------ Model Setup (Zephyr-7B) ----------------------------- #
-@st.cache_resource(show_spinner="Loading AshaAI brain...")
-
-def load_chat_model():
-    model_id = "HuggingFaceH4/zephyr-7b-beta"
-    tokenizer = AutoTokenizer.from_pretrained(model_id, token = HUGGINGFACE_API_KEY)
-    model = AutoModelForCausalLM.from_pretrained(
-        "HuggingFaceH4/zephyr-7b-beta",
-        device_map = "auto",
-        torch_dtype = torch.bfloat16,
-        trust_remote_code = True,
-        token = HUGGINGFACE_API_KEY
-    ) 
-    return pipeline("text-generation", model=model, tokenizer=tokenizer)
-try:
-    chat_model = load_chat_model()
-except Exception as e:
-    st.error(f"Model loading failed: {e}")
-
-
-system_prompt = """
-You are AshaAI, a smart, empathetic, and supportive career assistant designed to help women.
-You offer job guidance, resume tips, motivation, and recommend career options.
-Be helpful, kind, and informative, just like ChatGPT but more human.
-"""
-
-def generate_response(user_input):
-    try:
-        prompt = f"{system_prompt}\nUser: {user_input}\nAshaAI:"
-        response = chat_model(prompt, max_new_tokens=200, do_sample=True, temperature=0.7)
-        return response[0]['generated_text'].split("AshaAI:")[-1].strip()
-    except Exception as e:
-        return f"⚠️ Sorry, I had trouble generating a response: {e}"
-
-feedback_file = "feedback.csv"
-
+# ------------------ HEADER ------------------ #
 logo = Image.open("ashaai_logo.jpg")
 st.image(logo, width=150)
-st.markdown("<h2 style='text-align:center;'>Welcome to AshaAI 💙 - your Career companion</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='text-align:center;'>Welcome to AshaAI 💙 - your Career Companion</h2>", unsafe_allow_html=True)
 
-# ----------------------------- Sidebar Menu ----------------------------- #
+# ------------------ SIDEBAR ------------------ #
 menu = st.sidebar.radio("AshaAI Menu", [
     "New Chat ➕",
-    "Chat History 🔨",
+    "Chat History 🗨",
     "Search Chats 🔍",
     "Give Feedback 😊😐🙁",
     "Admin Dashboard 📊",
     "About AshaAI 👩‍🤖"
 ])
 
-# ----------------------------- New Chat Section ----------------------------- #
+# ------------------ NEW CHAT ------------------ #
 if menu == "New Chat ➕":
     st.subheader("💬 Start Chatting with AshaAI")
-
     if "chat" not in st.session_state:
         st.session_state.chat = []
 
@@ -108,13 +69,13 @@ if menu == "New Chat ➕":
     if user_input:
         st.session_state.chat.append(("user", user_input))
         with st.spinner("AshaAI is thinking..."):
-            reply = generate_response(user_input)
+            reply = query_flant5(user_input)
             st.session_state.chat.append(("AshaAI", reply))
             time.sleep(1)
             st.experimental_rerun()
 
-# ----------------------------- Chat History Section ----------------------------- #
-elif menu == "Chat History 🔨":
+# ------------------ CHAT HISTORY ------------------ #
+elif menu == "Chat History 🗨":
     st.subheader("📜 Chat History")
     if "chat" in st.session_state and st.session_state.chat:
         for role, text in st.session_state.chat:
@@ -125,7 +86,7 @@ elif menu == "Chat History 🔨":
     else:
         st.info("No previous chats available yet.")
 
-# ----------------------------- Feedback Section ----------------------------- #
+# ------------------ FEEDBACK ------------------ #
 elif menu == "Give Feedback 😊😐🙁":
     st.subheader("📝 Share your feedback!")
     emoji_map = {1: "😞", 2: "😕", 3: "😐", 4: "😊", 5: "😁"}
@@ -152,7 +113,7 @@ elif menu == "Give Feedback 😊😐🙁":
         st.success("🎉 Thank you for your feedback! 🤗🤩")
         st_lottie(lottie_success, height=500, key="success")
 
-# ----------------------------- Admin Dashboard Section ----------------------------- #
+# ------------------ ADMIN DASHBOARD ------------------ #
 elif menu == "Admin Dashboard 📊":
     st.subheader("🛠️ Admin Dashboard")
     admin_email = st.text_input("Enter Admin Email to access Dashboard")
@@ -170,27 +131,22 @@ elif menu == "Admin Dashboard 📊":
             st.pyplot(fig)
             st.subheader("All Feedback Entries")
             st.dataframe(df)
-            row_to_delete = st.number_input("Enter row number to delete (0-based)", min_value=0, max_value=len(df)-1)
-            if st.button("Delete Entry"):
-                df = df.drop(index=row_to_delete)
-                df.to_csv(feedback_file, index=False)
-                st.success("Deleted Successfully!")
-                st.experimental_rerun()
         else:
             st.warning("⚠️ No feedback data available yet.")
     else:
         st.warning("Access Denied. ADMIN ONLY..")
 
-# ----------------------------- Search Chat Section ----------------------------- #
+# ------------------ SEARCH CHATS (Coming Soon) ------------------ #
 elif menu == "Search Chats 🔍":
     st.subheader("🔍 Search Your Chats (Coming Soon)")
 
-# ----------------------------- About Section ----------------------------- #
+# ------------------ ABOUT ------------------ #
 elif menu == "About AshaAI 👩‍🤖":
     st.subheader("About AshaAI")
     st.markdown("""
     AshaAI is a personalized career guidance chatbot designed to support women in their professional journeys.
-    Whether it’s job matching, resume guidance, emotional motivation, or mentorship — AshaAI is your friendly, always-there assistant. 🤖💛
+    Whether it's job matching, resume guidance, emotional motivation, or mentorship — AshaAI is your friendly, always-there assistant. 🤖💛
 
     Built with love and purpose by **Nidhi** for the ASHA AI Hackathon 2025. ✨
     """)
+
