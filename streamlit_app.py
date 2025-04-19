@@ -17,7 +17,7 @@ st.set_page_config(page_title="AshaAI Chatbot", layout="wide")
 genai.configure(api_key=st.secrets.get("GEMINI_API_KEY"))
 model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
 feedback_file = "feedback.csv"
-feedback_file = "response_feedback.csv"
+response_feedback_file = "response_feedback.csv"
 history_file = "chat_history.json"
 
 # ------------------ UTILS ------------------ #
@@ -36,6 +36,7 @@ def query_gemini(prompt):
             return "Error: AshaAI is experiencing high demand. Please wait a few moments and try again."
         else:
             return f"Error: {str(e)}"
+
 def save_response_feedback(timestamp, chat_turn, feedback_type, response_text, user_prompt):
     new_feedback = pd.DataFrame({
         'timestamp': [timestamp],
@@ -44,11 +45,12 @@ def save_response_feedback(timestamp, chat_turn, feedback_type, response_text, u
         'response_text': [response_text],
         'user_prompt': [user_prompt]
     })
-    if os.path.exists(feedback_fie):
-        new_feedback.to_csv(feedback_file, mode='a', header=False, index=False)
+    if os.path.exists(response_feedback_file):
+        new_feedback.to_csv(response_feedback_file, mode='a', header=False, index=False)
     else:
-        new_feedback.to_csv(feedback_file, index = False)
-def text_to_speech(text):
+        new_feedback.to_csv(response_feedback_file, index=False)
+
+def text_to_speech_url(text):
     url = f"https://tts.micmonster.com/api/tts?text={requests.utils.quote(text)}&lang=en&voice=Amy"
     return url
 
@@ -79,48 +81,60 @@ if menu == "New Chat ➕":
         st.session_state.chat = []
     if "pending_input" not in st.session_state:
         st.session_state.pending_input = None
+    if "chat_turn" not in st.session_state:
+        st.session_state.chat_turn = 0
 
     # Display chat messages
-    for sender, msg in st.session_state.chat:
+    for i, (sender, msg) in enumerate(st.session_state.chat):
         if sender == "user":
             st.markdown(f"**👩‍💼 You:** {msg}")
         else:
             st.markdown(f"**👩 AshaAI:** {msg}")
             col1, col2, col3, col4 = st.columns(4)
             with col1:
-                if st.button("👍 Good", key = f"good_{i}"):
-                    save_response_ffedback(datetime.now().strftime("%d-%b-%y %H:%M:%S"), i, "good", msg, st.session_state.chat[i-1][1] if i>0 and st.session_state.chat[i-1][0] == "user" else "N/A")
+                if st.button("👍 Good", key=f"good_{i}"):
+                    save_response_feedback(datetime.now().strftime("%d-%b-%Y %H:%M:%S"), i, "good", msg, st.session_state.chat[i-1][1] if i > 0 and st.session_state.chat[i-1][0] == "user" else "N/A")
                     st.success("Thank you for the response!")
             with col2:
-                if st.button("👎 Bad", key=f"Bad_{i}"):
-                  save_response_feedback(datetime.now().strftime("%d-%b-%Y %H:%M:%S"), i, "bad", msg, st.session_state.chat[i-1][1] if i > 0 and st.session_state.chat[i-1][0] == "user" else "N/A")
-                  st.error("Thank you for your feedback. We'll work on improving.") 
+                if st.button("👎 Bad", key=f"bad_{i}"):
+                    save_response_feedback(datetime.now().strftime("%d-%b-%Y %H:%M:%S"), i, "bad", msg, st.session_state.chat[i-1][1] if i > 0 and st.session_state.chat[i-1][0] == "user" else "N/A")
+                    st.error("Thank you for your feedback. We'll work on improving.")
             with col3:
                 share_url = f"mailto:?subject=AshaAI Response&body={msg}"
                 st.markdown(f'<a href="{share_url}" target="_blank">📤 Share</a>', unsafe_allow_html=True)
             with col4:
                 tts_url = text_to_speech_url(msg)
                 st.audio(tts_url, format="audio/mpeg", start_time=0, key=f"listen_{i}")
-         
-    # Capture new input
+
+    # Capture new input with file upload
     user_input = st.chat_input(
         "Your Question...",
-        accept_file = True,
-        file_type = ["pdf", "docx", "txt", "jpg", "jpeg", "png"],
+        accept_file=True,
+        file_types=["pdf", "docx", "txt", "jpg", "jpeg", "png"],
     )
-    if user_input and user_input.text:
-        st.markdown(user_input.text)
-    if user_input and user_input["files"]:
-        st.image(user_input["files"][0])
+
     if user_input:
-        st.session_state.pending_input = user_input
+        processed_input = {"text": None, "files": []}
+        if hasattr(user_input, 'text'):
+            processed_input["text"] = user_input.text
+            st.markdown(f"**👩‍💼 You:** {user_input.text}")
+        if hasattr(user_input, 'files') and user_input.files:
+            processed_input["files"] = user_input.files
+            for file in user_input.files:
+                st.image(file) # Display uploaded images
+
+        st.session_state.chat.append(("user", processed_input))
+        st.session_state.pending_input = processed_input
+        st.session_state.chat_turn += 1
 
     # Respond to pending input
     if st.session_state.pending_input:
-        st.session_state.chat.append(("user", st.session_state.pending_input))
+        prompt_text = st.session_state.pending_input.get("text")
+        uploaded_files = st.session_state.pending_input.get("files")
+
         with st.spinner("AshaAI is thinking..."):
-            reply = query_gemini(st.session_state.pending_input)
-        #the cool typing effect
+            # Modify query_gemini to handle file input if needed
+            reply = query_gemini(prompt_text if prompt_text else "")
         full_response = reply
         placeholder = st.empty()
         typed_response = ""
@@ -158,7 +172,7 @@ elif menu == "Chat History 🗨":
     if not st.session_state.chat_history:
         st.info("No previous chats available.")
     else:
-        chat_titles = [f"Chat {i + 1} ({st.session_state.chat_history[i][0][1][:20]}...)" if st.session_state.chat_history[i] else f"Chat {i + 1}"
+        chat_titles = [f"Chat {i + 1} ({st.session_state.chat_history[i][0][1]['text'][:20]}...)" if st.session_state.chat_history[i] and st.session_state.chat_history[i][0][1].get('text') else f"Chat {i + 1}"
                        for i in range(len(st.session_state.chat_history))]
         selected_chat_title = st.radio("Select a previous chat to view:", chat_titles)
 
@@ -166,11 +180,18 @@ elif menu == "Chat History 🗨":
             selected_chat_index = chat_titles.index(selected_chat_title)
             selected_chat = st.session_state.chat_history[selected_chat_index]
             st.subheader(f"Content of {selected_chat_title}:")
-            for role, text in selected_chat:
+            for role, content in selected_chat:
                 if role == "user":
-                    st.markdown(f"**👩‍💼 You:** {text}")
+                    if isinstance(content, dict) and content.get('text'):
+                        st.markdown(f"**👩‍💼 You:** {content['text']}")
+                    elif isinstance(content, str):
+                        st.markdown(f"**👩‍💼 You:** {content}")
+                    elif isinstance(content, dict) and content.get('files'):
+                        st.markdown("**👩‍💼 You:** Uploaded files:")
+                        for file in content['files']:
+                            st.image(file)
                 else:
-                    st.markdown(f"**👩 AshaAI:** {text}")
+                    st.markdown(f"**👩 AshaAI:** {content}")
 
     if menu == "New Chat ➕":
         st.session_state.current_chat_saved = False
