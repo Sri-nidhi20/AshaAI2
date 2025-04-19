@@ -177,8 +177,20 @@ elif menu == "Search Chats 🔍":
 elif menu == "About AshaAI 👩‍🤖":
     st.subheader("About AshaAI")
     st.markdown("""
-    AshaAI is a personalized career guidance chatbot designed to support women in their professional journeys.
-    Whether it's job matching, resume guidance, emotional motivation, or mentorship — AshaAI is your friendly, always-there assistant. 🤖💛
+    **AshaAI** is your personal career companion — an AI-powered chatbot designed **exclusively for women** to support, guide, and empower them on their professional journey. 💙
 
-    Built with love and purpose by **Nidhi** for the ASHA AI Hackathon 2025. ✨
-    """)
+It helps you with:
+- 🔍 Discovering job opportunities tailored to your skills and interests  
+- 📄 Resume insights and application tips  
+- 🎯 Personalized course & upskilling suggestions  
+- 💡 Motivation and career growth advice  
+- 👩‍🏫 Access to mentorship and community events  
+- 🌈 Gender-bias free, inclusive conversations
+
+AshaAI remembers your previous chats and keeps conversations human-like — making career guidance feel as natural as talking to a friend.
+
+Built by **Nidhi 💛** with love and purpose for the **ASHA AI Hackathon 2025**, AshaAI combines real tech with real empathy.
+
+> _“Asha” means hope — and that’s exactly what this AI brings to every woman’s career journey._
+
+""")
