@@ -12,7 +12,7 @@ from PIL import Image
 
 # ------------------ CONFIG ------------------ #
 st.set_page_config(page_title="AshaAI Chatbot", layout="wide")
-genai.configure(api_key = st.secrets["GOOGLE_API_KEY"])
+genai.configure(api_key = st.secrets["GEMINI_API_KEY"])
 model = genai.GenerativeModel("gemini-pro")
 feedback_file = "feedback.csv"
 
