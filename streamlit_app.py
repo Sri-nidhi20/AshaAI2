@@ -1,5 +1,4 @@
 # streamlit_app.py
-
 import streamlit as st
 import google.generativeai as genai
 import os
@@ -86,6 +85,7 @@ if menu == "New Chat ➕":
             reply = query_gemini(st.session_state.pending_input)
         st.session_state.chat.append(("AshaAI", reply))
         st.session_state.pending_input = None
+        st.rerun()
 
 # ------------------ CHAT HISTORY ------------------ #
 elif menu == "Chat History 🗨":
