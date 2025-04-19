@@ -146,7 +146,7 @@ elif menu == "Admin Dashboard 📊":
                 df.to_csv("feedback.csv", index = False)
                 st.success("Deleted Successfully!!")
                 if st.button("Refresh.."):
-                st.experimental.rerun()
+                    st.experimental.rerun()
         else:
             st.warning("⚠️ No feedback data available yet.")
     else:
