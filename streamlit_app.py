@@ -70,10 +70,8 @@ if menu == "New Chat ➕":
         st.session_state.chat.append(("user", user_input))
         with st.spinner("AshaAI is thinking..."):
             reply = query_flant5(user_input)
-            st.session_state.chat.append(("AshaAI", reply))
-            time.sleep(1)
-            st.experimental_rerun()
-
+        st.session_state.chat.append(("AshaAI", reply))
+            
 # ------------------ CHAT HISTORY ------------------ #
 elif menu == "Chat History 🗨":
     st.subheader("📜 Chat History")
