@@ -12,7 +12,7 @@ from PIL import Image
 
 # ------------------ CONFIG ------------------ #
 st.set_page_config(page_title="AshaAI Chatbot", layout="wide")
-genai.configure(api_key = st.secrets["GEMINI_API_KEY"])
+genai.configure(api_key=st.secrets.get("GEMINI_API_KEY"))
 model = genai.GenerativeModel("gemini-pro")
 feedback_file = "feedback.csv"
 
@@ -31,8 +31,11 @@ def query_gemini(prompt):
         return f"Error: {str(e)}"
 
 # ------------------ HEADER ------------------ #
-logo = Image.open("ashaai_logo.jpg")
-st.image(logo, width=150)
+try:
+    logo = Image.open("ashaai_logo.jpg")
+    st.image(logo, width=150)
+except FileNotFoundError:
+    st.warning("⚠️ 'ashaai_logo.jpg' not found in the current directory.")
 st.markdown("<h2 style='text-align:center;'>Welcome to AshaAI 💙 - your Career Companion</h2>", unsafe_allow_html=True)
 
 # ------------------ SIDEBAR ------------------ #
@@ -112,7 +115,7 @@ elif menu == "Give Feedback 😊😐🙁":
             new_feedback.to_csv(feedback_file, index=False)
         lottie_success = load_lottieurl("https://lottie.host/a18d8f78-7a96-4938-a960-11846b793789/iUFyJaP2CZ.json")
         st.success("🎉 Thank you for your feedback! 🤗🤩")
-        st_lottie(lottie_success, height=500, key="success")
+        st_lottie(lottie_success, height=300, key="success_feedback") # Added a unique key
 
 # ------------------ ADMIN DASHBOARD ------------------ #
 elif menu == "Admin Dashboard 📊":
@@ -132,13 +135,14 @@ elif menu == "Admin Dashboard 📊":
             st.pyplot(fig)
             st.subheader("All Feedback Entries")
             st.dataframe(df)
-            row_to_delete = st.number_input("Enter row number to delete (0-based)", min_value = 0,max_value = len(df)-1)
+            row_to_delete = st.number_input("Enter row number to delete (0-based)", min_value=0, max_value=len(df) - 1)
             if st.button("Delete Entry"):
-                df = df.drop(index = row_to_delete)
-                df.to_csv("feedback.csv", index = False)
-                st.success("Deleted Successfully!!")
-                if st.button("Refresh.."):
-                    st.experimental.rerun()
+                try:
+                    df = df.drop(index=row_to_delete)
+                    df.to_csv("feedback.csv", index=False)
+                    st.success(f"Deleted row {row_to_delete} successfully!")
+                except IndexError:
+                    st.error("Invalid row number.")
         else:
             st.warning("⚠️ No feedback data available yet.")
     else:
@@ -157,4 +161,3 @@ elif menu == "About AshaAI 👩‍🤖":
 
     Built with love and purpose by **Nidhi** for the ASHA AI Hackathon 2025. ✨
     """)
-
