@@ -71,7 +71,15 @@ if menu == "New Chat ➕":
             st.markdown(f"**👩 AshaAI:** {msg}")
 
     # Capture new input
-    user_input = st.chat_input("Your Question...")
+    user_input = st.chat_input(
+        "Your Question...",
+        accept_file = True,
+        file_type = ["pdf", "docx", "txt", "jpg", "jpeg", "png"],
+    )
+    if user_input and user_input.text:
+        st.markdown(user_input.text)
+    if user_input and user_input["files"]:
+        st.image(user_input["files"][0])
     if user_input:
         st.session_state.pending_input = user_input
 
