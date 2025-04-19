@@ -9,12 +9,14 @@ import matplotlib.pyplot as plt
 from streamlit_lottie import st_lottie
 from PIL import Image
 import time
+import json
 
 # ------------------ CONFIG ------------------ #
 st.set_page_config(page_title="AshaAI Chatbot", layout="wide")
 genai.configure(api_key=st.secrets.get("GEMINI_API_KEY"))
 model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
 feedback_file = "feedback.csv"
+history_file = "chat_history.json"
 
 # ------------------ UTILS ------------------ #
 def load_lottieurl(url):
@@ -24,14 +26,14 @@ def load_lottieurl(url):
     return r.json()
 
 def query_gemini(prompt):
-        try:
-            response = model.generate_content(f"Answer the following career-related question: {prompt}")
-            return response.text
-        except Exception as e:
-            if "429" in str(e):
-                return "Error: AshaAI is experiencing high demand. Please wait a few moments and try again."
-            else:
-                return f"Error: {str(e)}"
+    try:
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        if "429" in str(e):
+            return "Error: AshaAI is experiencing high demand. Please wait a few moments and try again."
+        else:
+            return f"Error: {str(e)}"
 
 # ------------------ HEADER ------------------ #
 try:
@@ -92,14 +94,46 @@ if menu == "New Chat ➕":
 # ------------------ CHAT HISTORY ------------------ #
 elif menu == "Chat History 🗨":
     st.subheader("📜 Chat History")
-    if "chat" in st.session_state and st.session_state.chat:
-        for role, text in st.session_state.chat:
-            if role == "user":
-                st.markdown(f"**👩‍💼 You:** {text}")
-            else:
-                st.markdown(f"**👩 AshaAI:** {text}")
+
+    if "chat_history" not in st.session_state:
+        try:
+            with open(history_file, "r") as f:
+                st.session_state.chat_history = json.load(f)
+        except FileNotFoundError:
+            st.session_state.chat_history = []
+
+    if "current_chat_saved" not in st.session_state:
+        st.session_state.current_chat_saved = False
+
+    if "chat" in st.session_state and st.session_state.chat and not st.session_state.current_chat_saved:
+        st.session_state.chat_history.append(st.session_state.chat.copy())
+        st.session_state.chat = []
+        st.session_state.current_chat_saved = True
+        try:
+            with open(history_file, "w") as f:
+                json.dump(st.session_state.chat_history, f)
+        except Exception as e:
+            st.error(f"Error saving chat history: {e}")
+
+    if not st.session_state.chat_history:
+        st.info("No previous chats available.")
     else:
-        st.info("No previous chats available yet.")
+        chat_titles = [f"Chat {i + 1} ({st.session_state.chat_history[i][0][1][:20]}...)" if st.session_state.chat_history[i] else f"Chat {i + 1}"
+                       for i in range(len(st.session_state.chat_history))]
+        selected_chat_title = st.radio("Select a previous chat to view:", chat_titles)
+
+        if selected_chat_title:
+            selected_chat_index = chat_titles.index(selected_chat_title)
+            selected_chat = st.session_state.chat_history[selected_chat_index]
+            st.subheader(f"Content of {selected_chat_title}:")
+            for role, text in selected_chat:
+                if role == "user":
+                    st.markdown(f"**👩‍💼 You:** {text}")
+                else:
+                    st.markdown(f"**👩 AshaAI:** {text}")
+
+    if menu == "New Chat ➕":
+        st.session_state.current_chat_saved = False
 
 # ------------------ FEEDBACK ------------------ #
 elif menu == "Give Feedback 😊😐🙁":
@@ -170,11 +204,11 @@ elif menu == "About AshaAI 👩‍🤖":
     **AshaAI** is your personal career companion — an AI-powered chatbot designed **exclusively for women** to support, guide, and empower them on their professional journey. 💙
 
 It helps you with:
-- 🔍 Discovering job opportunities tailored to your skills and interests  
-- 📄 Resume insights and application tips  
-- 🎯 Personalized course & upskilling suggestions  
-- 💡 Motivation and career growth advice  
-- 👩‍🏫 Access to mentorship and community events  
+- 🔍 Discovering job opportunities tailored to your skills and interests
+- 📄 Resume insights and application tips
+- 🎯 Personalized course & upskilling suggestions
+- 💡 Motivation and career growth advice
+- 👩‍🏫 Access to mentorship and community events
 - 🌈 Gender-bias free, inclusive conversations
 
 AshaAI remembers your previous chats and keeps conversations human-like — making career guidance feel as natural as talking to a friend.
