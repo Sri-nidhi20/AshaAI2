@@ -28,7 +28,7 @@ def is_career_related(prompt):
         "courses", "training", "education", "profession", "occupation", "returnship", "remote", "hybrid", "on-site", "placement", "transition", "break", 
         "employment", "work", "hire", "recruitment", "industry", "field","portfolio", "cover letter", "network", "startup", "entrepreneur", "technical", "non-technical",
         "role", "position", "development", "growth", "path", "guidance","communication", "confidence", "negotiation", "soft skills", "hard skills",
-        "advice", "suggest", "learn", "study", "qualifications", "experience","hi", "how are you", "who are you",
+        "advice", "suggest", "learn", "study", "qualifications", "experience","hi", "how are you", "hello",
         "mentor", "networking", "manager", "woman",  "coding", "errors", "linkedin", "salary", "promotion"
         # Add more relevant keywords as you think of them
     ]
