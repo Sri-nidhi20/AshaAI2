@@ -28,7 +28,7 @@ def is_career_related(prompt):
         "employment", "work", "hire", "recruitment", "industry", "field",
         "role", "position", "development", "growth", "path", "guidance",
         "advice", "suggest", "learn", "study", "qualifications", "experience",
-        "mentor", "networking", "manager", "coding", "errors", "linkedin", "salary", "promotion"
+        "mentor", "networking", "manager", "woman",  "coding", "errors", "linkedin", "salary", "promotion"
         # Add more relevant keywords as you think of them
     ]
     prompt_lower = prompt.lower()
