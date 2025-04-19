@@ -140,6 +140,13 @@ elif menu == "Admin Dashboard 📊":
             st.pyplot(fig)
             st.subheader("All Feedback Entries")
             st.dataframe(df)
+            row_to_delete = st.number_input("Enter row number to delete (0-based)", min_value = 0,max_value = len(df)-1)
+            if st.button("Delete Entry"):
+                df = df.drop(index = row_to_delete)
+                df.to_csv("feedback.csv", index = False)
+                st.success("Deleted Successfully!!")
+                if st,button("Refresh.."):
+                st.experimental.rerun()
         else:
             st.warning("⚠️ No feedback data available yet.")
     else:
