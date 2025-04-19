@@ -56,22 +56,33 @@ menu = st.sidebar.radio("AshaAI Menu", [
 # ------------------ NEW CHAT ------------------ #
 if menu == "New Chat ➕":
     st.subheader("💬 Start Chatting with AshaAI")
+
+    # Initialize session state variables
     if "chat" not in st.session_state:
         st.session_state.chat = []
+    if "pending_input" not in st.session_state:
+        st.session_state.pending_input = None
 
+    # Display chat messages
     for sender, msg in st.session_state.chat:
         if sender == "user":
             st.markdown(f"**👩 You:** {msg}")
         else:
             st.markdown(f"**🤖 AshaAI:** {msg}")
 
+    # Capture new input
     user_input = st.chat_input("Your Question...")
     if user_input:
-        st.session_state.chat.append(("user", user_input))
+        st.session_state.pending_input = user_input
+
+    # Respond to pending input
+    if st.session_state.pending_input:
+        st.session_state.chat.append(("user", st.session_state.pending_input))
         with st.spinner("AshaAI is thinking..."):
-            reply = query_flant5(user_input)
+            reply = query_flant5(st.session_state.pending_input)
         st.session_state.chat.append(("AshaAI", reply))
-            
+        st.session_state.pending_input = None
+
 # ------------------ CHAT HISTORY ------------------ #
 elif menu == "Chat History 🗨":
     st.subheader("📜 Chat History")
