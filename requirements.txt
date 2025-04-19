@@ -2,10 +2,6 @@ streamlit
 matplotlib
 pandas
 streamlit-lottie
-transformers
 requests
 Pillow
-python-dotenv
-huggingface_hub[hf_xet]
-torch>=2.1.0
-accelerate
+google-generativeai
