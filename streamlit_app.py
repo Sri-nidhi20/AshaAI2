@@ -23,12 +23,12 @@ def load_lottieurl(url):
     return r.json()
 def is_career_related(prompt):
     career_keywords = [
-        "job", "career", "resume", "cv", "interview", "skills", "motivation",
+        "job", "career", "resume", "cv", "interview", "skills",
         "courses", "training", "education", "profession", "occupation",
         "employment", "work", "hire", "recruitment", "industry", "field",
         "role", "position", "development", "growth", "path", "guidance",
         "advice", "suggest", "learn", "study", "qualifications", "experience",
-        "mentor", "networking", "motivation", "coding", "errors", "linkedin", "salary", "promotion"
+        "mentor", "networking", "manager", "coding", "errors", "linkedin", "salary", "promotion"
         # Add more relevant keywords as you think of them
     ]
     prompt_lower = prompt.lower()
