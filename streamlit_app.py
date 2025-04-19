@@ -22,7 +22,7 @@ try:
 except Exception as e:
     st.error(f"Error listing models: {e}")
 
-model = genai.GenerativeModel("models/gemini-pro-vision")
+model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
 feedback_file = "feedback.csv"
 
 # ------------------ UTILS ------------------ #
