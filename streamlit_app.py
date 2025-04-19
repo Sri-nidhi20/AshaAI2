@@ -12,15 +12,6 @@ from PIL import Image
 # ------------------ CONFIG ------------------ #
 st.set_page_config(page_title="AshaAI Chatbot", layout="wide")
 genai.configure(api_key=st.secrets.get("GEMINI_API_KEY"))
-
-try:
-    for m in genai.list_models():
-        st.write(f"Model: {m.name}")
-        if 'generateContent' in m.supported_generation_methods:
-            st.write("  Supports generateContent")
-except Exception as e:
-    st.error(f"Error listing models: {e}")
-
 model = genai.GenerativeModel("models/gemini-1.5-pro-latest")
 feedback_file = "feedback.csv"
 
