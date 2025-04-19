@@ -22,24 +22,8 @@ def load_lottieurl(url):
     if r.status_code != 200:
         return None
     return r.json()
-def is_career_related(prompt):
-    career_keywords = [
-        "job", "career", "resume", "cv", "interview", "skills", "inspiring","opportunities", "freelancing", "internshi", "certification",
-        "courses", "training", "education", "profession", "occupation", "returnship", "remote", "hybrid", "on-site", "placement", "transition", "break", 
-        "employment", "work", "hire", "recruitment", "industry", "field","portfolio", "cover letter", "network", "startup", "entrepreneur", "technical", "non-technical",
-        "role", "position", "development", "growth", "path", "guidance","communication", "confidence", "negotiation", "soft skills", "hard skills",
-        "advice", "suggest", "learn", "study", "qualifications", "experience","hi", "how are you", "hello",
-        "mentor", "networking", "manager", "woman",  "coding", "errors", "linkedin", "salary", "promotion"
-        # Add more relevant keywords as you think of them
-    ]
-    prompt_lower = prompt.lower()
-    for keyword in career_keywords:
-        if keyword in prompt_lower:
-            return True
-    return False
 
 def query_gemini(prompt):
-    if is_career_related(prompt):
         try:
             response = model.generate_content(f"Answer the following career-related question: {prompt}")
             return response.text
@@ -48,8 +32,6 @@ def query_gemini(prompt):
                 return "Error: AshaAI is experiencing high demand. Please wait a few moments and try again."
             else:
                 return f"Error: {str(e)}"
-    else:
-        return "That's an interesting topic! However, I'm currently focused on providing career guidance. Let me know if you have any career-related questions!"
 
 # ------------------ HEADER ------------------ #
 try:
