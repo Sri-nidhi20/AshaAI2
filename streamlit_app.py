@@ -1,6 +1,7 @@
 # streamlit_app.py
 
 import streamlit as st
+import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 import requests
@@ -13,10 +14,8 @@ from PIL import Image
 
 # ------------------ CONFIG ------------------ #
 st.set_page_config(page_title="AshaAI Chatbot", layout="wide")
-load_dotenv()
-HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
-API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-small"
-HEADERS = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
+genai.configure(api_key = st.secrets["GOOGLE_API_KEY"])
+model = genai.GenerativeModel("gemini-pro")
 feedback_file = "feedback.csv"
 
 # ------------------ UTILS ------------------ #
@@ -26,15 +25,10 @@ def load_lottieurl(url):
         return None
     return r.json()
 
-def query_flant5(prompt):
-    data = {"inputs": prompt}
+def query_gemini(prompt):
     try:
-        response = requests.post(API_URL, headers=HEADERS, json=data)
-        result = response.json()
-        if isinstance(result, list) and "generated_text" in result[0]:
-            return result[0]["generated_text"]
-        else:
-            return "Sorry, I couldn't generate a response."
+        response = model.generate_content(prompt)
+        return response.text
     except Exception as e:
         return f"Error: {str(e)}"
 
@@ -79,7 +73,7 @@ if menu == "New Chat ➕":
     if st.session_state.pending_input:
         st.session_state.chat.append(("user", st.session_state.pending_input))
         with st.spinner("AshaAI is thinking..."):
-            reply = query_flant5(st.session_state.pending_input)
+            reply = query_gemini(st.session_state.pending_input)
         st.session_state.chat.append(("AshaAI", reply))
         st.session_state.pending_input = None
 
