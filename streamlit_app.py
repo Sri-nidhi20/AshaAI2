@@ -102,7 +102,7 @@ if menu == "New Chat ➕":
         typed_response = ""
         for char in full_response:
             typed_response += char
-            placeholde.markdown(f"**👩 AshaAI:** {typed_response}")
+            placeholder.markdown(f"**👩 AshaAI:** {typed_response}")
             time.sleep(0.05)
         st.session_state.chat.append(("AshaAI", full_response))
         st.session_state.pending_input = None
