@@ -2,7 +2,7 @@ streamlit
 matplotlib
 pandas
 streamlit-lottie
-transformers>=4.37.0
+transformers
 requests
 Pillow
 python-dotenv
