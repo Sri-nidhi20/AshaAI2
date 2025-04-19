@@ -60,6 +60,7 @@ try:
     st.image(logo, width=150)
 except FileNotFoundError:
     st.warning("⚠️ 'ashaai_logo.jpg' not found in the current directory.")
+
 st.markdown("<h2 style='text-align:center;'>Welcome to AshaAI 💙 - your Career Companion</h2>", unsafe_allow_html=True)
 
 # ------------------ SIDEBAR ------------------ #
@@ -76,7 +77,6 @@ menu = st.sidebar.radio("AshaAI Menu", [
 if menu == "New Chat ➕":
     st.subheader("💬 Start Chatting with AshaAI")
 
-    # Initialize session state variables
     if "chat" not in st.session_state:
         st.session_state.chat = []
     if "pending_input" not in st.session_state:
@@ -84,7 +84,6 @@ if menu == "New Chat ➕":
     if "chat_turn" not in st.session_state:
         st.session_state.chat_turn = 0
 
-    # Display chat messages
     for i, (sender, msg) in enumerate(st.session_state.chat):
         if sender == "user":
             st.markdown(f"**👩‍💼 You:** {msg}")
@@ -106,43 +105,25 @@ if menu == "New Chat ➕":
                 tts_url = text_to_speech_url(msg)
                 st.audio(tts_url, format="audio/mpeg", start_time=0, key=f"listen_{i}")
 
-    # Capture new input with file upload
-    user_input = st.chat_input(
-        "Your Question...",
-        accept_file=True,
-        file_types=["pdf", "docx", "txt", "jpg", "jpeg", "png"],
-    )
+    user_input = st.chat_input("Your Question...")
 
     if user_input:
-        processed_input = {"text": None, "files": []}
-        if hasattr(user_input, 'text'):
-            processed_input["text"] = user_input.text
-            st.markdown(f"**👩‍💼 You:** {user_input.text}")
-        if hasattr(user_input, 'files') and user_input.files:
-            processed_input["files"] = user_input.files
-            for file in user_input.files:
-                st.image(file) # Display uploaded images
-
-        st.session_state.chat.append(("user", processed_input))
-        st.session_state.pending_input = processed_input
+        st.markdown(f"**👩‍💼 You:** {user_input}")
+        st.session_state.chat.append(("user", user_input))
+        st.session_state.pending_input = user_input
         st.session_state.chat_turn += 1
 
-    # Respond to pending input
     if st.session_state.pending_input:
-        prompt_text = st.session_state.pending_input.get("text")
-        uploaded_files = st.session_state.pending_input.get("files")
-
+        prompt_text = st.session_state.pending_input
         with st.spinner("AshaAI is thinking..."):
-            # Modify query_gemini to handle file input if needed
-            reply = query_gemini(prompt_text if prompt_text else "")
-        full_response = reply
+            reply = query_gemini(prompt_text)
         placeholder = st.empty()
         typed_response = ""
-        for char in full_response:
+        for char in reply:
             typed_response += char
             placeholder.markdown(f"**👩 AshaAI:** {typed_response}")
             time.sleep(0.01)
-        st.session_state.chat.append(("AshaAI", full_response))
+        st.session_state.chat.append(("AshaAI", reply))
         st.session_state.pending_input = None
 
 # ------------------ CHAT HISTORY ------------------ #
@@ -172,8 +153,7 @@ elif menu == "Chat History 🗨":
     if not st.session_state.chat_history:
         st.info("No previous chats available.")
     else:
-        chat_titles = [f"Chat {i + 1} ({st.session_state.chat_history[i][0][1]['text'][:20]}...)" if st.session_state.chat_history[i] and st.session_state.chat_history[i][0][1].get('text') else f"Chat {i + 1}"
-                       for i in range(len(st.session_state.chat_history))]
+        chat_titles = [f"Chat {i + 1}" for i in range(len(st.session_state.chat_history))]
         selected_chat_title = st.radio("Select a previous chat to view:", chat_titles)
 
         if selected_chat_title:
@@ -181,20 +161,7 @@ elif menu == "Chat History 🗨":
             selected_chat = st.session_state.chat_history[selected_chat_index]
             st.subheader(f"Content of {selected_chat_title}:")
             for role, content in selected_chat:
-                if role == "user":
-                    if isinstance(content, dict) and content.get('text'):
-                        st.markdown(f"**👩‍💼 You:** {content['text']}")
-                    elif isinstance(content, str):
-                        st.markdown(f"**👩‍💼 You:** {content}")
-                    elif isinstance(content, dict) and content.get('files'):
-                        st.markdown("**👩‍💼 You:** Uploaded files:")
-                        for file in content['files']:
-                            st.image(file)
-                else:
-                    st.markdown(f"**👩 AshaAI:** {content}")
-
-    if menu == "New Chat ➕":
-        st.session_state.current_chat_saved = False
+                st.markdown(f"**{'👩‍💼 You:' if role == 'user' else '👩 AshaAI:'}** {content}")
 
 # ------------------ FEEDBACK ------------------ #
 elif menu == "Give Feedback 😊😐🙁":
