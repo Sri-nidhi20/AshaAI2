@@ -106,7 +106,8 @@ menu = st.sidebar.radio("AshaAI Menu", [
     "Search Chats 🔍",
     "Give Feedback 😊😐🙁",
     "Admin Dashboard 📊",
-    "About AshaAI 👩‍🤖"
+    "About AshaAI 👩‍🤖",
+    "QUIZ TIME 🤩🥳"
 ])
 
 # ------------------ NEW CHAT ------------------ #
@@ -265,3 +266,9 @@ Built by **Nidhi 💛** with love and purpose for the **ASHA AI Hackathon 2025**
 > _“Asha” means hope — and that’s exactly what this AI brings to every woman’s career journey._
 
 """)
+# --------------------- QUIZ ---------------------------#
+elif menu == "QUIZ TIME 🤩🥳":
+    st.header("It's the Quiz Time!!")
+    st.subheader("🎯 Ready, Set, Code! 💻 Time to show off your skills and conquer this quiz like a coding pro! 💥")
+    st.markdown("*COMING SOON !!*")
+     
