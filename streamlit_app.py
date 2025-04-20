@@ -74,7 +74,7 @@ if menu == "New Chat ➕":
         accept_file = True,
         file_type = ["jpg", "jpeg", "png", "pdf", "docx"],
     )
-    if user_input and unser_input.text:
+    if user_input and user_input.text:
         st.markdown(user_input.text)
     if user_input and user_input["files"]:
         st.image(user_input["files"][0])
