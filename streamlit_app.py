@@ -8,6 +8,10 @@ import matplotlib.pyplot as plt
 from streamlit_lottie import st_lottie
 from PIL import Image
 import time
+import logging
+import re
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+import nltk
 import json
 
 # ------------------ CONFIG ------------------ #
@@ -23,17 +27,65 @@ def load_lottieurl(url):
     if r.status_code != 200:
         return None
     return r.json()
-
-def query_gemini(prompt):
-    try:
-        response = model.generate_content(prompt)
-        return response.text
-    except Exception as e:
-        if "429" in str(e):
-            return "Error: AshaAI is experiencing high demand. Please wait a few moments and try again."
-        else:
+try:
+    nltk.data.find('sentiment/vader_lexicon.zip')
+except nltk.downloader('vader_lexicon')
+logging.basicConfig(level = logging.INFO)
+analyzer = SentimentIntensityAnalyzer()
+def query_gemini(prompt_text):
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    logging.info(f"[{timestamp}] User Prompt: {prompt_text}")
+    greetings = r"^(hello|hi|hey|good morning|good afternoon|good evening)\b.*"
+    if re.match(greetings, prompt_text, re.IGNORECASE):
+        return "Hello there!! How can I assist you with your career journey today?"
+    vs = analyzer.polarity_cores(prompt_text)
+    logging.info(f"[{timestamp}] Sentiment scores: {vs}")
+    if vs['compound'] < -0.2:
+        encouragement_query = f"The user is expressing negative feelings like  '{prompt_text}'. Offer a short, encouraging and supportive message related to career challenges. Keep it concise and uplifting."
+        logging.info(f"[{timestamp}] Detected negative sentiment, sending encouragement query to Gemini-2.0-flash: {encouragement_query}")
+        try:
+            contents = [{"parts": [{"text": encouragement_query}]}]
+            response = model.generate_content(contents)
+            if response.text:
+                logging.info(f"[{timestamp}] Gemini-2.0-flash encouragement response (first 50 chars): {response.text[:50]}...")
+                return response.text
+            else:
+                return "Sending you some positive vibes! Remember that career journeys have ups and downs. How can I help you navigate this?"
+        except Exception as e:
+            logging.error(f"[{timestamp}] Error fetching encouraging from Gemini-2.0-flash: {e}")
+            return f"Error: {str(e) }"
+    motivation_keywords = r"\b(motivate|inspire|inspiration|encouragement|uplift|positive outlook|give me motivation)\b"
+    if re.search(motivation_keywords, prompt_text, re.IGNORECASE):
+        motivation_query = f"Give me a short, inspiring message related to {prompt_text.lower().replace('give me motivation', '').strip()}. Keep it concise and uplifting."
+        logging.info(f"[{timestamp}] Sending motivation query to Gemini-2.0-flash: {motivation_query}")
+        try:
+            contents = [{"parts": [{"text": motivation_query}]}]
+            response = model.generate_content(contents)
+            if response.text:
+                logging.info(f"[{timestamp}] gemini-2.0-flash motivation response (first 50 chars): {response.text[:50]}...")
+                return response.text
+            else:
+                return "Here's a little something to keep you going: Every challenge is an opportunity to learn and grow."
+        except Exception as e:
+            logging.error(f"[{timestamp}] Error fetching motivation from Gemini-2.0-flash: {e}")
+            return f"error: {str(e)}"
+    career_keywords = r"\b(career|job|profession|occupation|field|industry|role|employment|work|skills|qualifications|opportunities|interview|resume|cv|cover letter|salary|hire|recruiting)\b"
+    if re.search(career_keywords, prompt_text, re.IGNORECASE) or "career" in prompt_text.lower() or "job" in prompt_text.lower():
+        logging.info(f"[{timestampl}] Assuming career-related query, sending to Gemini-2.0-flash.")
+        try:
+            contents = [{"parts": [{"text": prompt_text}]}]
+            response = model.generate_content(contents)
+            if response.text:
+                logging.info(f"[{timestamp}] Gemini-2.0-flash response (first 50 chars): {response.text[:50]}...")
+                return response.text
+            else:
+                return "Hmm, I didn't get a clear response for that career query. Could you please rephrase?"
+        except Exception as e:
+            logging.error(f"[{timestamp}] Error in query_gemini (Gemini-2.0-flash) for career query: {e}")
             return f"Error: {str(e)}"
-
+    else: 
+        return "I'm designed to be a helpful companion for your career journey. While I appreciate your message. I'm best equipped to answer questions related to careers, job opportunities, professional development, etc.. How can I specifically help you with your career today?"
+        
 # ------------------ HEADER ------------------ #
 try:
     logo = Image.open("ashaai_logo.jpg")
