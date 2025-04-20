@@ -42,7 +42,7 @@ def query_gemini(prompt_text):
     greetings = r"^(hello|hi|hey|good morning|good afternoon|good evening)\b.*"
     if re.match(greetings, prompt_text, re.IGNORECASE):
         return "Hello there!! How can I assist you with your career journey today?"
-    vs = analyzer.polarity_cores(prompt_text)
+    vs = analyzer.polarity_scores(prompt_text)
     logging.info(f"[{timestamp}] Sentiment scores: {vs}")
     if vs['compound'] < -0.2:
         encouragement_query = f"The user is expressing negative feelings like  '{prompt_text}'. Offer a short, encouraging and supportive message related to career challenges. Keep it concise and uplifting."
