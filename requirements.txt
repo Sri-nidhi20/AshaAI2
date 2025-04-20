@@ -5,3 +5,4 @@ streamlit-lottie
 requests
 Pillow
 google-generativeai
+nltk
