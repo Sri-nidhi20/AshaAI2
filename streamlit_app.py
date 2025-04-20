@@ -29,7 +29,8 @@ def load_lottieurl(url):
     return r.json()
 try:
     nltk.data.find('sentiment/vader_lexicon.zip')
-except nltk.downloader('vader_lexicon')
+except nltk.downloader.DownloadError:
+    nltk.download('vader_lexicon')
 logging.basicConfig(level = logging.INFO)
 analyzer = SentimentIntensityAnalyzer()
 def query_gemini(prompt_text):
