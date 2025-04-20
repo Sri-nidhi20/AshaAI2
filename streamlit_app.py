@@ -75,7 +75,7 @@ def query_gemini(prompt_text):
             return f"error: {str(e)}"
     career_keywords = r"\b(career|job|profession|occupation|field|industry|role|employment|work|skills|qualifications|opportunities|interview|resume|cv|cover letter|salary|hire|recruiting)\b"
     if re.search(career_keywords, prompt_text, re.IGNORECASE) or "career" in prompt_text.lower() or "job" in prompt_text.lower():
-        logging.info(f"[{timestampl}] Assuming career-related query, sending to Gemini-2.0-flash.")
+        logging.info(f"[{timestamp}] Assuming career-related query, sending to Gemini-2.0-flash.")
         try:
             contents = [{"parts": [{"text": prompt_text}]}]
             response = model.generate_content(contents)
