@@ -35,7 +35,7 @@ def load_lottieurl(url):
         return None
     return r.json()
 logging.basicConfig(level=logging.INFO)
-def query_gemini(prompt_text, timeout_seconds = 30):
+def query_gemini(prompt_text, timeout_seconds = 60):
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     logging.info(f"[{timestamp}] User prompt: {prompt_text}")
 
