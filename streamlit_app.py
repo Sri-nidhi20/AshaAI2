@@ -36,7 +36,7 @@ def load_lottieurl(url):
         return None
     return r.json()
 logging.basicConfig(filename = "ashaai_log.txt", level=logging.INFO)
-def query_gemini(prompt_text, timeout_seconds = 60):
+def query_gemini(prompt_text, timeout_seconds=60):
     logging.info(f"[{timestamp}] User prompt: {prompt_text}")
 
     greetings = r"^(hello|hi|hey|greetings|good morning|good afternoon|good evening)\b.*"
@@ -48,10 +48,10 @@ def query_gemini(prompt_text, timeout_seconds = 60):
     logging.info(f"[{timestamp}] Sentiment scores: {vs}")
     if vs['compound'] < -0.2:  # Adjust this threshold as needed
         encouragement_query = f"The user is expressing negative feelings like '{prompt_text}'. Offer a short, encouraging and supportive message related to career challenges. Keep it concise and uplifting."
-        logging.info(f"[{timestamp}] Detected negative sentiment, sending encouragement query to Gemini-2.0-flash: (timeout = {timeout_seconds}s): {encouragement_query}")
+        logging.info(f"[{timestamp}] Detected negative sentiment, sending encouragement query to Gemini-2.0-flash: {encouragement_query}")
         try:
             contents = [{"parts": [{"text": encouragement_query}]}]
-            response = model.generate_content(contents, generation_config = {"timeout": timeout_seconds})
+            response = model.generate_content(contents)  # Removed generation_config
             if response.text:
                 logging.info(f"[{timestamp}] Gemini-2.0-flash encouragement response (first 50 chars): {response.text[:50]}...")
                 return response.text
@@ -64,10 +64,10 @@ def query_gemini(prompt_text, timeout_seconds = 60):
     motivation_keywords = r"\b(motivate|inspire|inspiration|encouragement|uplift|positive outlook|give me motivation)\b"
     if re.search(motivation_keywords, prompt_text, re.IGNORECASE):
         motivation_query = f"Give me a short, inspiring message related to {prompt_text.lower().replace('give me motivation', '').strip()}. Keep it concise and uplifting."
-        logging.info(f"[{timestamp}] Sending motivation query to Gemini-2.0-flash: (timeout = {timeout_seconds}s): {motivation_query}")
+        logging.info(f"[{timestamp}] Sending motivation query to Gemini-2.0-flash: {motivation_query}")
         try:
             contents = [{"parts": [{"text": motivation_query}]}]
-            response = model.generate_content(contents, generation_config = {"timeout": timeout_seconds})
+            response = model.generate_content(contents)  # Removed generation_config
             if response.text:
                 logging.info(f"[{timestamp}] Gemini-2.0-flash motivation response (first 50 chars): {response.text[:50]}...")
                 return response.text
@@ -76,13 +76,13 @@ def query_gemini(prompt_text, timeout_seconds = 60):
         except Exception as e:
             logging.error(f"[{timestamp}] Error fetching motivation from Gemini-2.0-flash: {e}")
             return "I'm experiencing a slight delay. Please try your request again."
-            
+
     career_keywords = r"\b(B.Tech|BE|B.SC|BCA|MTECH|ME|MSC|MBA|PhD|IT|CS|ECE|EEE|ME|CE|Engineering|Biotechnology|data science|artificial inteliigence(AI)|Machine learning(ML)|cybersecurity|software engineering|business analytics|management studies|BCOM|MCOM|BA|MA|BDes|BPharm|BArch|software engineer|data analyst|data scientist|web developer|front-end developer|back-end developer|full-stack developer|mobile app developer(iOS, Android)| cloud engineer| DevOps engineer| cybersecurity analyst| network engineer|database administrator|project manager|business analyst|marketing specialist|sales representative|human resources (HR) generalist| technical support engineer| quality assurance(QA) tester|UI/UX designer|Product Manager|Research ScientistManagement Consultant|Financial Analyst|Accountant|Operations Manager|Chief Technology Officer (CTO)|Chief Executive Officer (CEO)|Team Lead|Architect (Software, Solutions, Enterprise)|Specialist (in various domains)|Associate|Analyst|Engineer|Developer|Consultant|Manager|Director|VP (Vice President)|Programming Languages (Python, Java, C++, JavaScript, C#, Go, etc.)|Data Analysis Tools (Pandas, NumPy, SQL, R)|Machine Learning Algorithms (Regression, Classification, Clustering, Deep Learning)|Cloud Platforms (AWS, Azure, GCP)|DevOps Tools (Docker, Kubernetes, Jenkins, Git)|Cybersecurity Concepts (Network Security, Cryptography, Ethical Hacking)|Database Management (SQL, NoSQL)|Web Development Frameworks (React, Angular, Vue.js, Node.js, Django, Flask)|Mobile Development (Swift, Kotlin, Flutter, React Native)|Testing Frameworks (JUnit, Selenium, Cypress)|Operating Systems (Linux, Windows)|Networking Concepts (TCP/IP, DNS, Routing)|Big Data Technologies (Spark, Hadoop)|UI/UX Design Tools (Figma, Sketch, Adobe XD)|Data Visualization (Tableau, Power BI)|Communication (Written and Verbal)|Problem-Solving|Critical Thinking|Teamwork|Collaboration|Leadership|Time Management|Adaptability|Learning Agility|Interpersonal Skills|Presentation Skills|Negotiation|Creativity|Emotional Intelligence|Placement|Recruitment|Hiring|Internship|Training|Career Fair|Job Portal|Application|Interview (Technical, HR, Behavioral)|Resume|Curriculum Vitae (CV)|Cover Letter|Networking|LinkedIn|Portfolio|Personal Branding|Skill Development|Upskilling|Reskilling|Career Path|Job Market|Industry Trends|Company Culture|Compensation|Benefits|Growth Opportunities|Professional Development|Alumni Network|Placement Cell|Company|Job Description|Eligibility Criteria)\b"
     if re.search(career_keywords, prompt_text, re.IGNORECASE) or "career" in prompt_text.lower() or "job" in prompt_text.lower():
-        logging.info(f"[{timestamp}] Assuming career-related query, sending to Gemini-2.0-flash (timeout = {timeout_seconds}s): {prompt_text}")
+        logging.info(f"[{timestamp}] Assuming career-related query, sending to Gemini-2.0-flash: {prompt_text}")
         try:
             contents = [{"parts": [{"text": prompt_text}]}]
-            response = model.generate_content(contents, generation_config = {"timeout": timeout_seconds})
+            response = model.generate_content(contents)  # Removed generation_config
             if response.text:
                 logging.info(f"[{timestamp}] Gemini-2.0-flash response (first 50 chars): {response.text[:50]}...")
                 return response.text
@@ -94,7 +94,6 @@ def query_gemini(prompt_text, timeout_seconds = 60):
     else:
         return "I'm designed to be a helpful companion for your career journey. While I appreciate your message, I'm best equipped to answer questions related to careers, job opportunities, professional development, and provide encouragement. How can I specifically help you with your career today?"
 
-            
 # ------------------ HEADER ------------------ #
 try:
     logo = Image.open("ashaai_logo.jpg")
