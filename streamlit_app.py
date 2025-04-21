@@ -35,73 +35,20 @@ def load_lottieurl(url):
         return None
     return r.json()
 logging.basicConfig(level=logging.INFO)
-def query_gemini(prompt_text, timeout_seconds = 60):
+def query_gemini(prompt_text, timeout_seconds=15):  # Increased default timeout
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    logging.info(f"[{timestamp}] User prompt: {prompt_text}")
-
-    greetings = r"^(hello|hi|hey|greetings|good morning|good afternoon|good evening)\b.*"
-    if re.match(greetings, prompt_text, re.IGNORECASE):
-        return "Hello there! How can I assist you with your career journey today?"
-
+    logging.info(f"[{timestamp}] Sending prompt to Gemini: {prompt_text}")
     try:
-        nltk.data.find('sentiment/vader_lexicon.zip')
-    except Exception:
-        try:
-            nltk.download('vader_lexicon', quiet = True)
-        except Exception as e:
-            logging.error(f"[{timestamp}] Error downloading VADER lexicon: {e}")
-
-    analyzer = SentimentIntensityAnalyzer()
-    vs = analyzer.polarity_scores(prompt_text)
-    logging.info(f"[{timestamp}] Sentiment scores: {vs}")
-    if vs['compound'] < -0.2:  # Adjust this threshold as needed
-        encouragement_query = f"The user is expressing negative feelings like '{prompt_text}'. Offer a short, encouraging and supportive message related to career challenges. Keep it concise and uplifting."
-        logging.info(f"[{timestamp}] Detected negative sentiment, sending encouragement query to Gemini-2.0-flash: (timeout = {timeout_seconds}s): {encouragement_query}")
-        try:
-            contents = [{"parts": [{"text": encouragement_query}]}]
-            response = model.generate_content(contents, generation_config = {"timeout": timeout_seconds})
-            if response.text:
-                logging.info(f"[{timestamp}] Gemini-2.0-flash encouragement response (first 50 chars): {response.text[:50]}...")
-                return response.text
-            else:
-                return "Sending you some positive vibes! Remember that career journeys have ups and downs. How can I help you navigate this?"
-        except Exception as e:
-            logging.error(f"[{timestamp}] Error fetching encouragement from Gemini-2.0-flash: {e}")
-            return f"Error: {str(e)}"
-
-    motivation_keywords = r"\b(motivate|inspire|inspiration|encouragement|uplift|positive outlook|give me motivation)\b"
-    if re.search(motivation_keywords, prompt_text, re.IGNORECASE):
-        motivation_query = f"Give me a short, inspiring message related to {prompt_text.lower().replace('give me motivation', '').strip()}. Keep it concise and uplifting."
-        logging.info(f"[{timestamp}] Sending motivation query to Gemini-2.0-flash: (timeout = {timeout_seconds}s): {motivation_query}")
-        try:
-            contents = [{"parts": [{"text": motivation_query}]}]
-            response = model.generate_content(contents, generation_config = {"timeout": timeout_seconds})
-            if response.text:
-                logging.info(f"[{timestamp}] Gemini-2.0-flash motivation response (first 50 chars): {response.text[:50]}...")
-                return response.text
-            else:
-                return "Here's a little something to keep you going: Every challenge is an opportunity to learn and grow."
-        except Exception as e:
-            logging.error(f"[{timestamp}] Error fetching motivation from Gemini-2.0-flash: {e}")
-            return "I'm experiencing a slight delay. Please try your request again."
-            
-    career_keywords = r"\b(B.Tech|BE|B.SC|BCA|MTECH|ME|MSC|MBA|PhD|IT|CS|ECE|EEE|ME|CE|Engineering|Biotechnology|data science|artificial inteliigence(AI)|Machine learning(ML)|cybersecurity|software engineering|business analytics|management studies|BCOM|MCOM|BA|MA|BDes|BPharm|BArch|software engineer|data analyst|data scientist|web developer|front-end developer|back-end developer|full-stack developer|mobile app developer(iOS, Android)| cloud engineer| DevOps engineer| cybersecurity analyst| network engineer|database administrator|project manager|business analyst|marketing specialist|sales representative|human resources (HR) generalist| technical support engineer| quality assurance(QA) tester|UI/UX designer|Product Manager|Research ScientistManagement Consultant|Financial Analyst|Accountant|Operations Manager|Chief Technology Officer (CTO)|Chief Executive Officer (CEO)|Team Lead|Architect (Software, Solutions, Enterprise)|Specialist (in various domains)|Associate|Analyst|Engineer|Developer|Consultant|Manager|Director|VP (Vice President)|Programming Languages (Python, Java, C++, JavaScript, C#, Go, etc.)|Data Analysis Tools (Pandas, NumPy, SQL, R)|Machine Learning Algorithms (Regression, Classification, Clustering, Deep Learning)|Cloud Platforms (AWS, Azure, GCP)|DevOps Tools (Docker, Kubernetes, Jenkins, Git)|Cybersecurity Concepts (Network Security, Cryptography, Ethical Hacking)|Database Management (SQL, NoSQL)|Web Development Frameworks (React, Angular, Vue.js, Node.js, Django, Flask)|Mobile Development (Swift, Kotlin, Flutter, React Native)|Testing Frameworks (JUnit, Selenium, Cypress)|Operating Systems (Linux, Windows)|Networking Concepts (TCP/IP, DNS, Routing)|Big Data Technologies (Spark, Hadoop)|UI/UX Design Tools (Figma, Sketch, Adobe XD)|Data Visualization (Tableau, Power BI)|Communication (Written and Verbal)|Problem-Solving|Critical Thinking|Teamwork|Collaboration|Leadership|Time Management|Adaptability|Learning Agility|Interpersonal Skills|Presentation Skills|Negotiation|Creativity|Emotional Intelligence|Placement|Recruitment|Hiring|Internship|Training|Career Fair|Job Portal|Application|Interview (Technical, HR, Behavioral)|Resume|Curriculum Vitae (CV)|Cover Lette|rNetworking|LinkedIn|Portfolio|Personal Branding|Skill Development|Upskilling|Reskilling|Career Path|Job Market|Industry Trends|Company Culture|Compensation|Benefits|Growth Opportunities|Professional Development|Alumni Network|Placement Cell|Company|Job Description|Eligibility Criteria)\b"
-    if re.search(career_keywords, prompt_text, re.IGNORECASE) or "career" in prompt_text.lower() or "job" in prompt_text.lower():
-        logging.info(f"[{timestamp}] Assuming career-related query, sending to Gemini-2.0-flash (timeout = {timeout_seconds}s): {prompt_text}")
-        try:
-            contents = [{"parts": [{"text": prompt_text}]}]
-            response = model.generate_content(contents, generation_config = {"timeout": timeout_seconds})
-            if response.text:
-                logging.info(f"[{timestamp}] Gemini-2.0-flash response (first 50 chars): {response.text[:50]}...")
-                return response.text
-            else:
-                return "Hmm, I didn't get a clear response for that career query. Could you please rephrase?"
-        except Exception as e:
-            logging.error(f"[{timestamp}] Error in query_gemini (Gemini-2.0-flash) for career query: {e}")
-            return "Sorry! I'm having trouble processing your request right now. Please try again in few moments."
-    else:
-        return "I'm designed to be a helpful companion for your career journey. While I appreciate your message, I'm best equipped to answer questions related to careers, job opportunities, professional development, and provide encouragement. How can I specifically help you with your career today?"
-
+        contents = [{"parts": [{"text": prompt_text}]}]
+        response = model.generate_content(contents, generation_config={"timeout": timeout_seconds})
+        if response.text:
+            logging.info(f"[{timestamp}] Received response from Gemini (first 50 chars): {response.text[:50]}...")
+            return response.text
+        else:
+            return "Hmm, the model didn't provide a response. Please try again."
+    except Exception as e:
+        logging.error(f"[{timestamp}] Error in query_gemini: {e}")
+        return f"Error: {str(e)}"
             
 # ------------------ HEADER ------------------ #
 try:
