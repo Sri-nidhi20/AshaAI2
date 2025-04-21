@@ -24,7 +24,7 @@ except Exception:
 # ------------------ CONFIG ------------------ #
 st.set_page_config(page_title="AshaAI Chatbot", layout="wide")
 genai.configure(api_key=st.secrets.get("GEMINI_API_KEY"))
-model = genai.GenerativeModel("models/gemini-2.5-flash")
+model = genai.GenerativeModel("models/gemini-2.0-flash")
 feedback_file = "feedback.csv"
 history_file = "chat_history.json"
 
