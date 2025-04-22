@@ -65,7 +65,7 @@ if 'motivational_quotes' not in st.session_state:
         "You’re not failing. You’re becoming.",
         "Great things take time. Stay consistent, and success will follow.",
     ]
-quiz_questions = {
+quiz_data = {
     "C": {
         "easy": [
             {"question": "What is the difference between #include <stdio.h> and #include 'stdio.h'?"},
@@ -327,6 +327,12 @@ quiz_questions = {
         ],
     },
 }
+def generate_quiz_questions(language, difficulty):
+    """Generates a list of quiz questions based on the selected language and difficulty."""
+    if language in quiz_data and difficulty in quiz_data[language]:
+        return random.sample(quiz_data[language][difficulty], min(3, len(quiz_data[language][difficulty])))
+    else:
+        return[]
 def quiz_time():
     st.header("It's the Quiz Time!!")
     st.subheader("🎯 Ready, Set, Code! 💻 Time to show off your skills and conquer this quiz like a coding pro! 💥")
