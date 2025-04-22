@@ -293,21 +293,58 @@ quiz_data = {
         ],
     },
 }
-def generate_quiz_questions(language, difficulty, num_questions_to_ask=3): # Changed parameter name for clarity
+def generate_quiz_questions(language, difficulty, num_questions_to_ask=3):
     """Generates a specified number of random quiz questions."""
     if language in quiz_data and difficulty in quiz_data[language]:
         available_questions = quiz_data[language][difficulty]
         num_available = len(available_questions)
-        num_to_select = min(num_questions_to_ask, num_available) # Ensure we don't try to select more than available
+        num_to_select = min(num_questions_to_ask, num_available)
         if num_to_select > 0:
             return random.sample(available_questions, num_to_select)
         else:
             return []
     else:
         return []
+def evaluate_answer_with_gemini(user_answer, correct_answer, question):
+    """Evaluates the user's answer using Gemini."""
+    prompt = f"""You are an expert quiz grader. Given the following question and the user's answer, determine if the user's answer is correct or incorrect. Provide a brief explanation for your judgment.
+
+    Question: {question}
+    Correct Answer: {correct_answer}
+    User's Answer: {user_answer}
+
+    Respond with a JSON object in the following format:
+    {{
+      "is_correct": true/false,
+      "explanation": "..."
+    }}
+    """
+
+    try:
+        response = model.generate_content([prompt])
+        if response.parts and hasattr(response.parts[0], 'text'):
+            try:
+                evaluation = json.loads(response.parts[0].text)
+                if isinstance(evaluation, dict) and "is_correct" in evaluation and "explanation" in evaluation:
+                    return evaluation["is_correct"], evaluation["explanation"]
+                else:
+                    st.error("Error: Gemini evaluation response format is incorrect.")
+                    return False, "Unable to evaluate due to response format issue."
+            except json.JSONDecodeError:
+                st.error("Error: Could not decode JSON from Gemini evaluation response.")
+                st.error(f"Raw response: {response.parts[0].text}")
+                return False, "Unable to evaluate due to decoding issue."
+        else:
+            st.error("Error: Empty or unexpected response from Gemini during evaluation.")
+            return False, "Unable to evaluate due to no response."
+    except Exception as e:
+        st.error(f"Error evaluating answer with Gemini: {e}")
+        return False, f"Evaluation error: {e}"
 def quiz_time():
     st.header("It's the Quiz Time!!")
     st.subheader("🎯 Ready, Set, Code! 💻 Time to show off your skills and conquer this quiz like a coding pro! 💥")
+
+    # Initialize quiz session state
     if 'quiz_played_today' not in st.session_state:
         st.session_state['quiz_played_today'] = False
     if 'last_played_date' not in st.session_state:
@@ -344,10 +381,12 @@ def quiz_time():
             "You’re not failing. You’re becoming.",
             "Great things take time. Stay consistent, and success will follow.",
         ]
+
     today = date.today()
     if st.session_state['quiz_played_today'] and st.session_state['last_played_date'] == today:
         st.warning("You've already played the QUIZ today. Please comeback tomorrow to play again! Till the practice and stay tuned..🤗😉")
         return
+
     languages = ["C", "C++", "Java", "Go(Golang)", "Rust", "C#", "Python", "Python (for data analysis/science", "R", "Julia", "MATLAB", "HTML & CSS", "JavaScript", "TypeScript", "GraphQL", "Kotlin", "Swift", "Dart", "SQL", "PL/SQL", "T-SQL", "Bash/Shell", "Hashkell/Elixir"]
     selected_language = st.selectbox("Select a Programming Language:", languages)
     difficulties = ["easy", "Medium", "Hard"]
@@ -357,46 +396,73 @@ def quiz_time():
         if st.button("Start Quiz"):
             st.session_state['quiz_language'] = selected_language
             st.session_state['quiz_difficulty'] = selected_difficulty
-            st.session_state['quiz_questions'] = generate_quiz_questions(selected_language, selected_difficulty, num_questions_to_ask=3) # Ask 3 random questions
+            st.session_state['quiz_questions'] = generate_quiz_questions(selected_language, selected_difficulty, num_questions_to_ask=3)
             st.session_state['question_index'] = 0
             st.session_state['user_answers'] = {}
             st.session_state['correct_answers_count'] = 0
             st.session_state['quiz_started'] = True
-            st.rerun() 
+            st.rerun()
 
-    if st.session_state['quiz_questions'] and st.session_state['question_index'] < len(st.session_state['quiz_questions']):
-        question_data = st.session_state['quiz_questions'][st.session_state['question_index']]
-        st.write(f"**Question {st.session_state['question_index'] + 1} ({st.session_state['quiz_difficulty']}):** {question_data['question']}")
-        user_answer = st.text_input("Your Answer:")
-        if st.button("Submit"):
-            is_correct, explanation = evaluate_answer_with_gemini(
-                user_answer,
-                question_data['answer'],
-                question_data['question']
-            )
-            st.session_state['user_answers'].append(user_answer)
-            if is_correct:
-                st.success(f"Correct! {explanation}")
-                st.session_state['correct_answers_count'] += 1
+    elif st.session_state['quiz_started'] and st.session_state['quiz_questions']:
+        if st.session_state['question_index'] < len(st.session_state['quiz_questions']):
+            question_data = st.session_state['quiz_questions'][st.session_state['question_index']]
+            st.subheader(f"Question {st.session_state['question_index'] + 1} ({st.session_state['quiz_difficulty']}):")
+            st.write(question_data['question'])
+            user_answer = st.text_area("Your Answer:", key=f"answer_{st.session_state['question_index']}")
+
+            col1, col2, _ = st.columns([1, 1, 8])
+
+            if st.session_state['question_index'] > 0:
+                if col1.button("Previous"):
+                    st.session_state['user_answers'][st.session_state['question_index']] = user_answer
+                    st.session_state['question_index'] -= 1
+                    st.rerun()
+
+            if st.session_state['question_index'] < len(st.session_state['quiz_questions']) - 1:
+                if col2.button("Next"):
+                    st.session_state['user_answers'][st.session_state['question_index']] = user_answer
+                    st.session_state['question_index'] += 1
+                    st.rerun()
             else:
-                st.error(f"Incorrect. {explanation} The correct answer was: {question_data['answer']}")
-            st.session_state['question_index'] += 1
-    elif st.session_state['quiz_questions'] and st.session_state['question_index'] == len(st.session_state['quiz_questions']):
-        st.subheader("Quiz Finished!")
-        if st.session_state['correct_answers_count'] == len(st.session_state['quiz_questions']):
-            st.balloons()
-            st.success("Congratulations! You answered all questions correctly!")
-            st.session_state['streak'] += 1
-        else:
-            st.error("OOPS!! Not all answers were correct.")
-            st.info(f"You got {st.session_state['correct_answers_count']} out of {len(st.session_state['quiz_questions'])} correct.")
-            st.info(f"Motivational Quote: {random.choice(st.session_state['motivational_quotes'])}")
-            st.info("Focus, Practice and come back tomorrow..")
-            st.session_state['streak'] = 0
-        st.info(f"Your current streak: {st.session_state['streak']}")
-        st.session_state['quiz_played_today'] = True
-        st.session_state['last_played_date'] = today
-        st.session_state['quiz_questions'] = []
+                if st.button("Submit Answers"):
+                    st.session_state['user_answers'][st.session_state['question_index']] = user_answer
+                    st.session_state['quiz_started'] = False
+                    # Evaluate all answers
+                    for i, q_data in enumerate(st.session_state['quiz_questions']):
+                        correct, explanation = evaluate_answer_with_gemini(
+                            st.session_state['user_answers'].get(i, ""),
+                            q_data['answer'],
+                            q_data['question']
+                        )
+                        st.subheader(f"Question {i + 1}: {q_data['question']}")
+                        if correct:
+                            st.success(f"Your answer was correct! {explanation}")
+                            st.session_state['correct_answers_count'] += 1
+                        else:
+                            st.error(f"Your answer was incorrect. {explanation} The correct answer was: {q_data['answer']}")
+
+                    st.subheader("Quiz Finished!")
+                    if st.session_state['correct_answers_count'] == len(st.session_state['quiz_questions']):
+                        st.balloons()
+                        st.success("Congratulations! You answered all questions correctly!")
+                        st.session_state['streak'] += 1
+                    else:
+                        st.error("OOPS!! Not all answers were correct.")
+                        st.info(f"You got {st.session_state['correct_answers_count']} out of {len(st.session_state['quiz_questions'])} correct.")
+                        st.info(f"Motivational Quote: {random.choice(st.session_state['motivational_quotes'])}")
+                        st.info("Focus, Practice and come back tomorrow..")
+                        st.session_state['streak'] = 0
+                    st.info(f"Your current streak: {st.session_state['streak']}")
+                    st.session_state['quiz_played_today'] = True
+                    st.session_state['last_played_date'] = today
+                    st.session_state['quiz_questions'] = []
+                    st.session_state['question_index'] = 0
+                    st.session_state['user_answers'] = {}
+                    st.session_state['correct_answers_count'] = 0
+                    st.rerun() # Reset the quiz
+
+        elif not st.session_state['quiz_questions']:
+            st.info("Select a language and difficulty, then click 'Start Quiz'.")
 # ------------------ UTILS ------------------ #
 def load_lottieurl(url):
     r = requests.get(url)
