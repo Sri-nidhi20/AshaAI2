@@ -2,6 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 import os
 import requests
+import random
 import pandas as pd
 from datetime import datetime, date
 timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
