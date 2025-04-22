@@ -64,7 +64,7 @@ quiz_data = {
             {"question": "Explain the concept of function overloading."},
             {"question": "What is a constructor and destructor?"},
             {"question": "What is the use of the 'this' pointer?"},
-            {"question": "Write a program to dispplay "Hello, World!" using a class."},
+            {"question": "Write a program to dispplay 'Hello, World!' using a class."},
         ],
         "medium": [
             {"question": "Implement a class with getter and setter methods."},
