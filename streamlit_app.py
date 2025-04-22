@@ -145,7 +145,7 @@ quiz_data = {
             {"question": "What is pattern matching and how is match used?"},
         ],
         "medium": [
-            {"question": "Implement a program that reads from a file and counts words."}
+            {"question": "Implement a program that reads from a file and counts words."},
             {"question": "Explain ownership, borrowing, and lifetimes."},
             {"question": "What is Option<T> and how do you handle it ?"},
             {"question": "Write a Rust program that handles command line arguments."},
