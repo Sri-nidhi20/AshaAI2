@@ -112,7 +112,7 @@ quiz_data = {
     "Go(Golang)": {
         "easy": [
             {"question": "What is a goroutine in GO?"},
-            {"question": "Write a Go program to print "Hello, World!"."},
+            {"question": "Write a Go program to print 'Hello, World!'."},
             {"question": "How do you declare and initialize a slice?"},
             {"question": "Explain the use of := in variable declarations."},
             {"question": "Write a function to check if a number is even or odd."},
