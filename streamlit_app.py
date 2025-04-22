@@ -540,7 +540,7 @@ elif menu == "QUIZ TIME 🤩🥳":
     today = date.today()
     if st.session_state['quiz_played_today'] and st.session_state['last_played_date'] == today:
         st.warning("You've already played the QUIZ today. Please comeback tomorrow to play again! Till the practice and stay tuned..🤗😉")
-        return
+    return
     languages = ["C", "C++", "Java", "Go(Golang)", "Rust", "C#", "Python", "Python (for data analysis/science", "R", "Julia", "MATLAB", "HTML & CSS", "JavaScript", "TypeScript", "GraphQL", "Kotlin", "Swift", "Dart", "SQL", "PL/SQL", "T-SQL", "Bash/Shell", "Hashkell/Elixir"]
     selected_language = st.selectbox("Select a Programming Language:", languages)
     difficulties = ["easy", "Medium", "Hard"]
