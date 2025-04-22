@@ -33,7 +33,7 @@ history_file = "chat_history.json"
 quiz_data = {
     "C": {
         "easy": [
-            {"question": "What is the difference between #include <stdio.h> and #include "stdio.h"?"},
+            {"question": "What is the difference between #include <stdio.h> and #include 'stdio.h'?"},
             {"question": "Write a program to check if a number is odd or even."},
             {"question": "Define a pointer and give an example."},
             {"question": "What is the size of int, float, char and double in C ?"},
