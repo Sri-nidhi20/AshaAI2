@@ -72,7 +72,7 @@ quiz_data = {
             {"question": "What are templates in C++?"},
             {"question": "What is operator overloading? Give an example."},
             {"question": "How is memory managed in C++?"},
-            {"question": "What are the differences between deep copy and shallow copy?"}'
+            {"question": "What are the differences between deep copy and shallow copy?"},
         ],
         "hard": [
             {"question": "Implement a linked list using classes."},
