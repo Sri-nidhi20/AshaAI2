@@ -295,7 +295,6 @@ quiz_data = {
 def quiz_time():
     st.header("It's the Quiz Time!!")
     st.subheader("🎯 Ready, Set, Code! 💻 Time to show off your skills and conquer this quiz like a coding pro! 💥")
-    from datetime import datetime
     today = date.today()
     if st.session_state['quiz_played_today'] and st.session_state['last_played_date'] == today:
         st.warning("You've already played the QUIZ today. Please comeback tomorrow to play again! Till the practice and stay tuned..🤗😉")
