@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from streamlit_lottie import st_lottie
 from PIL import Image
 import time
+import json
 import logging
 import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
@@ -294,7 +295,6 @@ quiz_data = {
     },
 }
 def generate_quiz_questions(language, difficulty, num_questions_to_ask=3):
-    """Generates a specified number of random quiz questions."""
     if language in quiz_data and difficulty in quiz_data[language]:
         available_questions = quiz_data[language][difficulty]
         num_available = len(available_questions)
@@ -303,10 +303,8 @@ def generate_quiz_questions(language, difficulty, num_questions_to_ask=3):
             return random.sample(available_questions, num_to_select)
         else:
             return []
-    else:
-        return []
+    return []
 def evaluate_answer_with_gemini(user_answer, correct_answer, question):
-    """Evaluates the user's answer using Gemini."""
     prompt = f"""You are an expert quiz grader. Given the following question and the user's answer, determine if the user's answer is correct or incorrect. Provide a brief explanation for your judgment.
 
     Question: {question}
@@ -321,6 +319,7 @@ def evaluate_answer_with_gemini(user_answer, correct_answer, question):
     """
 
     try:
+        # Assuming model.generate_content is the way to interact with Gemini
         response = model.generate_content([prompt])
         if response.parts and hasattr(response.parts[0], 'text'):
             try:
@@ -332,7 +331,6 @@ def evaluate_answer_with_gemini(user_answer, correct_answer, question):
                     return False, "Unable to evaluate due to response format issue."
             except json.JSONDecodeError:
                 st.error("Error: Could not decode JSON from Gemini evaluation response.")
-                st.error(f"Raw response: {response.parts[0].text}")
                 return False, "Unable to evaluate due to decoding issue."
         else:
             st.error("Error: Empty or unexpected response from Gemini during evaluation.")
