@@ -63,7 +63,7 @@ quiz_data = {
             {"question": "Define a class and an object with a simple example."},
             {"question": "Explain the concept of function overloading."},
             {"question": "What is a constructor and destructor?"},
-            {"question": "What is the use of the "this" pointer?"},
+            {"question": "What is the use of the 'this' pointer?"},
             {"question": "Write a program to dispplay "Hello, World!" using a class."},
         ],
         "medium": [
