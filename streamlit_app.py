@@ -31,41 +31,6 @@ feedback_file = "feedback.csv"
 history_file = "chat_history.json"
 
 #--------------------------defining quiz data -----------------------------#
-# Initialize session state for quiz (preferably at the top of your script)
-if 'quiz_played_today' not in st.session_state:
-    st.session_state['quiz_played_today'] = False
-if 'last_played_date' not in st.session_state:
-    st.session_state['last_played_date'] = None
-if 'quiz_questions' not in st.session_state:
-    st.session_state['quiz_questions'] = []
-if 'question_index' not in st.session_state:
-    st.session_state['question_index'] = 0
-if 'user_answers' not in st.session_state:
-    st.session_state['user_answers'] = []
-if 'correct_answers_count' not in st.session_state:
-    st.session_state['correct_answers_count'] = 0
-if 'quiz_language' not in st.session_state:
-    st.session_state['quiz_language'] = None
-if 'quiz_difficulty' not in st.session_state:
-    st.session_state['quiz_difficulty'] = None
-if 'streak' not in st.session_state:
-    st.session_state['streak'] = 0
-if 'motivational_quotes' not in st.session_state:
-    st.session_state['motivational_quotes'] = [
-        "The only way to do great work is to love what you do.",
-        "Success is not final, failure is not fatal: it is the courage to continue that counts.",
-        "Believe you can and you're halfway there.",
-        "Mistakes are proof that you are trying. Keep going!",
-        "Failure is not the opposite of success, it’s part of it.",
-        "Every expert was once a beginner. You’ve got this!",
-        "You didn’t lose, you learned. Come back stronger tomorrow!",
-        "Small progress is still progress. Your journey matters.",
-        "It’s not about being the best today. It’s about being better than yesterday.",
-        "One step back is just the setup for a stronger comeback.",
-        "Your potential is greater than one quiz result. Keep pushing!",
-        "You’re not failing. You’re becoming.",
-        "Great things take time. Stay consistent, and success will follow.",
-    ]
 quiz_data = {
     "C": {
         "easy": [
@@ -343,6 +308,42 @@ def generate_quiz_questions(language, difficulty, num_questions_to_ask=3): # Cha
 def quiz_time():
     st.header("It's the Quiz Time!!")
     st.subheader("🎯 Ready, Set, Code! 💻 Time to show off your skills and conquer this quiz like a coding pro! 💥")
+    if 'quiz_played_today' not in st.session_state:
+        st.session_state['quiz_played_today'] = False
+    if 'last_played_date' not in st.session_state:
+        st.session_state['last_played_date'] = None
+    if 'quiz_questions' not in st.session_state:
+        st.session_state['quiz_questions'] = []
+    if 'question_index' not in st.session_state:
+        st.session_state['question_index'] = 0
+    if 'user_answers' not in st.session_state:
+        st.session_state['user_answers'] = {}
+    if 'correct_answers_count' not in st.session_state:
+        st.session_state['correct_answers_count'] = 0
+    if 'quiz_language' not in st.session_state:
+        st.session_state['quiz_language'] = None
+    if 'quiz_difficulty' not in st.session_state:
+        st.session_state['quiz_difficulty'] = None
+    if 'quiz_started' not in st.session_state:
+        st.session_state['quiz_started'] = False
+    if 'streak' not in st.session_state:
+        st.session_state['streak'] = 0
+    if 'motivational_quotes' not in st.session_state:
+        st.session_state['motivational_quotes'] = [
+            "The only way to do great work is to love what you do.",
+            "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+            "Believe you can and you're halfway there.",
+            "Mistakes are proof that you are trying. Keep going!",
+            "Failure is not the opposite of success, it’s part of it.",
+            "Every expert was once a beginner. You’ve got this!",
+            "You didn’t lose, you learned. Come back stronger tomorrow!",
+            "Small progress is still progress. Your journey matters.",
+            "It’s not about being the best today. It’s about being better than yesterday.",
+            "One step back is just the setup for a stronger comeback.",
+            "Your potential is greater than one quiz result. Keep pushing!",
+            "You’re not failing. You’re becoming.",
+            "Great things take time. Stay consistent, and success will follow.",
+        ]
     today = date.today()
     if st.session_state['quiz_played_today'] and st.session_state['last_played_date'] == today:
         st.warning("You've already played the QUIZ today. Please comeback tomorrow to play again! Till the practice and stay tuned..🤗😉")
