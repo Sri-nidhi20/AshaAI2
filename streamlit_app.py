@@ -292,6 +292,59 @@ quiz_data = {
         ],
     },
 }
+def quiz_time():
+    st.header("It's the Quiz Time!!")
+    st.subheader("🎯 Ready, Set, Code! 💻 Time to show off your skills and conquer this quiz like a coding pro! 💥")
+    today = date.today()
+    if st.session_state['quiz_played_today'] and st.session_state['last_played_date'] == today:
+        st.warning("You've already played the QUIZ today. Please comeback tomorrow to play again! Till the practice and stay tuned..🤗😉")
+        return
+    languages = ["C", "C++", "Java", "Go(Golang)", "Rust", "C#", "Python", "Python (for data analysis/science", "R", "Julia", "MATLAB", "HTML & CSS", "JavaScript", "TypeScript", "GraphQL", "Kotlin", "Swift", "Dart", "SQL", "PL/SQL", "T-SQL", "Bash/Shell", "Hashkell/Elixir"]
+    selected_language = st.selectbox("Select a Programming Language:", languages)
+    difficulties = ["easy", "Medium", "Hard"]
+    selected_difficulty = st.selectbox("Select Difficulty Level:", difficulties, disabled=not selected_language)
+
+    if selected_language and selected_difficulty and not st.session_state['quiz_questions']:
+        st.session_state['quiz_language'] = selected_language
+        st.session_state['quiz_difficulty'] = selected_difficulty
+        st.session_state['quiz_questions'] = generate_quiz_questions(selected_language, selected_difficulty)
+        st.session_state['question_index'] = 0
+        st.session_state['user_answers'] = []
+        st.session_state['correct_answers_count'] = 0
+
+    if st.session_state['quiz_questions'] and st.session_state['question_index'] < len(st.session_state['quiz_questions']):
+        question_data = st.session_state['quiz_questions'][st.session_state['question_index']]
+        st.write(f"**Question {st.session_state['question_index'] + 1} ({st.session_state['quiz_difficulty']}):** {question_data['question']}")
+        user_answer = st.text_input("Your Answer:")
+        if st.button("Submit"):
+            is_correct, explanation = evaluate_answer_with_gemini(
+                user_answer,
+                question_data['answer'],
+                question_data['question']
+            )
+            st.session_state['user_answers'].append(user_answer)
+            if is_correct:
+                st.success(f"Correct! {explanation}")
+                st.session_state['correct_answers_count'] += 1
+            else:
+                st.error(f"Incorrect. {explanation} The correct answer was: {question_data['answer']}")
+            st.session_state['question_index'] += 1
+    elif st.session_state['quiz_questions'] and st.session_state['question_index'] == len(st.session_state['quiz_questions']):
+        st.subheader("Quiz Finished!")
+        if st.session_state['correct_answers_count'] == len(st.session_state['quiz_questions']):
+            st.balloons()
+            st.success("Congratulations! You answered all questions correctly!")
+            st.session_state['streak'] += 1
+        else:
+            st.error("OOPS!! Not all answers were correct.")
+            st.info(f"You got {st.session_state['correct_answers_count']} out of {len(st.session_state['quiz_questions'])} correct.")
+            st.info(f"Motivational Quote: {random.choice(st.session_state['motivational_quotes'])}")
+            st.info("Focus, Practice and come back tomorrow..")
+            st.session_state['streak'] = 0
+        st.info(f"Your current streak: {st.session_state['streak']}")
+        st.session_state['quiz_played_today'] = True
+        st.session_state['last_played_date'] = today
+        st.session_state['quiz_questions'] = []
 # ------------------ UTILS ------------------ #
 def load_lottieurl(url):
     r = requests.get(url)
@@ -534,59 +587,6 @@ Built by *Nidhi 💛* with love and purpose for the *ASHA AI Hackathon 2025*, As
 
 """)
 # --------------------- QUIZ ---------------------------#
-def quiz_time():
-    st.header("It's the Quiz Time!!")
-    st.subheader("🎯 Ready, Set, Code! 💻 Time to show off your skills and conquer this quiz like a coding pro! 💥")
-    today = date.today()
-    if st.session_state['quiz_played_today'] and st.session_state['last_played_date'] == today:
-        st.warning("You've already played the QUIZ today. Please comeback tomorrow to play again! Till the practice and stay tuned..🤗😉")
-        return
-    languages = ["C", "C++", "Java", "Go(Golang)", "Rust", "C#", "Python", "Python (for data analysis/science", "R", "Julia", "MATLAB", "HTML & CSS", "JavaScript", "TypeScript", "GraphQL", "Kotlin", "Swift", "Dart", "SQL", "PL/SQL", "T-SQL", "Bash/Shell", "Hashkell/Elixir"]
-    selected_language = st.selectbox("Select a Programming Language:", languages)
-    difficulties = ["easy", "Medium", "Hard"]
-    selected_difficulty = st.selectbox("Select Difficulty Level:", difficulties, disabled=not selected_language)
-
-    if selected_language and selected_difficulty and not st.session_state['quiz_questions']:
-        st.session_state['quiz_language'] = selected_language
-        st.session_state['quiz_difficulty'] = selected_difficulty
-        st.session_state['quiz_questions'] = generate_quiz_questions(selected_language, selected_difficulty)
-        st.session_state['question_index'] = 0
-        st.session_state['user_answers'] = []
-        st.session_state['correct_answers_count'] = 0
-
-    if st.session_state['quiz_questions'] and st.session_state['question_index'] < len(st.session_state['quiz_questions']):
-        question_data = st.session_state['quiz_questions'][st.session_state['question_index']]
-        st.write(f"**Question {st.session_state['question_index'] + 1} ({st.session_state['quiz_difficulty']}):** {question_data['question']}")
-        user_answer = st.text_input("Your Answer:")
-        if st.button("Submit"):
-            is_correct, explanation = evaluate_answer_with_gemini(
-                user_answer,
-                question_data['answer'],
-                question_data['question']
-            )
-            st.session_state['user_answers'].append(user_answer)
-            if is_correct:
-                st.success(f"Correct! {explanation}")
-                st.session_state['correct_answers_count'] += 1
-            else:
-                st.error(f"Incorrect. {explanation} The correct answer was: {question_data['answer']}")
-            st.session_state['question_index'] += 1
-    elif st.session_state['quiz_questions'] and st.session_state['question_index'] == len(st.session_state['quiz_questions']):
-        st.subheader("Quiz Finished!")
-        if st.session_state['correct_answers_count'] == len(st.session_state['quiz_questions']):
-            st.balloons()
-            st.success("Congratulations! You answered all questions correctly!")
-            st.session_state['streak'] += 1
-        else:
-            st.error("OOPS!! Not all answers were correct.")
-            st.info(f"You got {st.session_state['correct_answers_count']} out of {len(st.session_state['quiz_questions'])} correct.")
-            st.info(f"Motivational Quote: {random.choice(st.session_state['motivational_quotes'])}")
-            st.info("Focus, Practice and come back tomorrow..")
-            st.session_state['streak'] = 0
-        st.info(f"Your current streak: {st.session_state['streak']}")
-        st.session_state['quiz_played_today'] = True
-        st.session_state['last_played_date'] = today
-        st.session_state['quiz_questions'] = []
 elif menu == "QUIZ TIME 🤩🥳":
     quiz_time()
 
