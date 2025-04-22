@@ -3,7 +3,7 @@ import google.generativeai as genai
 import os
 import requests
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, date
 timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 import matplotlib.pyplot as plt
 from streamlit_lottie import st_lottie
