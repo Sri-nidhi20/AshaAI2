@@ -242,7 +242,7 @@ quiz_data = {
     "R": {
         "easy": [
             {"question": "What is a vector in R?"},
-            {"question": Write a function in R to find the average of a list."},
+            {"question": "Write a function in R to find the average of a list."},
             {"question": "How do you create a DataFrame in R?"},
             {"question": "What are some common data types in R?"},
             {"question": "How to install and load a package in R?"},
