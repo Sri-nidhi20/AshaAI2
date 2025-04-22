@@ -194,7 +194,7 @@ quiz_data = {
             {"question": "What's the difference between list and tuple?"},
             {"question": "What is indentation and why is it important?"},
             {"question": "Write a function to count vowels in a string."},
-            {"question": "What is the use of if__name__ == "__main__" "},
+            {"question": "What is the use of if__name__ == '__main__' "},
         ],
         "medium": [
             {"question": "Write a function to find duplicate elements in alist."},
