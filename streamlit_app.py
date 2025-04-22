@@ -328,12 +328,18 @@ quiz_data = {
         ],
     },
 }
-def generate_quiz_questions(language, difficulty):
-    """Generates a list of quiz questions based on the selected language and difficulty."""
+def generate_quiz_questions(language, difficulty, num_questions_to_ask=3): # Changed parameter name for clarity
+    """Generates a specified number of random quiz questions."""
     if language in quiz_data and difficulty in quiz_data[language]:
-        return random.sample(quiz_data[language][difficulty], min(3, len(quiz_data[language][difficulty])))
+        available_questions = quiz_data[language][difficulty]
+        num_available = len(available_questions)
+        num_to_select = min(num_questions_to_ask, num_available) # Ensure we don't try to select more than available
+        if num_to_select > 0:
+            return random.sample(available_questions, num_to_select)
+        else:
+            return []
     else:
-        return[]
+        return []
 def quiz_time():
     st.header("It's the Quiz Time!!")
     st.subheader("🎯 Ready, Set, Code! 💻 Time to show off your skills and conquer this quiz like a coding pro! 💥")
@@ -346,13 +352,16 @@ def quiz_time():
     difficulties = ["easy", "Medium", "Hard"]
     selected_difficulty = st.selectbox("Select Difficulty Level:", difficulties, disabled=not selected_language)
 
-    if selected_language and selected_difficulty and not st.session_state['quiz_questions']:
-        st.session_state['quiz_language'] = selected_language
-        st.session_state['quiz_difficulty'] = selected_difficulty
-        st.session_state['quiz_questions'] = generate_quiz_questions(selected_language, selected_difficulty)
-        st.session_state['question_index'] = 0
-        st.session_state['user_answers'] = []
-        st.session_state['correct_answers_count'] = 0
+    if selected_language and selected_difficulty and not st.session_state['quiz_started']:
+        if st.button("Start Quiz"):
+            st.session_state['quiz_language'] = selected_language
+            st.session_state['quiz_difficulty'] = selected_difficulty
+            st.session_state['quiz_questions'] = generate_quiz_questions(selected_language, selected_difficulty, num_questions_to_ask=3) # Ask 3 random questions
+            st.session_state['question_index'] = 0
+            st.session_state['user_answers'] = {}
+            st.session_state['correct_answers_count'] = 0
+            st.session_state['quiz_started'] = True
+            st.rerun() 
 
     if st.session_state['quiz_questions'] and st.session_state['question_index'] < len(st.session_state['quiz_questions']):
         question_data = st.session_state['quiz_questions'][st.session_state['question_index']]
