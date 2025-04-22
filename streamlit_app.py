@@ -146,9 +146,9 @@ quiz_data = {
         ],
         "medium": [
             {"question": "Implement a program that reads from a file and counts words."}
-            {"question": Explain ownership, borrowing, and lifetimes."},
-            {"question": What is Option<T> and how do you handle it ?"},
-            {"question": Write a Rust program that handles command line arguments."},
+            {"question": "Explain ownership, borrowing, and lifetimes."},
+            {"question": "What is Option<T> and how do you handle it ?"},
+            {"question": "Write a Rust program that handles command line arguments."},
             {"question": "How are traits different from interfaces in other languages?"},
             {"question": "Implement a struct with associated methods and derive traits."},
         ],
