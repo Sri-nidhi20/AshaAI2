@@ -65,7 +65,7 @@ if 'motivational_quotes' not in st.session_state:
         "You’re not failing. You’re becoming.",
         "Great things take time. Stay consistent, and success will follow.",
     ]
-quiz_data = {
+quiz_questions = {
     "C": {
         "easy": [
             {"question": "What is the difference between #include <stdio.h> and #include 'stdio.h'?"},
