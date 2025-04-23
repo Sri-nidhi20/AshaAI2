@@ -31,16 +31,20 @@ model = genai.GenerativeModel("models/gemini-2.0-flash")
 feedback_file = "feedback.csv"
 history_file = "chat_history.json"
 #--------------------------Google Login -----------------------------------#
-google_oauth = OAuth2Component(
+oauth2 = OAuth2Component(
     client_id = st.secrets["google_oauth"]["client_id"],
     client_secret = st.secrets["google_oauth"]["client_secret"],
+    authorize_url="https://accounts.google.com/o/oauth2/auth",
+    access_token_url="https://oauth2.googleapis.com/token",
+    redirect_uri="https://ashaai2-l7xhle6l06.streamlit.app/",
+    scope="openid email profile"
 )
-user_info = google_oauth.get_user_info()
-if user_info:
-    st.session_state.user = user_info
-    st.write(f"Hello {user_info['name']}! LogIN Successfull!!")
+token = oauth2.authorize_button("LogIn")
+if token:
+    st.session_state.user = token
+    st.sucess(f"Logged in as {token['email']}")
 else:
-    st.write("Please LogIN with your Google Account.")
+    st.info("Please login with your Google account.")
 #--------------------------defining quiz data -----------------------------#
 def get_gemini_answer(question_text):
     prompt_text = f"Answer the following question related to programming: {question_text}"
