@@ -24,7 +24,7 @@
        {"question": "How would you simulate object-oriented programming in C?"},
        {"question": "Explain the working of function pointers."}
     ],
-  },
+},
   "C++": {
     "easy": [
       {"question": "What is the difference between C and C++?"},
@@ -50,7 +50,7 @@
       {"question": "Implement a basic LRU Cache using STL."},
       {"question": "Discuss RAII (Resource Acquisition Is Initialization)."}
     ],
-  },
+},
   "Java": {
     "easy": [
       {"question": "What is the JVM and how is it different from JRE and JDK?"},
@@ -76,7 +76,7 @@
       {"question": "What is the pupose of the volatile keyword?"},
       {"question": "Implement a producer-consumer problem using threads."}
     ],
-  },
+},
   "Go(Golang)": {
     "easy": [
       {"question": "What is a goroutine in GO?"},
@@ -102,7 +102,7 @@
       {"question": "Implement a custom data structure (eg., queue) in Go."},
       {"question": "Discuss garbage collection and concurrency safety in Go."}
     ],
-  },
+},
   "Rust": {
     "easy": [
       {"question": "What makes Rust a memory-safe language?"},
@@ -128,7 +128,7 @@
       {"question": "How does Rust handle memory without garbage collection?"},
       {"question": "Use lifetimes to manage  refernces across function boundaries."}
     ],
-  },
+},
   "C#": {
     "easy": [
       {"question": "What is the CLR in C#?"},
@@ -154,7 +154,7 @@
       {"question": "Explain how garbage collection works in .NET."},
       {"question": "Create a custom collection that implements IEnumerable."}
     ],
-  },
+},
   "Python": {
     "easy": [
       {"question": "What are Python's key data types?"},
@@ -180,7 +180,7 @@
       {"question": "What are metaclasses? When are they useful?"},
       {"question": "Create a multi-threaded app using threading and queue."}
     ],
-  },
+},
   "Python for Data analysis/science": {
     "easy": [
       {"question": "What are pandas, numpy and matplotlib used for?"},
@@ -206,7 +206,7 @@
       {"question": "How would you handle a dataset with 1M+ rows efficiently?"},
       {"questions": "How do you identify and treat outliers?"}
     ],
-  },
+},
   "R": {
     "easy": [
       {"question": "What is a vector in R?"},
@@ -232,7 +232,7 @@
       {"question": "Build a Shiny app that visualized a dataset."},
       {"question": "Conduct principal component analysis (PCA) on a dataset."}
     ],
-  },
+},
   "Julia": {
     "easy": [
       {"question": "What is Julia used for?"},
@@ -258,7 +258,7 @@
       {"question": "Build a basic statistical model using GLM.jl."},
       {"question": "Implement a caching system in Julia for faster computation."}
     ],
-  },
+},
   "MATLAB": {
     "easy": [
       {"question": "What is MATLAB primarily used for?"},
@@ -284,7 +284,7 @@
       {"question": "Implement a real-time signal processing script."},
       {"question": "Use MATLAB to model and solve a control system."}
     ],
-  },
+},
   "HTML & CSS": {
     "easy": [
       {"question": "What is the purpose of the <head> tag?"},
@@ -310,7 +310,7 @@
       {"question": "Explain the CSS box model with debugging techniques."},
       {"question": "Code a custom CSS modal popup with animation."}
     ],
-  },
+},
   "JavaScript": {
     "easy": [
       {"question": "What is the difference between var, let, and const?"},
@@ -336,7 +336,7 @@
       {"question": "Optimize a JS-heavy webpage for performance."},
       {"question": "Implement drag-and-drop from scratch."}
     ],
-  },
+},
   "TypeScript": {
     "easy": [
       {"question": "What is TypeScript and how is it different from JS?"},
@@ -362,7 +362,7 @@
       {"question": "Convert a complex JS project to TypeScript."},
       {"question": "Use Mapped Types and Conditional Types in a real use case."}
     ],
-  },
+},
   "GraphQL": {
     "easy": [
       {"question": "What is GraphQL and how is it different from REST?"},
@@ -388,7 +388,7 @@
       {"question": "Use GraphQL subscriptions for real-time updates."},
       {"question": "Compare Apollo Server vs Hasura vs GraphQL Yoga."}
     ],
-  },
+},
   "Kotlin": {
     "easy": [
       {"question": "What is Kotlin and where is it used?"},
@@ -414,7 +414,7 @@
       {"question": "Build a custom DSL using Kotlin."},
       {"question": "Compare Java vs Kotlin for Android development."}
     ],
-  },
+},
   "Swift": {
     "easy": [
       {"question": "What is Swift and where is it used?"},
@@ -440,7 +440,7 @@
       {"question": "Build an iOS app that fetches and displays weather data."},
       {"question": "Discuss memory management and ARC in Swift."}
     ],
-  },
+},
   "Dart": {
     "easy": [
       {"question": "What is Dart and where is it primarily used?"},
@@ -466,7 +466,7 @@
       {"question": "Explain isolate and how to use it for parallel tasks."},
       {"question": "Build a complete Flutter screen with navigation, input, and validation."}
     ],
-  },
+},
   "SQL (with PL/SQL & T-SQL)": {
     "easy": [
       {"question": "What is the difference between WHERE and HAVING?"},
@@ -492,7 +492,7 @@
       {"question": "Optimize a slow SQL query with indexes and explain plan."},
       {"question": "Write a PL/SQL function that returns the count of employees in a department."}
     ],
-  },
+},
   "Bash/Shell": {
     "easy": [
       {"question": "What is the difference between sh, bash, and zsh?"},
@@ -518,7 +518,7 @@
       {"question": "Write a script that interacts with a REST API using curl."},
       {"question": "Securely transfer files between servers using SCP in a script."}
     ],
-  },
+},
   "Haskell/Elixir": {
     "easy": [
       {"question": "What type of programming paradigm does Haskell follow?"},
@@ -544,7 +544,7 @@
       {"question": "Explain functional purity and side effects handling in both languages."},
       {"question": "Build a distributed chat app (skeleton) in Elixir using Phoenix Channels."}
     ],
-  },
+},
   "motivational_quotes": [
     "The only way to do great work is to love what you do.",
     "Success is not final, failure is not fatal: it is the courage to continue that counts.",
