@@ -32,11 +32,11 @@ feedback_file = "feedback.csv"
 history_file = "chat_history.json"
 
 #---------------------------------- utilities--------------------#
-def evaluate_answer_with_gemini(questions, user_answers):
+def evaluate_answer_with_gemini(question, user_answer):
     prompt = f"""
-You are a coding interview evaluator. Evaluate whetherthe following answer is correct for the given question. Return only "Coreect" or "Incorrect".
-Question: {questions}
-Answer: {user_answers}
+You are a coding interview evaluator. Evaluate whether the following answer is correct for the given question. Return only "Correct" or "Incorrect".
+Question: {question}
+Answer: {user_answer}
 """
     try:
         response = model.generate_content([{"parts": [{"text": prompt}]}])
@@ -47,6 +47,7 @@ Answer: {user_answers}
     except Exception as e:
         logging.error(f"[{timestamp}] Gemini evaluation error: {e}")
         return "Error"
+
 
 #--------------------------defining quiz data -----------------------------#
 def load_quiz_data():
@@ -357,7 +358,7 @@ elif menu == "QUIZ TIME 🤩🥳":
 
             # Submit Answers Button (appears after all questions are displayed)
             if st.button("Submit all answers"):
-                result = evaluate_answer_with_gemini(questions, st.session_state.user_answers[q_index])
+                result = evaluate_answer_with_gemini(st.session_state.questions[i], st.session_state.user_answers[i])
                 if result == "Correct":
                     st.success("✅ Correct!")
                     st.session_state.score += 1
