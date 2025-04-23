@@ -6,7 +6,7 @@
       {"question": "Define a pointer and give an example."},
       {"question": "What is the size of int, float, char and double in C ?"},
       {"question": "Explain the purpose of scanf() and printf()."},
-      {"Question": "What is a function in C ?"},
+      {"question": "What is a function in C ?"},
     ],
     "medium": [
       {"question": "Write a function to find the factorial of a number using recursion."},
