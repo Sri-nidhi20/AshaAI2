@@ -34,9 +34,9 @@ history_file = "chat_history.json"
 
 #--------------------------Google Login -----------------------------------#
 google_oauth = OAuth2Component(
-    client_id = st.secrets["google_oauth"]["client_id"],
-    client_secret = st.secrets["google_oauth"]["client_secret"],
-    redirect_url = st.secrets["google_oauth"]["redirect_url"]
+    client_id = "453133241950-bsd0cqmtnvk4votich77vsaql0r2gg9i.apps.googleusercontent.com",
+    client_secret = "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",
+    redirect_url = "https://ashaai2-l7xhle6l06.streamlit.app/"
 )
 user_info = google_oauth.get_user_info()
 if user_info:
