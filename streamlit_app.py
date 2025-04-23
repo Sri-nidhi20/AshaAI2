@@ -45,7 +45,7 @@ Answer: {user_answer}
         else:
             return "Incorrect"
     except Exception as e:
-        logging.error(f"f"[{timestamp}] Gemini evaluation error: {e}")
+        logging.error(f"[{timestamp}] Gemini evaluation error: {e}")
         return "Error"
 
 #--------------------------defining quiz data -----------------------------#
