@@ -295,7 +295,7 @@ Built by *Nidhi 💛* with love and purpose for the *ASHA AI Hackathon 2025*, As
 
 """)
 # --------------------- QUIZ -------------------------#
-elif menu == "QUIZ TIME 🤩🥳:
+elif menu == "QUIZ TIME 🤩🥳":
     st.header("It's the Quiz Time!!")
     st.subheader("🎯 Ready, Set, Code! 💻 Time to show off your skills and conquer this quiz like a coding pro! 💥")
     if st.session_state.last_played != today:
