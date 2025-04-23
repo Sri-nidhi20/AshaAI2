@@ -309,7 +309,7 @@ elif menu == "QUIZ TIME 🤩🥳":
 
     # Inform the user if they've already taken the quiz today
     if st.session_state.answered_today:
-        st.success("✅ You've already taken today's quiz. Come Back Tomorrowto keep your streak alive! Till then keep practicing😉")
+        st.success("✅ You've already taken today's quiz. Come Back Tomorrow to keep your streak alive! Till then keep practicing😉")
     else:
         # Language Selection
         if not st.session_state.language:
@@ -326,22 +326,22 @@ elif menu == "QUIZ TIME 🤩🥳":
                 if not st.session_state.questions:
                     all_questions = quiz_data[st.session_state.language][st.session_state.difficulty.lower()]
                     st.session_state.questions = random.sample(all_questions, 3)
-                    st.session_state.user_answers = [""] * 3 # Initialize as a list of empty strings
+                    st.session_state.user_answers = [""] * 3  # Initialize as a list of empty strings
                     st.session_state.score = 0
-                    st.session_state.quiz_started = True # Flag to indicate quiz has started
-                    st.rerun() # Force a rerun to display questions
+                    st.session_state.quiz_started = True  # Flag to indicate quiz has started
+                    st.rerun()  # Force a rerun to display questions
 
         # Display Questions and Get Answers (only if quiz has started)
         if st.session_state.get('quiz_started'):
             for i, q in enumerate(st.session_state.questions):
                 st.markdown(f"**Question {i+1}:** {q['question']}")
                 st.session_state.user_answers[i] = st.text_input(
-                    f"Your answer {i+1}", value = st.session_state.user_answers[i], key=f"user_answer_{i}"
+                    f"Your answer {i+1}", value=st.session_state.user_answers[i], key=f"user_answer_{i}"
                 )
 
             # Submit Answers Button (appears after all questions are displayed)
             if st.button("Submit all answers"):
-                with st.spinner("🧠 Evaluating your answers......"):
+                with st.spinner("🧠 Evaluating your answers..."):
                     prompts = []
                     for i in range(3):
                         q = st.session_state.questions[i]
@@ -349,17 +349,16 @@ elif menu == "QUIZ TIME 🤩🥳":
                         prompt = f"""
                         Evaluate the user's programming answer.
                         Question: {q['question']}
-                        Expected Answer: {q['answer']}
                         User Answer: {user_ans}
                         Respond in JSON with:
                         - "is_correct": true/false
-                        -"explanation": brief feedback or correction
+                        - "explanation": brief feedback or correction
                         """
                         prompts.append(prompt)
 
                     results = []
                     for p in prompts:
-                        response = model.generate_content(p)
+                        response = model.generate_content(p)  # This call should use your AI model
                         try:
                             json_text = response.text.strip().split("''")[-1]
                             result = json.loads(json_text)
@@ -389,7 +388,7 @@ elif menu == "QUIZ TIME 🤩🥳":
                             st.info(random.choice(motivational_quotes))
                     st.session_state.answered_today = True
                     st.session_state.last_played = today
-                    st.session_state.quiz_started = False # Reset quiz started flag
+                    st.session_state.quiz_started = False  # Reset quiz started flag
 
     # Reset Quiz Button (for development)
     if st.button("Reset Quiz (Dev Mode)"):
@@ -399,5 +398,6 @@ elif menu == "QUIZ TIME 🤩🥳":
         st.session_state.user_answers = []
         st.session_state.score = 0
         st.session_state.answered_today = False
-        st.session_state.quiz_started = False # Ensure this is reset too
+        st.session_state.quiz_started = False  # Ensure this is reset too
         st.rerun()
+
