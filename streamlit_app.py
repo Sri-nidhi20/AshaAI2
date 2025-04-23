@@ -311,13 +311,12 @@ elif menu == "QUIZ TIME 🤩🥳":
     if st.session_state.answered_today:
         st.success("✅ You've already taken today's quiz. Come Back Tomorrow to keep your streak alive! Till then keep practicing😉")
     else:
-        # Language Selection
-        if not st.session_state.language:
-            st.session_state.language = st.selectbox("Choose a programming language:", list(quiz_data.keys()))
+        # Language Selection (Always visible)
+        st.session_state.language = st.selectbox("Choose a programming language:", list(quiz_data.keys()), key="language")
 
         # Difficulty Selection (only if language is selected)
-        if st.session_state.language and not st.session_state.difficulty:
-            st.session_state.difficulty = st.selectbox("Select difficulty level:", ["Easy", "Medium", "Hard"])
+        if st.session_state.language:
+            st.session_state.difficulty = st.selectbox("Select difficulty level:", ["Easy", "Medium", "Hard"], key="difficulty")
 
         # Start Quiz Button (appears after language and difficulty are selected)
         if st.session_state.language and st.session_state.difficulty:
@@ -329,9 +328,10 @@ elif menu == "QUIZ TIME 🤩🥳":
                     st.session_state.user_answers = [""] * 3  # Initialize as a list of empty strings
                     st.session_state.score = 0
                     st.session_state.quiz_started = True  # Flag to indicate quiz has started
+                    st.session_state.answered_today = False  # Reset for fresh quiz day
                     st.rerun()  # Force a rerun to display questions
 
-        # Display Questions and Get Answers (only if quiz has started)
+        # Allow switching between questions or languages after quiz is started
         if st.session_state.get('quiz_started'):
             for i, q in enumerate(st.session_state.questions):
                 st.markdown(f"**Question {i+1}:** {q['question']}")
@@ -400,4 +400,5 @@ elif menu == "QUIZ TIME 🤩🥳":
         st.session_state.answered_today = False
         st.session_state.quiz_started = False  # Ensure this is reset too
         st.rerun()
+
 
