@@ -1,3 +1,4 @@
+from streamlit_oauth import OAuth2Component
 import streamlit as st
 import google.generativeai as genai
 import os
@@ -31,6 +32,18 @@ model = genai.GenerativeModel("models/gemini-2.0-flash")
 feedback_file = "feedback.csv"
 history_file = "chat_history.json"
 
+#--------------------------Google Login -----------------------------------#
+google_oauth = OAuth2Component(
+    client_id = st.secrets["google_oauth"]["client_id"],
+    client_secret = st.secrets["google_oauth"]["client_secret"],
+    redirect_url = st.secrets["google_oauth"]["redirect_url"]
+)
+user_info = google_oauth.get_user_info()
+if user_info:
+    st.session_state.user = user_info
+    st.write(f"Hello {user_info['name']}! LogIN Successfull!!")
+else:
+    st.write("Please LogIN with your Google Account.")
 #--------------------------defining quiz data -----------------------------#
 def get_gemini_answer(question_text):
     prompt_text = f"Answer the following question related to programming: {question_text}"
@@ -149,15 +162,19 @@ except FileNotFoundError:
 st.markdown("<h2 style='text-align:center;'>Welcome to AshaAI 💙 - your Career Companion</h2>", unsafe_allow_html=True)
 
 # ------------------ SIDEBAR ------------------ #
-menu = st.sidebar.radio("AshaAI Menu", [
-    "New Chat ➕",
-    "Chat History 🗨",
-    "Search Chats 🔍",
-    "Give Feedback 😊😐🙁",
-    "Admin Dashboard 📊",
-    "About AshaAI 👩‍🤖",
-    "QUIZ TIME 🤩🥳"
-])
+if st.session_state.get('logged_in', False):
+    menu = st.sidebar.radio("AshaAI Menu", [
+        "New Chat ➕",
+        "Chat History 🗨",
+        "Search Chats 🔍",
+        "Give Feedback 😊😐🙁",
+        "Admin Dashboard 📊",
+        "About AshaAI 👩‍🤖",
+        "QUIZ TIME 🤩🥳",
+        "Logout 🏃❌"
+    ])
+else:
+    st.warning("You need to log in to access the AshaAI.")
 
 # ------------------ NEW CHAT ------------------ #
 if menu == "New Chat ➕":
@@ -420,4 +437,9 @@ elif menu == "QUIZ TIME 🤩🥳":
         st.session_state.score = 0
         st.session_state.answered_today = False
         st.session_state.quiz_started = False  # Ensure this is reset too
+        st.rerun()
+elif menu == "Logout ❌":
+        del st.session_state['logged_in']  
+        del st.session_state['user'] 
+        st.success("You have successfully logged out.")  
         st.rerun()
