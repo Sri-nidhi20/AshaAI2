@@ -319,9 +319,6 @@ elif menu == "QUIZ TIME 🤩🥳":
 
         # Difficulty Selection (only if language is selected)
         if st.session_state.language:
-            if 'difficulty' not in st.session_state:
-                st.session_state.difficulty = None  # Initialize difficulty if not set
-
             st.session_state.difficulty = st.selectbox("Select difficulty level:", ["Easy", "Medium", "Hard"], key="difficulty")
 
         # Start Quiz Button (appears after language and difficulty are selected)
