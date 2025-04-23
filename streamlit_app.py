@@ -334,7 +334,7 @@ elif menu == "QUIZ TIME 🤩🥳":
         if st.session_state.get('quiz_started'):
             for i, q in enumerate(st.session_state.questions):
                 st.markdown(f"**Question {i+1}:** {q['question']}")
-                st.session_state.user_answers[i] = st.text_input(
+                st.session_state.user_answers[i] = st.text_area(
                     f"Your answer {i+1}", value=st.session_state.user_answers[i], key=f"user_answer_{i}"
                 )
 
