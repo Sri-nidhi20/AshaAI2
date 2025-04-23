@@ -354,37 +354,36 @@ elif menu == "QUIZ TIME 🤩🥳":
                 st.markdown(f"**Question {i+1}:** {q['question']}")
                 st.session_state.user_answers[i] = st.text_area(
                     f"Your answer {i+1}", value=st.session_state.user_answers[i], key=f"user_answer_{i}"
-                )
-
-            # Submit Answers Button (appears after all questions are displayed)
+                ) 
             if st.button("Submit all answers"):
-                result = evaluate_answer_with_gemini(st.session_state.questions[i], st.session_state.user_answers[i])
-                if result == "Correct":
-                    st.success("✅ Correct!")
-                    st.session_state.score += 1
-                elif result == "Incorrect":
-                    st.error("❌ Incorrect.")
+                st.session_state.score = 0
+                correct_count = 0
+                with st.spinner("Evaluating your answers..."):
+                    for i in range(3):  # Loop through all 3 questions
+                        question = st.session_state.questions[i]
+                        user_answer = st.session_state.user_answers[i]
+                        result = evaluate_answer_with_gemini(question, user_answer)
+                        if result == "Correct":
+                            st.success(f"✅ Q{i+1}: Correct!")
+                            st.session_state.score += 1
+                            correct_count += 1
+                        elif result == "Incorrect":
+                            st.error(f"❌ Q{i+1}: Incorrect.")
+                        else:
+                            st.warning(f"⚠ Q{i+1}: Gemini couldn't evaluate this answer.")
+                st.session_state.answered_today = True
+                st.session_state.last_played = today
+                st.session_state.quiz_started = False
+                if correct_count == 3:
+                    st.balloons()
+                    st.success("🥳💃 Perfect Score!! You're on fire Buddy! Keep it up🤗")
+                    st.session_state.streak += 1
                 else:
-                    st.warning("⚠ Gemini couldn't evaluate the answer.")
-                if q_index < 2:
-                    st.session_state.current_q += 1
-                else:
-                    # Show result
-                    st.session_state.answered_today = True
-                    st.session_state.last_played = today
-                    st.session_state.quiz_started = False
-
-                    # Display Results and Update Streak
-                    if st.session_state.score == 3:
-                        st.balloons()
-                        st.success("🥳💃 Perfect Score!! You're on fire Buddy! Keep it up🤗")
-                        st.session_state.streak += 1
-                    else:
-                        st.warning(f"You got {correct_count}/3 correct. Keep practicing!! 🤝💪")
-                        st.session_state.streak = 0
-                        motivational_quotes = quiz_data.get("motivational_quotes", [])
-                        if motivational_quotes:
-                            st.info(random.choice(motivational_quotes))
+                    st.warning(f"You got {correct_count}/3 correct. Keep practicing!! 🤝💪")
+                    st.session_state.streak = 0
+                    motivational_quotes = quiz_data.get("motivational_quotes", [])
+                    if motivational_quotes:
+                        st.info(random.choice(motivational_quotes))
 
     # Reset Quiz Button (for development)
     if st.button("Reset Quiz (Dev Mode)"):
