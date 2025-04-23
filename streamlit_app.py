@@ -148,18 +148,15 @@ except FileNotFoundError:
 st.markdown("<h2 style='text-align:center;'>Welcome to AshaAI 💙 - your Career Companion</h2>", unsafe_allow_html=True)
 
 # ------------------ SIDEBAR ------------------ #
-if st.session_state.get('logged_in', False):
-    menu = st.sidebar.radio("AshaAI Menu", [
-        "New Chat ➕",
-        "Chat History 🗨",
-        "Search Chats 🔍",
-        "Give Feedback 😊😐🙁",
-        "Admin Dashboard 📊",
-        "About AshaAI 👩‍🤖",
-        "QUIZ TIME 🤩🥳"
-    ])
-else:
-    st.warning("You need to log in to access the AshaAI.")
+menu = st.sidebar.radio("AshaAI Menu", [
+    "New Chat ➕",
+    "Chat History 🗨",
+    "Search Chats 🔍",
+    "Give Feedback 😊😐🙁",
+    "Admin Dashboard 📊",
+    "About AshaAI 👩‍🤖",
+    "QUIZ TIME 🤩🥳"
+])
 
 # ------------------ NEW CHAT ------------------ #
 if menu == "New Chat ➕":
