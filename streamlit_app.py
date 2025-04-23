@@ -312,10 +312,16 @@ elif menu == "QUIZ TIME 🤩🥳":
         st.success("✅ You've already taken today's quiz. Come Back Tomorrow to keep your streak alive! Till then keep practicing😉")
     else:
         # Language Selection (Always visible)
+        if 'language' not in st.session_state:
+            st.session_state.language = None  # Initialize language if not set
+        
         st.session_state.language = st.selectbox("Choose a programming language:", list(quiz_data.keys()), key="language")
 
         # Difficulty Selection (only if language is selected)
         if st.session_state.language:
+            if 'difficulty' not in st.session_state:
+                st.session_state.difficulty = None  # Initialize difficulty if not set
+
             st.session_state.difficulty = st.selectbox("Select difficulty level:", ["Easy", "Medium", "Hard"], key="difficulty")
 
         # Start Quiz Button (appears after language and difficulty are selected)
@@ -400,5 +406,3 @@ elif menu == "QUIZ TIME 🤩🥳":
         st.session_state.answered_today = False
         st.session_state.quiz_started = False  # Ensure this is reset too
         st.rerun()
-
-
