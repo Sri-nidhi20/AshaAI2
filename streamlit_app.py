@@ -1,5 +1,6 @@
 from streamlit_oauth import OAuth2Component
 import streamlit as st
+st.write(st.secrets)
 import google.generativeai as genai
 import os
 import requests
