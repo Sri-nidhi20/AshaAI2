@@ -25,7 +25,7 @@ except Exception:
         nltk.download('vader_lexicon', quiet = True)
     except Exception as e:
         logging.error(f"[{timestamp}] Error downloading VADER lexicon: {e}")
-print(streamlit_oauth.__version__)
+
 # ------------------ CONFIG ------------------ #
 st.set_page_config(page_title="AshaAI Chatbot", layout="wide")
 genai.configure(api_key=st.secrets.get("GEMINI_API_KEY"))
