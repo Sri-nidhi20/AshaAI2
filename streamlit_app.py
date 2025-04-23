@@ -1,6 +1,5 @@
 from streamlit_oauth import OAuth2Component
 import streamlit as st
-st.write(st.secrets)
 import google.generativeai as genai
 import os
 import requests
@@ -32,7 +31,7 @@ genai.configure(api_key=st.secrets.get("GEMINI_API_KEY"))
 model = genai.GenerativeModel("models/gemini-2.0-flash")
 feedback_file = "feedback.csv"
 history_file = "chat_history.json"
-
+st.write(st.secrets)
 #--------------------------Google Login -----------------------------------#
 google_oauth = OAuth2Component(
     client_id = st.secrets["google_oauth"]["client_id"],
