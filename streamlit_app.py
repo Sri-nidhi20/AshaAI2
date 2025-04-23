@@ -16,7 +16,6 @@ import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import nltk
 import json
-import concurrent.futures
 try:
     nltk.data.find('sentiment/vader_lexicon.zip')
 except Exception:
@@ -32,19 +31,27 @@ model = genai.GenerativeModel("models/gemini-2.0-flash")
 feedback_file = "feedback.csv"
 history_file = "chat_history.json"
 
-#---------------------------------- utilities--------------------#
-def evaluate_all_answers_parallel(questions, user_answers):
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = [
-            executor.submit(evaluate_answer_with_gemini, q, a)
-            for q, a in zip(questions, user_answers)
-        ]
-        return [f.result() for f in futures]
 #--------------------------defining quiz data -----------------------------#
+def get_gemini_answer(question_text):
+    prompt_text = f"Answer the following question related to programming: {question_text}"
+    try:
+        # Sending query to Gemini API
+        response = model.generate_content([{"parts": [{"text": prompt_text}]}])
+        if response.text:
+            return response.text
+        else:
+            return "I'm sorry, I couldn't provide an answer at the moment."
+    except Exception as e:
+        logging.error(f"Error fetching answer from Gemini: {e}")
+        return "I'm having trouble retrieving the answer right now."
+        
 def load_quiz_data():
     with open("quiz_data.json", "r") as f:
-        return json.load(f)
-quiz_data = load_quiz_data()
+        quiz_data = json.load(f)
+    for language in quiz_data:
+        for difficulty in quiz_data[language]:
+            q['answer'] = get_gemini_answer(q['question'])
+    return quiz_data
 #========== Session State======
 if "streak" not in st.session_state:
     st.session_state.streak = 0
@@ -345,37 +352,59 @@ elif menu == "QUIZ TIME 🤩🥳":
                 st.markdown(f"**Question {i+1}:** {q['question']}")
                 st.session_state.user_answers[i] = st.text_area(
                     f"Your answer {i+1}", value=st.session_state.user_answers[i], key=f"user_answer_{i}"
-                ) 
+                )
+
+            # Submit Answers Button (appears after all questions are displayed)
             if st.button("Submit all answers"):
-                st.session_state.score = 0
-                correct_count = 0
-                with st.spinner("Evaluating your answers..."):
-                    results = evaluate_all_answers_parallel(
-                        st.session_state.questions,
-                        st.session_state.user_answers 
-                    )
-                    for i, result in enumerate(results):
-                        if result == "Correct":
-                            st.success(f"✅ Q{i+1}: Correct!")
-                            st.session_state.score += 1
+                with st.spinner("🧠 Evaluating your answers..."):
+                    prompts = []
+                    for i in range(3):
+                        q = st.session_state.questions[i]
+                        user_ans = st.session_state.user_answers[i]
+                        prompt = f"""
+                        You are an expert programming tutor helping evaluate student quiz answers.
+                        Evaluate the following answer for technical correctness.
+                        Question: {q['question']}
+                        Student Answer: {user_ans}
+                        Reply ONLY in valid JSON with these fields:
+                        - "is_correct": true or false
+                        - "explanation": short, clear feedback or correction
+                        """
+                        prompts.append(prompt)
+
+                    results = []
+                    for p in prompts:
+                        response = model.generate_content(p)  # This call should use your AI model
+                        try:
+                            json_text = response.text.strip().split("''")[-1]
+                            result = json.loads(json_text)
+                        except Exception as e:
+                            result = {"is_correct": False, "explanation": "Couldn't evaluate the answer properly."}
+                        results.append(result)
+
+                    correct_count = 0
+                    for i, r in enumerate(results):
+                        st.markdown(f"**Q{i+1}:** {st.session_state.questions[i]['question']}")
+                        if r["is_correct"]:
+                            st.success(f"✅ Correct!!")
                             correct_count += 1
-                        elif result == "Incorrect":
-                            st.error(f"❌ Q{i+1}: Incorrect.")
                         else:
-                            st.warning(f"⚠ Q{i+1}: Gemini couldn't evaluate this answer.")
-                st.session_state.answered_today = True
-                st.session_state.last_played = today
-                st.session_state.quiz_started = False
-                if correct_count == 3:
-                    st.balloons()
-                    st.success("🥳💃 Perfect Score!! You're on fire Buddy! Keep it up🤗")
-                    st.session_state.streak += 1
-                else:
-                    st.warning(f"You got {correct_count}/3 correct. Keep practicing!! 🤝💪")
-                    st.session_state.streak = 0
-                    motivational_quotes = quiz_data.get("motivational_quotes", [])
-                    if motivational_quotes:
-                        st.info(random.choice(motivational_quotes))
+                            st.error(f"❌ Incorrect.. {r['explanation']}")
+
+                    # Display Results and Update Streak
+                    if correct_count == 3:
+                        st.balloons()
+                        st.success("🥳💃 Perfect Score!! You're on fire Buddy! Keep it up🤗")
+                        st.session_state.streak += 1
+                    else:
+                        st.warning(f"You got {correct_count}/3 correct. Keep practicing!! 🤝💪")
+                        st.session_state.streak = 0
+                        motivational_quotes = quiz_data.get("motivational_quotes", [])
+                        if motivational_quotes:
+                            st.info(random.choice(motivational_quotes))
+                    st.session_state.answered_today = True
+                    st.session_state.last_played = today
+                    st.session_state.quiz_started = False  # Reset quiz started flag
 
     # Reset Quiz Button (for development)
     if st.button("Reset Quiz (Dev Mode)"):
