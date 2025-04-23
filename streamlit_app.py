@@ -112,10 +112,10 @@ def query_gemini(prompt_text, timeout_seconds=60):
         logging.info(f"[{timestamp}] Detected negative sentiment, sending encouragement query to Gemini-2.0-flash: {encouragement_query}")
         try:
             contents = [{"parts": [{"text": encouragement_query}]}]
-            response = model.generate_content(contents)  # Removed generation_config
+            response = model.generate_content(contents)  
             if response.text:
                 logging.info(f"[{timestamp}] Gemini-2.0-flash encouragement response (first 50 chars): {response.text[:50]}...")
-                return response.text
+                return response.text[:2000]
             else:
                 return "Sending you some positive vibes! Remember that career journeys have ups and downs. How can I help you navigate this?"
         except Exception as e:
@@ -131,7 +131,7 @@ def query_gemini(prompt_text, timeout_seconds=60):
             response = model.generate_content(contents)  # Removed generation_config
             if response.text:
                 logging.info(f"[{timestamp}] Gemini-2.0-flash motivation response (first 50 chars): {response.text[:50]}...")
-                return response.text
+                return response.text[:2000]
             else:
                 return "Here's a little something to keep you going: Every challenge is an opportunity to learn and grow."
         except Exception as e:
@@ -146,7 +146,7 @@ def query_gemini(prompt_text, timeout_seconds=60):
             response = model.generate_content(contents)  # Removed generation_config
             if response.text:
                 logging.info(f"[{timestamp}] Gemini-2.0-flash response (first 50 chars): {response.text[:50]}...")
-                return response.text
+                return response.text[:2000]
             else:
                 return "Hmm, I didn't get a clear response for that career query. Could you please rephrase?"
         except Exception as e:
