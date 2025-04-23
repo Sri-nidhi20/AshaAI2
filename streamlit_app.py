@@ -46,12 +46,17 @@ def get_gemini_answer(question_text):
         return "I'm having trouble retrieving the answer right now."
         
 def load_quiz_data():
-    with open("quiz_data.json", "r") as f:
-        quiz_data = json.load(f)
-    for language in quiz_data:
-        for difficulty in quiz_data[language]:
-            q['answer'] = get_gemini_answer(q['question'])
-    return quiz_data
+    try:
+        with open("quiz_data.json", "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        logging.error(f"[{timestamp}] quiz_data.json file not found.")
+        return {}  # Return an empty dictionary if the file is not found
+    except json.JSONDecodeError as e:
+        logging.error(f"[{timestamp}] Error decoding quiz_data.json: {e}")
+        return {}
+
+quiz_data = load_quiz_data()
 #========== Session State======
 if "streak" not in st.session_state:
     st.session_state.streak = 0
