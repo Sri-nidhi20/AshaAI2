@@ -359,10 +359,11 @@ elif menu == "QUIZ TIME 🤩🥳":
                 st.session_state.score = 0
                 correct_count = 0
                 with st.spinner("Evaluating your answers..."):
-                    for i in range(3):  # Loop through all 3 questions
-                        question = st.session_state.questions[i]
-                        user_answer = st.session_state.user_answers[i]
-                        result = evaluate_answer_with_gemini(question, user_answer)
+                    results = evaluate_all_answers_parallel(
+                        st.session_state.questions,
+                        st.session_state.user_answers 
+                    )
+                    for i, result in enumerate(results):
                         if result == "Correct":
                             st.success(f"✅ Q{i+1}: Correct!")
                             st.session_state.score += 1
