@@ -6,7 +6,7 @@
       {"question": "Define a pointer and give an example."},
       {"question": "What is the size of int, float, char and double in C ?"},
       {"question": "Explain the purpose of scanf() and printf()."},
-      {"question": "What is a function in C ?"},
+      {"question": "What is a function in C ?"}
     ],
     "medium": [
       {"question": "Write a function to find the factorial of a number using recursion."},
@@ -14,7 +14,7 @@
       {"question": "Implement a program to reverse a string without using a library function."},
       {"question": "What are storage classes in C ?"},
       {"question": "Explain stack and heap memory."},
-      {"question": "What is a segmentation fault?"},
+      {"question": "What is a segmentation fault?"}
     ],
     "hard": [
        {"question": "Implement a stack using an array."},
@@ -22,7 +22,7 @@
        {"question": "Write a program to sort an array using quicksort."},
        {"question": "What is a pointer arithmetic?"},
        {"question": "How would you simulate object-oriented programming in C?"},
-       {"question": "Explain the working of function pointers."},
+       {"question": "Explain the working of function pointers."}
     ],
   },
   "C++": {
@@ -32,7 +32,7 @@
       {"question": "Explain the concept of function overloading."},
       {"question": "What is a constructor and destructor?"},
       {"question": "What is the use of the 'this' pointer?"},
-      {"question": "Write a program to dispplay 'Hello, World!' using a class."},
+      {"question": "Write a program to dispplay 'Hello, World!' using a class."}
     ],
     "medium": [
        {"question": "Implement a class with getter and setter methods."},
@@ -40,7 +40,7 @@
        {"question": "What are templates in C++?"},
        {"question": "What is operator overloading? Give an example."},
        {"question": "How is memory managed in C++?"},
-       {"question": "What are the differences between deep copy and shallow copy?"},
+       {"question": "What are the differences between deep copy and shallow copy?"}
     ],
     "hard": [
       {"question": "Implement a linked list using classes."},
@@ -48,7 +48,7 @@
       {"question": "How does polymorphism work in C++?"},
       {"question": "What is the role of std::move and rvalue refernces?"},
       {"question": "Implement a basic LRU Cache using STL."},
-      {"question": "Discuss RAII (Resource Acquisition Is Initialization)."},
+      {"question": "Discuss RAII (Resource Acquisition Is Initialization)."}
     ],
   },
   "Java": {
@@ -58,7 +58,7 @@
       {"question": "Write a Java program to check if a number is prime."},
       {"question": "Define a class and create an object in Java."},
       {"question": "What is the purpose of the main() method?"},
-      {"question": "What are primitive data types in Java?"},
+      {"question": "What are primitive data types in Java?"}
     ],
     "medium": [
       {"question": "Explain the concept of inheritance with an example."},
@@ -66,7 +66,7 @@
       {"question": "What are the differences between an interface and an abstract class?"},
       {"question": "What is exception handling in Java?"},
       {"question": "Write a method to reverse a string using a StringBuilder."},
-      {"question": "How does garbage collection work in Java?"},
+      {"question": "How does garbage collection work in Java?"}
     ],
     "hard": [
       {"question": "Implement a custom exception in Java."},
@@ -74,7 +74,7 @@
       {"question": "How does the JVM optimize bytecode execution?"},
       {"question": "Implement a Singleton design pattern."},
       {"question": "What is the pupose of the volatile keyword?"},
-      {"question": "Implement a producer-consumer problem using threads."},
+      {"question": "Implement a producer-consumer problem using threads."}
     ],
   },
   "Go(Golang)": {
@@ -84,7 +84,7 @@
       {"question": "How do you declare and initialize a slice?"},
       {"question": "Explain the use of := in variable declarations."},
       {"question": "Write a function to check if a number is even or odd."},
-      {"question": "What is the difference between an array and a slice?"},
+      {"question": "What is the difference between an array and a slice?"}
     ],
     "medium": [
       {"question": "Write a program to use goroutines and channels to print concurrently."},
@@ -92,7 +92,7 @@
       {"question": "Implement a map that counts character frequencies in a string."},
       {"question": "Explain how Go hnadles errors without try-catch."},
       {"question": "What is the select statement used for?"},
-      {"question": "How is memory managed in Go?"},
+      {"question": "How is memory managed in Go?"}
     ],
     "hard": [
       {"question": "Implement a worker pool pattern using goroutines."},
@@ -100,7 +100,7 @@
       {"question": "How do you avoid race conditions in Go?"},
       {"question": "Write a basic REST API using Go's standard library."},
       {"question": "Implement a custom data structure (eg., queue) in Go."},
-      {"question": "Discuss garbage collection and concurrency safety in Go."},
+      {"question": "Discuss garbage collection and concurrency safety in Go."}
     ],
   },
   "Rust": {
@@ -110,7 +110,7 @@
       {"question": "What is borrow in Rust?"},
       {"question": "Explain the differnce between String and &str."},
       {"question": "Write a function that adds two numbers and returns the result."},
-      {"question": "What is pattern matching and how is match used?"},
+      {"question": "What is pattern matching and how is match used?"}
     ],
     "medium": [
       {"question": "Implement a program that reads from a file and counts words."},
@@ -118,7 +118,7 @@
       {"question": "What is Option<T> and how do you handle it ?"},
       {"question": "Write a Rust program that handles command line arguments."},
       {"question": "How are traits different from interfaces in other languages?"},
-      {"question": "Implement a struct with associated methods and derive traits."},
+      {"question": "Implement a struct with associated methods and derive traits."}
     ],
     "hard": [
       {"question": "Build a multi-threaded program using channels."},
@@ -126,7 +126,7 @@
       {"question": "Implement a custom smart pointer."},
       {"question": "Write a simple web server using hyper and actix-web."},
       {"question": "How does Rust handle memory without garbage collection?"},
-      {"question": "Use lifetimes to manage  refernces across function boundaries."},
+      {"question": "Use lifetimes to manage  refernces across function boundaries."}
     ],
   },
   "C#": {
@@ -136,7 +136,7 @@
       {"question": "What is the differnce between ref and out?"},
       {"question": "What is the namespace in C#?"},
       {"question": "How do you create a class and instantiate an object?"},
-      {"question": "What are value types and refernce types?"},
+      {"question": "What are value types and refernce types?"}
     ],
     "medium": [
       {"question": "Implement a class with properties and use getters/setters."},
@@ -144,7 +144,7 @@
       {"question": "Explain boxing and unboxing with examples."},
       {"question": "Write a program to filter even numbers from alist using LINQ."},
       {"question": "How is exception handling done in C#?"},
-      {"question": "What are static classes and when should they be used?"},
+      {"question": "What are static classes and when should they be used?"}
     ],
     "hard": [
       {"question": "Implement a multi-threaded application using Task."},
@@ -152,7 +152,7 @@
       {"question": "How would you implement dependency injection in C#?"},
       {"question": "Design a mini inventory system using OOP in C#."},
       {"question": "Explain how garbage collection works in .NET."},
-      {"question": "Create a custom collection that implements IEnumerable."},
+      {"question": "Create a custom collection that implements IEnumerable."}
     ],
   },
   "Python": {
@@ -162,7 +162,7 @@
       {"question": "What's the difference between list and tuple?"},
       {"question": "What is indentation and why is it important?"},
       {"question": "Write a function to count vowels in a string."},
-      {"question": "What is the use of if__name__ == '__main__' "},
+      {"question": "What is the use of if__name__ == '__main__' "}
     ],
     "medium": [
       {"question": "Write a function to find duplicate elements in alist."},
@@ -170,7 +170,7 @@
       {"question": "Explain the differnce between deepcopy() and copy()."},
       {"question": "Implement a dictionary-based frequency counter."},
       {"question": "What are decorators? Write a sample."},
-      {"question": "When would you use a generator instead of a list?"},
+      {"question": "When would you use a generator instead of a list?"}
     ],
     "hard": [
       {"question": "Implement a class with inheritance and method overriding."},
@@ -178,7 +178,7 @@
       {"question": "How does Python manage memory"},
       {"question": "Write a mini project like a to-do list CLI app."},
       {"question": "What are metaclasses? When are they useful?"},
-      {"question": "Create a multi-threaded app using threading and queue."},
+      {"question": "Create a multi-threaded app using threading and queue."}
     ],
   },
   "Python for Data analysis/science": {
@@ -188,7 +188,7 @@
       {"question": "Write a code to calculate the mean of a numeric column."},
       {"question": "What is the shape of a DataFrame?"},
       {"question": "How do you handle missing values in pandas?"},
-      {"question": "How do you filter rows based on a condition?"},
+      {"question": "How do you filter rows based on a condition?"}
     ],
     "medium": [
       {"question": "Create a histogram for a dataset column using matplotlib."},
@@ -196,7 +196,7 @@
       {"question": "Write a function to normalize a numeric column."},
       {"question": "How do you detect and remove duplicates?"},
       {"question": "What is the role of groupby() in pandas?"},
-      {"question": "How do you merge two DataFrames?"},
+      {"question": "How do you merge two DataFrames?"}
     ],
     "hard": [
       {"question": "Perform EDA on a dataset and summarize findings."},
@@ -204,7 +204,7 @@
       {"question": "Implement a regression model using scikit-learn."},
       {"question": "create a dashboard using Plotly or Streamlit."},
       {"question": "How would you handle a dataset with 1M+ rows efficiently?"},
-      {"questions": "How do you identify and treat outliers?"},
+      {"questions": "How do you identify and treat outliers?"}
     ],
   },
   "R": {
@@ -214,7 +214,7 @@
       {"question": "How do you create a DataFrame in R?"},
       {"question": "What are some common data types in R?"},
       {"question": "How to install and load a package in R?"},
-      {"question": "What is the difference between = and <- in R?"},
+      {"question": "What is the difference between = and <- in R?"}
     ],
     "medium": [
       {"question": "Use ggplot2 to plot a bar graph."},
@@ -222,7 +222,7 @@
       {"question": "What is the difference between apply(), lapply(), and sapply()?"},
       {"question": "Write a function that normalized a vector."},
       {"question": "How do you join two datasets in R?"},
-      {"question": "Explain the use of dplyr package."},
+      {"question": "Explain the use of dplyr package."}
     ],
     "hard": [
       {"question": "Perform a time series analysis using forecast."},
@@ -230,7 +230,7 @@
       {"question": "Write a custom function to compute correlation matrix with plots."},
       {"question": "Optimize a slow loop using vectorization."},
       {"question": "Build a Shiny app that visualized a dataset."},
-      {"question": "Conduct principal component analysis (PCA) on a dataset."},
+      {"question": "Conduct principal component analysis (PCA) on a dataset."}
     ],
   },
   "Julia": {
@@ -240,7 +240,7 @@
       {"question": "Write a Julia program to check if a number is even."},
       {"question": "How is Julia different from Python?"},
       {"question": "What are tuples in Julia?"},
-      {"question": "how do you install a package?"},
+      {"question": "how do you install a package?"}
     ],
     "medium": [
       {"question": "Write a program to compute the dot product of two vectors."},
@@ -248,7 +248,7 @@
       {"question": "How do you handle missing data in Julia?"},
       {"question": "What is broadcasting and how is it used?"},
       {"question": "Create a plot using the Plots.jl package."},
-      {"question": "Write a function that performs linear regression."},
+      {"question": "Write a function that performs linear regression."}
     ],
     "hard": [
       {"question": "Perform matrix operations on large datasets."},
@@ -256,7 +256,7 @@
       {"question": "Use Julia's multithreading to process a large file."},
       {"question": "Compare the performance of a function in Python and Julia."},
       {"question": "Build a basic statistical model using GLM.jl."},
-      {"question": "Implement a caching system in Julia for faster computation."},
+      {"question": "Implement a caching system in Julia for faster computation."}
     ],
   },
   "MATLAB": {
@@ -266,7 +266,7 @@
       {"question": "What does the plot() function do?"},
       {"question": "How do you comment a line in MATLAB?"},
       {"question": "What is the difference between = and ==?"},
-      {"question": "Write a script to calculate the area of a circle."},
+      {"question": "Write a script to calculate the area of a circle."}
     ],
     "medium": [
       {"question": "Create a 3D plot for a sine wave."},
@@ -274,7 +274,7 @@
       {"question": "Explain how to read and write CSV files in MATLAB."},
       {"question": "Perform matrix multiplication between two arrays."},
       {"question": "What is the use of meshgrid() in surface plotting?"},
-      {"question": "Write a function that normalizes a vector."},
+      {"question": "Write a function that normalizes a vector."}
     ],
     "hard": [
       {"question": "Simulate a differential equation using ode45."},
@@ -282,7 +282,7 @@
       {"question": "Create a GUI in MATLAB to take input and display output."},
       {"question": "Develop an image processing script that blurs an image."},
       {"question": "Implement a real-time signal processing script."},
-      {"question": "Use MATLAB to model and solve a control system."},
+      {"question": "Use MATLAB to model and solve a control system."}
     ],
   },
   "HTML & CSS": {
@@ -292,7 +292,7 @@
       {"question": "What’s the difference between id and class?"},
       {"question": "How do you add a CSS file to your HTML?"},
       {"question": "Write CSS to change text color to blue."},
-      {"question": "What does the alt attribute in <img> do?"},
+      {"question": "What does the alt attribute in <img> do?"}
     ],
     "medium": [
       {"question": "Create a responsive layout using flexbox."},
@@ -300,7 +300,7 @@
       {"question": "What are media queries? Write an example."},
       {"question": "Build a card layout with shadow and hover animation."},
       {"question": "Differentiate between inline, internal, and external CSS."},
-      {"question": "How does z-index work in layered design?"},
+      {"question": "How does z-index work in layered design?"}
     ],
     "hard": [
       {"question": "Build a responsive portfolio layout using grid + flexbox."},
@@ -308,7 +308,7 @@
       {"question": "Create an animated loading spinner using keyframes."},
       {"question": "Design a sticky navbar that changes style on scroll."},
       {"question": "Explain the CSS box model with debugging techniques."},
-      {"question": "Code a custom CSS modal popup with animation."},
+      {"question": "Code a custom CSS modal popup with animation."}
     ],
   },
   "JavaScript": {
@@ -318,7 +318,7 @@
       {"question": "What are JavaScript data types?"},
       {"question": "How do you add an event listener to a button?"},
       {"question": "Explain == vs ===."},
-      {"question": "What is NaN?"},
+      {"question": "What is NaN?"}
     ],
     "medium": [
       {"question": "Explain closures with an example."},
@@ -326,7 +326,7 @@
       {"question": "Write a debounce function."},
       {"question": "What is the use of Promise? Write a sample."},
       {"question": "Implement a simple to-do list with add/delete."},
-      {"question": "How does hoisting work?"},
+      {"question": "How does hoisting work?"}
     ],
     "hard": [
       {"question": "Implement a throttling mechanism for API calls."},
@@ -334,7 +334,7 @@
       {"question": "Use async/await to fetch and render API data."},
       {"question": "Build a basic custom implementation of bind() method."},
       {"question": "Optimize a JS-heavy webpage for performance."},
-      {"question": "Implement drag-and-drop from scratch."},
+      {"question": "Implement drag-and-drop from scratch."}
     ],
   },
   "TypeScript": {
@@ -344,7 +344,7 @@
       {"question": "Write a simple function with typed parameters."},
       {"question": "What are interfaces in TypeScript?"},
       {"question": "How do you compile TS to JS?"},
-      {"question": "What are enums?"},
+      {"question": "What are enums?"}
     ],
     "medium": [
       {"question": "What are generics? Provide an example."},
@@ -352,7 +352,7 @@
       {"question": "How do you create optional properties in an interface?"},
       {"question": "Implement a typed function that accepts a list of numbers and returns the max."},
       {"question": "What is type assertion?"},
-      {"question": "Build a form validator using TS."},
+      {"question": "Build a form validator using TS."}
     ],
     "hard": [
       {"question": "Create a strongly typed Redux store using TS."},
@@ -360,7 +360,7 @@
       {"question": "Implement a custom generic function for filtering."},
       {"question": "How do you handle 3rd-party JavaScript libraries in TS?"},
       {"question": "Convert a complex JS project to TypeScript."},
-      {"question": "Use Mapped Types and Conditional Types in a real use case."},
+      {"question": "Use Mapped Types and Conditional Types in a real use case."}
     ],
   },
   "GraphQL": {
@@ -370,7 +370,7 @@
       {"question": "What are the three main types of operations in GraphQL?"},
       {"question": "What is a resolver?"},
       {"question": "What is the purpose of the ! symbol in GraphQL types?"},
-      {"question": "Define a User type with id, name, and email."},
+      {"question": "Define a User type with id, name, and email."}
     ],
     "medium": [
       {"question": "Create a mutation to add a new blog post."},
@@ -378,7 +378,7 @@
       {"question": "How do fragments work in GraphQL?"},
       {"question": "What are input types and why are they used?"},
       {"question": "How do you handle errors in GraphQL responses?"},
-      {"question": "How do you connect a GraphQL API to a frontend like React?"},
+      {"question": "How do you connect a GraphQL API to a frontend like React?"}
     ],
     "hard": [
       {"question": "Build a custom resolver with authentication check."},
@@ -386,7 +386,7 @@
       {"question": "Write a query that fetches deeply nested data across multiple types."},
       {"question": "Implement schema stitching or federation in GraphQL."},
       {"question": "Use GraphQL subscriptions for real-time updates."},
-      {"question": "Compare Apollo Server vs Hasura vs GraphQL Yoga."},
+      {"question": "Compare Apollo Server vs Hasura vs GraphQL Yoga."}
     ],
   },
   "Kotlin": {
@@ -396,7 +396,7 @@
       {"question": "What is the use of val and var?"},
       {"question": "Write a function that returns the square of a number."},
       {"question": "What are nullable types in Kotlin?"},
-      {"question": "How do you write a simple class in Kotlin?"},
+      {"question": "How do you write a simple class in Kotlin?"}
     ],
     "medium": [
       {"question": "Explain Kotlin's data classes with an example."},
@@ -404,7 +404,7 @@
       {"question": "Write a function with default and named parameters."},
       {"question": "How does extension function work in Kotlin?"},
       {"question": "What is a sealed class and where is it used?"},
-      {"question": "Implement a simple Android UI interaction using Kotlin."},
+      {"question": "Implement a simple Android UI interaction using Kotlin."}
     ],
     "hard": [
       {"question": "Use coroutines to fetch API data asynchronously."},
@@ -412,7 +412,7 @@
       {"question": "Create a custom higher-order function in Kotlin."},
       {"question": "Implement a RecyclerView with multiple view types."},
       {"question": "Build a custom DSL using Kotlin."},
-      {"question": "Compare Java vs Kotlin for Android development."},
+      {"question": "Compare Java vs Kotlin for Android development."}
     ],
   },
   "Swift": {
@@ -422,7 +422,7 @@
       {"question": "What is optional in Swift?"},
       {"question": "Write a function to return the factorial of a number."},
       {"question": "Explain the difference between let and var."},
-      {"question": "What is type inference?"},
+      {"question": "What is type inference?"}
     ],
     "medium": [
       {"question": "Implement a class and a struct with similar properties."},
@@ -430,7 +430,7 @@
       {"question": "What are closures and how are they used?"},
       {"question": "How does error handling work in Swift?"},
       {"question": "Explain the use of guard vs if let."},
-      {"question": "Build a basic TableView in iOS using Swift."},
+      {"question": "Build a basic TableView in iOS using Swift."}
     ],
     "hard": [
       {"question": "Create a custom SwiftUI component."},
@@ -438,7 +438,7 @@
       {"question": "Integrate Core Data for local persistence."},
       {"question": "Write a generic function that works with any numeric type."},
       {"question": "Build an iOS app that fetches and displays weather data."},
-      {"question": "Discuss memory management and ARC in Swift."},
+      {"question": "Discuss memory management and ARC in Swift."}
     ],
   },
   "Dart": {
@@ -448,7 +448,7 @@
       {"question": "What are the basic data types in Dart?"},
       {"question": "Write a function that returns the sum of a list."},
       {"question": "What is the difference between final and const?"},
-      {"question": "How do you define a class and constructor?"},
+      {"question": "How do you define a class and constructor?"}
     ],
     "medium": [
       {"question": "Use async and await to simulate a network call."},
@@ -456,7 +456,7 @@
       {"question": "Write a simple Flutter widget in Dart."},
       {"question": "Create a map and iterate over its keys and values."},
       {"question": "How does null safety work in Dart?"},
-      {"question": "What is the difference between List and Set?"},
+      {"question": "What is the difference between List and Set?"}
     ],
     "hard": [
       {"question": "Build a custom Flutter widget with user input."},
@@ -464,7 +464,7 @@
       {"question": "Use Dart streams to handle real-time data."},
       {"question": "Write a generic Dart function with type constraints."},
       {"question": "Explain isolate and how to use it for parallel tasks."},
-      {"question": "Build a complete Flutter screen with navigation, input, and validation."},
+      {"question": "Build a complete Flutter screen with navigation, input, and validation."}
     ],
   },
   "SQL (with PL/SQL & T-SQL)": {
@@ -474,7 +474,7 @@
       {"question": "What does GROUP BY do?"},
       {"question": "What is the difference between INNER JOIN and LEFT JOIN?"},
       {"question": "What does NULL mean in SQL?"},
-      {"question": "What is a primary key?"},
+      {"question": "What is a primary key?"}
     ],
     "medium": [
       {"question": "Write a query to get the 2nd highest salary from a Salaries table."},
@@ -482,7 +482,7 @@
       {"question": "Write a PL/SQL block to insert a record into a table."},
       {"question": "What are cursors in PL/SQL? Write an example."},
       {"question": "What is a stored procedure? Write a basic one."},
-      {"question": "How does T-SQL differ from standard SQL?"},
+      {"question": "How does T-SQL differ from standard SQL?"}
     ],
     "hard": [
       {"question": "Write a T-SQL script with exception handling."},
@@ -490,7 +490,7 @@
       {"question": "Create a trigger that logs insertions into an audit table."},
       {"question": "Implement a recursive query using CTE (Common Table Expression)."},
       {"question": "Optimize a slow SQL query with indexes and explain plan."},
-      {"question": "Write a PL/SQL function that returns the count of employees in a department."},
+      {"question": "Write a PL/SQL function that returns the count of employees in a department."}
     ],
   },
   "Bash/Shell": {
@@ -500,7 +500,7 @@
       {"question": "How do you assign and print variables in Bash?"},
       {"question": "What does the chmod +x command do?"},
       {"question": "Write a script to check if a file exists."},
-      {"question": "What is the use of echo and read?"},
+      {"question": "What is the use of echo and read?"}
     ],
     "medium": [
       {"question": "Write a script to loop through files in a directory."},
@@ -508,7 +508,7 @@
       {"question": "What is the use of &&, ||, and !?"},
       {"question": "Write a Bash function that checks if a number is prime."},
       {"question": "Use grep and awk together in a script."},
-      {"question": "Automate a backup process using Bash."},
+      {"question": "Automate a backup process using Bash."}
     ],
     "hard": [
       {"question": "Write a script that monitors CPU usage and logs high spikes."},
@@ -516,7 +516,7 @@
       {"question": "Create a menu-driven shell script with multiple options."},
       {"question": "Implement a custom command-line utility using shell scripting."},
       {"question": "Write a script that interacts with a REST API using curl."},
-      {"question": "Securely transfer files between servers using SCP in a script."},
+      {"question": "Securely transfer files between servers using SCP in a script."}
     ],
   },
   "Haskell/Elixir": {
@@ -526,7 +526,7 @@
       {"question": "What is immutability in functional languages?"},
       {"question": "In Elixir, how do you define a module and a function?"},
       {"question": "What is pattern matching? Give a simple example."},
-      {"question": "What are tuples in Elixir?"},
+      {"question": "What are tuples in Elixir?"}
     ],
     "medium": [
       {"question": "Implement recursion to calculate factorial in Haskell."},
@@ -534,7 +534,7 @@
       {"question": "Explain lazy evaluation in Haskell."},
       {"question": "How does Elixir handle concurrency using spawn and send?"},
       {"question": "Write a Haskell function using list comprehension."},
-      {"question": "Build a basic GenServer in Elixir."},
+      {"question": "Build a basic GenServer in Elixir."}
     ],
     "hard": [
       {"question": "Create a simple OTP-based process tree in Elixir."},
@@ -542,7 +542,7 @@
       {"question": "Use MapReduce style logic to count word frequency in Elixir."},
       {"question": "Optimize tail recursion in Haskell."},
       {"question": "Explain functional purity and side effects handling in both languages."},
-      {"question": "Build a distributed chat app (skeleton) in Elixir using Phoenix Channels."},
+      {"question": "Build a distributed chat app (skeleton) in Elixir using Phoenix Channels."}
     ],
   },
   "motivational_quotes": [
