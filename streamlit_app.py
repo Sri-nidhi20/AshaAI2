@@ -32,7 +32,7 @@ feedback_file = "feedback.csv"
 history_file = "chat_history.json"
 
 #---------------------------------- utilities--------------------#
-def evaluate_answer_with_gemini(question, user_answer):
+def evaluate_answer_with_gemini(questions, user_answer):
     prompt = f"""
 You are a coding interview evaluator. Evaluate whetherthe following answer is correct for the given question. Return only "Coreect" or "Incorrect".
 Question: {question}
