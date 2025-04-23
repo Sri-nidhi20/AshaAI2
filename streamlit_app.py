@@ -345,12 +345,10 @@ elif menu == "QUIZ TIME 🤩🥳":
                     for i in range(3):
                         q = st.session_state.questions[i]
                         user_ans = st.session_state.user_answers[i]
-                        expected_ans = q['answer']
                         prompt = f"""
                         You are an expert programming tutor helping evaluate student quiz answers.
                         Evaluate the following answer for technical correctness.
                         Question: {q['question']}
-                        Expected Answer: {expected_ans}
                         Student Answer: {user_ans}
                         Reply ONLY in valid JSON with these fields:
                         - "is_correct": true or false
