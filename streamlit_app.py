@@ -16,6 +16,7 @@ import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import nltk
 import json
+import concurrent.futures
 try:
     nltk.data.find('sentiment/vader_lexicon.zip')
 except Exception:
@@ -32,23 +33,13 @@ feedback_file = "feedback.csv"
 history_file = "chat_history.json"
 
 #---------------------------------- utilities--------------------#
-def evaluate_answer_with_gemini(question, user_answer):
-    prompt = f"""
-You are a coding interview evaluator. Evaluate whether the following answer is correct for the given question. Return only "Correct" or "Incorrect".
-Question: {question}
-Answer: {user_answer}
-"""
-    try:
-        response = model.generate_content([{"parts": [{"text": prompt}]}])
-        if "correct" in response.text.lower():
-            return "Correct"
-        else:
-            return "Incorrect"
-    except Exception as e:
-        logging.error(f"[{timestamp}] Gemini evaluation error: {e}")
-        return "Error"
-
-
+def evaluate_all_answers_parallel(questions, user_answers):
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = [
+            executor.submit(evaluate_answer_with_gemini, q, a)
+            for q, a in zip(questions, user_answers)
+        ]
+        return [f.result() for f in futures]
 #--------------------------defining quiz data -----------------------------#
 def load_quiz_data():
     with open("quiz_data.json", "r") as f:
