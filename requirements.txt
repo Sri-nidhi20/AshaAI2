@@ -6,4 +6,4 @@ requests
 Pillow
 google-generativeai
 nltk
-streamlit-oauth
+streamlit-oauthlib
