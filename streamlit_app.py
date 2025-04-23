@@ -32,435 +32,27 @@ feedback_file = "feedback.csv"
 history_file = "chat_history.json"
 
 #--------------------------defining quiz data -----------------------------#
-quiz_data = {
-    "C": {
-        "easy": [
-            {"question": "What is the difference between #include <stdio.h> and #include 'stdio.h'?"},
-            {"question": "Write a program to check if a number is odd or even."},
-            {"question": "Define a pointer and give an example."},
-            {"question": "What is the size of int, float, char and double in C ?"},
-            {"question": "Explain the purpose of scanf() and printf()."},
-            {"Question": "What is a function in C ?"},
-             ],
-        "medium": [
-            {"question": "Write a function to find the factorial of a number using recursion."},
-            {"question": "Explain the difference between a structure and a union."},
-            {"question": "Implement a program to reverse a string without using a library function."},
-            {"question": "What are storage classes in C ?"},
-            {"question": "Explain stack and heap memory."},
-            {"question": "What is a segmentation fault?"},
-        ],
-        "hard": [
-            {"question": "Implement a stack using an array."},
-            {"question": "Explain memory leaks and how to avoid them in C ?"},
-            {"question": "Write a program to sort an array using quicksort."},
-            {"question": "What is a pointer arithmetic?"},
-            {"question": "How would you simulate object-oriented programming in C?"},
-            {"question": "Explain the working of function pointers."},
-        ],
-    },
-    "C++": {
-        "easy": [
-            {"question": "What is the difference between C and C++?"},
-            {"question": "Define a class and an object with a simple example."},
-            {"question": "Explain the concept of function overloading."},
-            {"question": "What is a constructor and destructor?"},
-            {"question": "What is the use of the 'this' pointer?"},
-            {"question": "Write a program to dispplay 'Hello, World!' using a class."},
-        ],
-        "medium": [
-            {"question": "Implement a class with getter and setter methods."},
-            {"question": "Explain inheritance with a practical example."},
-            {"question": "What are templates in C++?"},
-            {"question": "What is operator overloading? Give an example."},
-            {"question": "How is memory managed in C++?"},
-            {"question": "What are the differences between deep copy and shallow copy?"},
-        ],
-        "hard": [
-            {"question": "Implement a linked list using classes."},
-            {"question": "Explain virtual functions and pure virtual functions."},
-            {"question": "How does polymorphism work in C++?"},
-            {"question": "What is the role of std::move and rvalue refernces?"},
-            {"question": "Implement a basic LRU Cache using STL."},
-            {"question": "Discuss RAII (Resource Acquisition Is Initialization)."},
-        ],
-    },
-    "Java": {
-        "easy": [
-            {"question": "What is the JVM and how is it different from JRE and JDK?"},
-            {"question": "What is the difference between == and .equals()?"},
-            {"question": "Write a Java program to check if a number is prime."},
-            {"question": "Define a class and create an object in Java."},
-            {"question": "What is the purpose of the main() method?"},
-            {"question": "What are primitive data types in Java?"},
-        ],
-        "medium": [
-            {"question": "Explain the concept of inheritance with an example."},
-            {"question": "Implement a simple class hierarchy for animals."},
-            {"question": "What are the differences between an interface and an abstract class?"},
-            {"question": "What is exception handling in Java?"},
-            {"question": "Write a method to reverse a string using a StringBuilder."},
-            {"question": "How does garbage collection work in Java?"},
-        ],
-        "hard": [
-            {"question": "Implement a custom exception in Java."},
-            {"question": "Write a program to implement multithreading using Runnable."},
-            {"question": "How does the JVM optimize bytecode execution?"},
-            {"question": "Implement a Singleton design pattern."},
-            {"question": "What is the pupose of the volatile keyword?"},
-            {"question": "Implement a producer-consumer problem using threads."},
-        ],
-    },
-    "Go(Golang)": {
-        "easy": [
-            {"question": "What is a goroutine in GO?"},
-            {"question": "Write a Go program to print 'Hello, World!'."},
-            {"question": "How do you declare and initialize a slice?"},
-            {"question": "Explain the use of := in variable declarations."},
-            {"question": "Write a function to check if a number is even or odd."},
-            {"question": "What is the differnce between an array and a slice?"},
-        ],
-        "medium": [
-            {"question": "Write a program to use goroutines and channels to print concurrently."},
-            {"question": "What is the use of defer in Go?"},
-            {"question": "Implement a map that counts character frequencies in a string."},
-            {"question": "Explain how Go hnadles errors without try-catch."},
-            {"question": "What is the select statement used for?"},
-            {"question": "How is memory managed in Go?"},
-        ],
-        "hard": [
-            {"question": "Implement a worker pool pattern using goroutines."},
-            {"question": "Optimize a program that concurrently fetches data from APIs."},
-            {"question": "How do you avoid race conditions in Go?"},
-            {"question": "Write a basic REST API using Go's standard library."},
-            {"question": "Implement a custom data structure (eg., queue) in Go."},
-            {"question": "Discuss garbage collection and concurrency safety in Go."},
-             ],
-    },
-    "Rust": {
-        "easy": [
-            {"question": "What makes Rust a memory-safe language?"},
-            {"question": "Write a Rust program to print the Fibonacci Series."},
-            {"question": "What is borrow in Rust?"},
-            {"question": "Explain the differnce between String and &str."},
-            {"question": "Write a function that adds two numbers and returns the result."},
-            {"question": "What is pattern matching and how is match used?"},
-        ],
-        "medium": [
-            {"question": "Implement a program that reads from a file and counts words."},
-            {"question": "Explain ownership, borrowing, and lifetimes."},
-            {"question": "What is Option<T> and how do you handle it ?"},
-            {"question": "Write a Rust program that handles command line arguments."},
-            {"question": "How are traits different from interfaces in other languages?"},
-            {"question": "Implement a struct with associated methods and derive traits."},
-        ],
-        "hard": [
-            {"question": "Build a multi-threaded program using channels."},
-            {"question": "Optimize file I/O using buffered reading and error handling."},
-            {"question": "Implement a custom smart pointer."},
-            {"question": "Write a simple web server using hyper and actix-web."},
-            {"question": "How does Rust handle memory without garbage collection?"},
-            {"question": "Use lifetimes to manage  refernces across function boundaries."},
-        ],
-    },
-    "C#": {
-        "easy": [
-            {"question": "What is the CLR in C#?"},
-            {"question": "Write a C# method to find the square of a number."},
-            {"question": "What is the differnce between ref and out?"},
-            {"question": "What is the namespace in C#?"},
-            {"question": "How do you create a class and instantiate an object?"},
-            {"question": "What are value types and refernce types?"},
-        ],
-        "medium": [
-            {"question": "Implement a class with properties and use getters/setters."},
-            {"question": "What is a delegate and how is it differnt from an event?"},
-            {"question": "Explain boxing and unboxing with examples."},
-            {"question": "Write a program to filter even numbers from alist using LINQ."},
-            {"question": "How is exception handling done in C#?"},
-            {"question": "What are static classes and when should they be used?"},
-        ],
-        "hard": [
-            {"question": "Implement a multi-threaded application using Task."},
-            {"question": "What are async and await in asynchronous programming?"},
-            {"question": "How would you implement dependency injection in C#?"},
-            {"question": "Design a mini inventory system using OOP in C#."},
-            {"question": "Explain how garbage collection works in .NET."},
-            {"question": "Create a custom collection that implements IEnumerable."},
-        ],
-    },
-    "Python": {
-        "easy": [
-            {"question": "What are Python's key data types?"},
-            {"question": "Write a Python program to check if a string is a palindrome."},
-            {"question": "What's the difference between list and tuple?"},
-            {"question": "What is indentation and why is it important?"},
-            {"question": "Write a function to count vowels in a string."},
-            {"question": "What is the use of if__name__ == '__main__' "},
-        ],
-        "medium": [
-            {"question": "Write a function to find duplicate elements in alist."},
-            {"question": "What is a lambda function? Give an example."},
-            {"question": "Explain the differnce between deepcopy() and copy()."},
-            {"question": "Implement a dictionary-based frequency counter."},
-            {"question": "What are decorators? Write a sample."},
-            {"question": "When would you use a generator instead of a list?"},
-        ],
-        "hard": [
-            {"question": "Implement a class with inheritance and method overriding."},
-            {"question": "Optimize code that parses a huge log file and extracts data."},
-            {"question": "How does Python manage memory"},
-            {"question": "Write a mini project like a to-do list CLI app."},
-            {"question": "What are metaclasses? When are they useful?"},
-            {"question": "Create a multi-threaded app using threading and queue."},
-        ],
-    },
-    "Python for Data science/Analysis": {
-        "easy": [
-            {"question": "What are pandas, numpy and matplotlib used for?"},
-            {"question": "How do you load CSV file using pandas?"},
-            {"question": "Write a code to calculate the mean of a numeric column."},
-            {"question": "What is the shape of a DataFrame?"},
-            {"question": "How do you handle missing values in pandas?"},
-            {"question": "How do you filter rows based on a condition?"},
-        ],
-        "medium": [
-            {"question": "Create a histogram for a dataset column using matplotlib."},
-            {"question": "Explain the difference between .loc[] and .iloc[]."},
-            {"question": "Write a function to normalize a numeric column."},
-            {"question": "How do you detect and remove duplicates?"},
-            {"question": "What is the role of groupby() in pandas?"},
-            {"question": "How do you merge two DataFrames?"},
-        ],
-        "hard": [
-            {"question": "Perform EDA on a dataset and summarize findings."},
-            {"question": "Optimize a data pipeline for real-time analytics."},
-            {"question": "Implement a regression model using scikit-learn."},
-            {"question": "create a dashboard using Plotly or Streamlit."},
-            {"question": "How would you handle a dataset with 1M+ rows efficiently?"},
-            {"questions": "How do you identify and treat outliers?"},
-        ],
-    },
-    "R": {
-        "easy": [
-            {"question": "What is a vector in R?"},
-            {"question": "Write a function in R to find the average of a list."},
-            {"question": "How do you create a DataFrame in R?"},
-            {"question": "What are some common data types in R?"},
-            {"question": "How to install and load a package in R?"},
-            {"question": "What is the difference between = and <- in R?"},
-        ],
-        "medium": [
-            {"question": "Use ggplot2 to plot a bar graph."},
-            {"question": "How do you handle NA values in R?"},
-            {"question": "What is the difference between apply(), lapply(), and sapply()?"},
-            {"question": "Write a function that normalized a vector."},
-            {"question": "How do you join two datasets in R?"},
-            {"question": "Explain the use of dplyr package."},
-        ],
-        "hard": [
-            {"question": "Perform a time series analysis using forecast."},
-            {"question": "Build and evaluate a linear regression model."},
-            {"question": "Write a custom function to compute correlation matrix with plots."},
-            {"question": "Optimize a slow loop using vectorization."},
-            {"question": "Build a Shiny app that visualized a dataset."},
-            {"question": "Conduct principal component analysis (PCA) on a dataset."},
-        ],
-    },
-    "Julia": {
-        "easy": [
-            {"question": "What is Julia used for?"},
-            {"question": "How do you define a function in Julia?"},
-            {"question": "Write a Julia program to check if a number is even."},
-            {"question": "How is Julia different from Python?"},
-            {"question": "What are tuples in Julia?"},
-            {"question": "how do you install a package?"},
-        ],
-        "medium": [
-            {"question": "Write a program to compute the dot product of two vectors."},
-            {"question": "Explain type declarations and why they matter."},
-            {"question": "How do you handle missing data in Julia?"},
-            {"question": "What is broadcasting and how is it used?"},
-            {"question": "Create a plot using the Plots.jl package."},
-            {"question": "Write a function that performs linear regression."},
-        ],
-        "hard": [
-            {"question": "Perform matrix operations on large datasets."},
-            {"question": "Optimize a loop using @inbounds and @simd."},
-            {"question": "Use Julia's multithreading to process a large file."},
-            {"question": "Compare the performance of a function in Python and Julia."},
-            {"question": "Build a basic statistical model using GLM.jl."},
-            {"question": "Implement a caching system in Julia for faster computation."},
-        ],
-    },
-}
-def generate_quiz_questions(language, difficulty, num_questions_to_ask=3):
-    if language in quiz_data and difficulty in quiz_data[language]:
-        available_questions = quiz_data[language][difficulty]
-        num_available = len(available_questions)
-        num_to_select = min(num_questions_to_ask, num_available)
-        if num_to_select > 0:
-            return random.sample(available_questions, num_to_select)
-        else:
-            return []
-    return []
-def evaluate_answer_with_gemini(user_answer, correct_answer, question):
-    prompt = f"""You are an expert quiz grader. Given the following question and the user's answer, determine if the user's answer is correct or incorrect. Provide a brief explanation for your judgment.
-
-    Question: {question}
-    Correct Answer: {correct_answer}
-    User's Answer: {user_answer}
-
-    Respond with a JSON object in the following format:
-    {{
-      "is_correct": true/false,
-      "explanation": "..."
-    }}
-    """
-
-    try:
-        # Assuming model.generate_content is the way to interact with Gemini
-        response = model.generate_content([prompt])
-        if response.parts and hasattr(response.parts[0], 'text'):
-            try:
-                evaluation = json.loads(response.parts[0].text)
-                if isinstance(evaluation, dict) and "is_correct" in evaluation and "explanation" in evaluation:
-                    return evaluation["is_correct"], evaluation["explanation"]
-                else:
-                    st.error("Error: Gemini evaluation response format is incorrect.")
-                    return False, "Unable to evaluate due to response format issue."
-            except json.JSONDecodeError:
-                st.error("Error: Could not decode JSON from Gemini evaluation response.")
-                return False, "Unable to evaluate due to decoding issue."
-        else:
-            st.error("Error: Empty or unexpected response from Gemini during evaluation.")
-            return False, "Unable to evaluate due to no response."
-    except Exception as e:
-        st.error(f"Error evaluating answer with Gemini: {e}")
-        return False, f"Evaluation error: {e}"
-def quiz_time():
-    st.header("It's the Quiz Time!!")
-    st.subheader("🎯 Ready, Set, Code! 💻 Time to show off your skills and conquer this quiz like a coding pro! 💥")
-
-    # Initialize quiz session state
-    if 'quiz_played_today' not in st.session_state:
-        st.session_state['quiz_played_today'] = False
-    if 'last_played_date' not in st.session_state:
-        st.session_state['last_played_date'] = None
-    if 'quiz_questions' not in st.session_state:
-        st.session_state['quiz_questions'] = []
-    if 'question_index' not in st.session_state:
-        st.session_state['question_index'] = 0
-    if 'user_answers' not in st.session_state:
-        st.session_state['user_answers'] = {}
-    if 'correct_answers_count' not in st.session_state:
-        st.session_state['correct_answers_count'] = 0
-    if 'quiz_language' not in st.session_state:
-        st.session_state['quiz_language'] = None
-    if 'quiz_difficulty' not in st.session_state:
-        st.session_state['quiz_difficulty'] = None
-    if 'quiz_started' not in st.session_state:
-        st.session_state['quiz_started'] = False
-    if 'streak' not in st.session_state:
-        st.session_state['streak'] = 0
-    if 'motivational_quotes' not in st.session_state:
-        st.session_state['motivational_quotes'] = [
-            "The only way to do great work is to love what you do.",
-            "Success is not final, failure is not fatal: it is the courage to continue that counts.",
-            "Believe you can and you're halfway there.",
-            "Mistakes are proof that you are trying. Keep going!",
-            "Failure is not the opposite of success, it’s part of it.",
-            "Every expert was once a beginner. You’ve got this!",
-            "You didn’t lose, you learned. Come back stronger tomorrow!",
-            "Small progress is still progress. Your journey matters.",
-            "It’s not about being the best today. It’s about being better than yesterday.",
-            "One step back is just the setup for a stronger comeback.",
-            "Your potential is greater than one quiz result. Keep pushing!",
-            "You’re not failing. You’re becoming.",
-            "Great things take time. Stay consistent, and success will follow.",
-        ]
-
-    today = date.today()
-    if st.session_state['quiz_played_today'] and st.session_state['last_played_date'] == today:
-        st.warning("You've already played the QUIZ today. Please comeback tomorrow to play again! Till the practice and stay tuned..🤗😉")
-        return
-
-    languages = ["C", "C++", "Java", "Go(Golang)", "Rust", "C#", "Python", "Python (for data analysis/science", "R", "Julia", "MATLAB", "HTML & CSS", "JavaScript", "TypeScript", "GraphQL", "Kotlin", "Swift", "Dart", "SQL", "PL/SQL", "T-SQL", "Bash/Shell", "Hashkell/Elixir"]
-    selected_language = st.selectbox("Select a Programming Language:", languages)
-    difficulties = ["easy", "Medium", "Hard"]
-    selected_difficulty = st.selectbox("Select Difficulty Level:", difficulties, disabled=not selected_language)
-
-    if selected_language and selected_difficulty and not st.session_state['quiz_started']:
-        if st.button("Start Quiz"):
-            st.session_state['quiz_language'] = selected_language
-            st.session_state['quiz_difficulty'] = selected_difficulty
-            st.session_state['quiz_questions'] = generate_quiz_questions(selected_language, selected_difficulty, num_questions_to_ask=3)
-            st.session_state['question_index'] = 0
-            st.session_state['user_answers'] = {}
-            st.session_state['correct_answers_count'] = 0
-            st.session_state['quiz_started'] = True
-            st.rerun()
-
-    elif st.session_state['quiz_started'] and st.session_state['quiz_questions']:
-        if st.session_state['question_index'] < len(st.session_state['quiz_questions']):
-            question_data = st.session_state['quiz_questions'][st.session_state['question_index']]
-            st.subheader(f"Question {st.session_state['question_index'] + 1} ({st.session_state['quiz_difficulty']}):")
-            st.write(question_data['question'])
-            user_answer = st.text_area("Your Answer:", key=f"answer_{st.session_state['question_index']}")
-
-            col1, col2, _ = st.columns([1, 1, 8])
-
-            if st.session_state['question_index'] > 0:
-                if col1.button("Previous"):
-                    st.session_state['user_answers'][st.session_state['question_index']] = user_answer
-                    st.session_state['question_index'] -= 1
-                    st.rerun()
-
-            if st.session_state['question_index'] < len(st.session_state['quiz_questions']) - 1:
-                if col2.button("Next"):
-                    st.session_state['user_answers'][st.session_state['question_index']] = user_answer
-                    st.session_state['question_index'] += 1
-                    st.rerun()
-            else:
-                if st.button("Submit Answers"):
-                    st.session_state['user_answers'][st.session_state['question_index']] = user_answer
-                    st.session_state['quiz_started'] = False
-                    # Evaluate all answers
-                    for i, q_data in enumerate(st.session_state['quiz_questions']):
-                        correct, explanation = evaluate_answer_with_gemini(
-                            st.session_state['user_answers'].get(i, ""),
-                            q_data['answer'],
-                            q_data['question']
-                        )
-                        st.subheader(f"Question {i + 1}: {q_data['question']}")
-                        if correct:
-                            st.success(f"Your answer was correct! {explanation}")
-                            st.session_state['correct_answers_count'] += 1
-                        else:
-                            st.error(f"Your answer was incorrect. {explanation} The correct answer was: {q_data['answer']}")
-
-                    st.subheader("Quiz Finished!")
-                    if st.session_state['correct_answers_count'] == len(st.session_state['quiz_questions']):
-                        st.balloons()
-                        st.success("Congratulations! You answered all questions correctly!")
-                        st.session_state['streak'] += 1
-                    else:
-                        st.error("OOPS!! Not all answers were correct.")
-                        st.info(f"You got {st.session_state['correct_answers_count']} out of {len(st.session_state['quiz_questions'])} correct.")
-                        st.info(f"Motivational Quote: {random.choice(st.session_state['motivational_quotes'])}")
-                        st.info("Focus, Practice and come back tomorrow..")
-                        st.session_state['streak'] = 0
-                    st.info(f"Your current streak: {st.session_state['streak']}")
-                    st.session_state['quiz_played_today'] = True
-                    st.session_state['last_played_date'] = today
-                    st.session_state['quiz_questions'] = []
-                    st.session_state['question_index'] = 0
-                    st.session_state['user_answers'] = {}
-                    st.session_state['correct_answers_count'] = 0
-                    st.rerun() # Reset the quiz
-
-        elif not st.session_state['quiz_questions']:
-            st.info("Select a language and difficulty, then click 'Start Quiz'.")
+def load_quiz_data():
+    with open("quiz_data.json", "r") as f:
+        return json.load(f)
+quiz_data = load_quiz_data()
+#========== Session State======
+if "streak" not in st.session_state:
+    st.session_state.streak = 0
+if "last_played" not in st.session_state:
+    st.session_state.last_played = ""
+if "language" not in st.session_state:
+    st.session_state.language = None
+if "difficulty" not in st.session_state:
+    st.session_state.difficulty = None
+if "questions" not in st.session_state:
+    st.session_state.questions = []
+if "score" not in st.session_state:
+    st.session_state.score = 0
+if "answered_today" not in st.session_state:
+    st.session_state.answered_today = False
+if "user_answers" not in st.session_state:
+    st.session_state.user_answers = []
 # ------------------ UTILS ------------------ #
 def load_lottieurl(url):
     r = requests.get(url)
@@ -702,7 +294,83 @@ Built by *Nidhi 💛* with love and purpose for the *ASHA AI Hackathon 2025*, As
 > “Asha” means hope — and that’s exactly what this AI brings to every woman’s career journey.
 
 """)
-# --------------------- QUIZ ---------------------------#
-elif menu == "QUIZ TIME 🤩🥳":
-    quiz_time()
-
+# --------------------- QUIZ -------------------------#
+elif menu == "QUIZ TIME 🤩🥳:
+    st.header("It's the Quiz Time!!")
+    st.subheader("🎯 Ready, Set, Code! 💻 Time to show off your skills and conquer this quiz like a coding pro! 💥")
+    if st.session_state.last_played != today:
+        st.session_state.answered_today = False
+    st.markdown(f"🔥 **Your Current Streak:** '{st.session_state.streak}' days")
+    if st.session_state.answered_today:
+        st.success("✅ You've already taken today's quiz. Come Back Tomorrowto keep your streak alive! Till then keep practicing😉")
+    else:
+        if not st.session_state.language:
+            st.session_state.language = st.selectbox("Choose a programming language:", list(quiz_data.keys()))
+            if st.session_state.language:
+                if not st.session_state.difficulty:
+                    st.session_state.difficulty = st.selectbox("Select difficulty level:", ["Easy", "Medium", "Hard"])
+                    if st.session_state.difficulty:
+                        if not st.session_state.questions:
+                            all_questions = quiz_data[st.session_state.language][st.session_state.difficulty.lower()]
+                            st.session_state.questions = random.sample(all_questions, 3)
+                            st.session_state.user_answers = ["", "", ""]
+                            st.session_state.score = 0
+                            for i, q in enumerate(st.session_state.questions):
+                                st.markdown(f"**Question {i+1}:** {q['question']}")
+                                st.session_state.user_answers[i] = st.text_input(
+                                    f"Your answer {i+1}", value = st.session_state.user_answers[i], key=f"user_answer_{i}"
+                                )
+                                if st.button("Submit all answers"):
+                                    with st.spinner("🧠 Evaluating your answers......"):
+                                        prompts = []
+                                        for i in range(3):
+                                            q = st.session_state.questions[i]
+                                            user_ans = st.session_state.user_answers[i]
+                                            prompt = f"""
+                                            Evaluate the user's programming answer.
+                                            Question: {q['question']}
+                                            Expected Answer: {q['answer']}
+                                            User Answer: {user_ans}
+                                            Respond in JSON with:
+                                            - "is_correct": true/false
+                                            -"explanation": brief feedback or correction
+                                            """
+                                            prompts.append(prompt)
+                                            results = []
+                                            for p in prompts:
+                                                response = model.generate_content(p)
+                                                try:
+                                                    json_text = response.text.strip().split("''")[-1]
+                                                    result = json.loads(json_text)
+                                                except Exception as e:
+                                                    ressult = {"is_correct": False, "explanation": "Couldn't evaluate the answer properly."}
+                                                    results.append(result)
+                                                    correct_count = 0
+                                                    for i, r in enumerate(results):
+                                                        st.markdown(f"**Q{i+1}:** {st.session_state.questions[i]['question']}")
+                                                        if r["is_correct"]:
+                                                            st.success(f"✅ Correct!!")
+                                                            correct_count += 1
+                                                        else:
+                                                            st.error(f"❌ Incorrect.. {r['explanation']}")
+                                                            if correct_count == 3:
+                                                                st.ballons()
+                                                                st.success("🥳💃 Perfect Score!! You're on fire Buddy! Keep it up🤗")
+                                                                st.session_state.streak += 1
+                                                            else:
+                                                                st.warning(f"You got {correct_count}/3 correct. Keep practicing!! 🤝💪")
+                                                                st.session_state.streak = 0
+                                                                motivational_quotes = quiz_data.get("motivational_quotes", [])
+                                                                if motivational_quotes:
+                                                                    st.info(random.choice(motivational_quotes))
+                                                            st.session_state.answered_today = True
+                                                            st.session_state.last_played = today
+    if st.button("Reset Quiz (Dev Mode)"):
+        st.session_state.language = None
+        st.session_state.difficulty = None
+        st.session_state.questions = []
+        st.session_state.user_answers = []
+        st.session_state.score = 0
+        st.session_state.answered_today = False
+        st.rerun()
+                    
