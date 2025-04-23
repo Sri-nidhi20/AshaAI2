@@ -1,5 +1,3 @@
-import streamlit_oauth
-from streamlit_oauth import OAuth2Component
 import streamlit as st
 import google.generativeai as genai
 import os
@@ -32,21 +30,6 @@ genai.configure(api_key=st.secrets.get("GEMINI_API_KEY"))
 model = genai.GenerativeModel("models/gemini-2.0-flash")
 feedback_file = "feedback.csv"
 history_file = "chat_history.json"
-#--------------------------Google Login -----------------------------------#
-oauth2 = OAuth2Component(
-    client_id = st.secrets["google_oauth"]["client_id"],
-    client_secret = st.secrets["google_oauth"]["client_secret"],
-    authorize_url="https://accounts.google.com/o/oauth2/auth",
-    access_token_url="https://oauth2.googleapis.com/token",
-    redirect_uri="https://ashaai2-l7xhle6l06.streamlit.app/",
-    scope="openid email profile"
-)
-token = oauth2.authorize_button("LogIn")
-if token:
-    st.session_state.user = token
-    st.sucess(f"Logged in as {token['email']}")
-else:
-    st.info("Please login with your Google account.")
 #--------------------------defining quiz data -----------------------------#
 def get_gemini_answer(question_text):
     prompt_text = f"Answer the following question related to programming: {question_text}"
@@ -173,8 +156,7 @@ if st.session_state.get('logged_in', False):
         "Give Feedback 😊😐🙁",
         "Admin Dashboard 📊",
         "About AshaAI 👩‍🤖",
-        "QUIZ TIME 🤩🥳",
-        "Logout 🏃❌"
+        "QUIZ TIME 🤩🥳"
     ])
 else:
     st.warning("You need to log in to access the AshaAI.")
@@ -440,9 +422,4 @@ elif menu == "QUIZ TIME 🤩🥳":
         st.session_state.score = 0
         st.session_state.answered_today = False
         st.session_state.quiz_started = False  # Ensure this is reset too
-        st.rerun()
-elif menu == "Logout ❌":
-        del st.session_state['logged_in']  
-        del st.session_state['user'] 
-        st.success("You have successfully logged out.")  
         st.rerun()
