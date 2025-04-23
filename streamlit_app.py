@@ -298,82 +298,80 @@ Built by *Nidhi 💛* with love and purpose for the *ASHA AI Hackathon 2025*, As
 elif menu == "QUIZ TIME 🤩🥳":
     st.header("It's the Quiz Time!!")
     st.subheader("🎯 Ready, Set, Code! 💻 Time to show off your skills and conquer this quiz like a coding pro! 💥")
-    
     today = date.today()
-    if "last_played" not in st.session_state or st.session_state.last_played != today:
+    if st.session_state.last_played != today:
         st.session_state.answered_today = False
-    
-    st.markdown(f"🔥 **Your Current Streak:** '{st.session_state.get('streak', 0)}' days")
-    
-    if st.session_state.get("answered_today", False):
-        st.success("✅ You've already taken today's quiz. Come back tomorrow to keep your streak alive! Keep practicing😉")
+    st.markdown(f"🔥 **Your Current Streak:** '{st.session_state.streak}' days")
+    if st.session_state.answered_today:
+        st.success("✅ You've already taken today's quiz. Come Back Tomorrowto keep your streak alive! Till then keep practicing😉")
     else:
-        # Language selection
-        if "language" not in st.session_state:
+        if not st.session_state.language:
             st.session_state.language = st.selectbox("Choose a programming language:", list(quiz_data.keys()))
-        
-        # Difficulty selection
-        if "difficulty" not in st.session_state:
-            st.session_state.difficulty = st.selectbox("Select difficulty level:", ["Easy", "Medium", "Hard"])
-        
-        # Start Quiz Button to begin the quiz
-        if st.button("Start Quiz") and st.session_state.language and st.session_state.difficulty:
-            # Get questions based on selected language and difficulty
-            all_questions = quiz_data[st.session_state.language][st.session_state.difficulty.lower()]
-            st.session_state.questions = random.sample(all_questions, 3)  # Pick 3 random questions
-            st.session_state.user_answers = [""] * 3
-            st.session_state.score = 0
-
-            # Show questions and input fields for answers
-            for idx, q in enumerate(st.session_state.questions):
-                st.markdown(f"**Question {idx+1}:** {q['question']}")
-                st.session_state.user_answers[idx] = st.text_input(f"Your answer {idx+1}", key=f"user_answer_{idx}")
-            
-            # Submit answers button to evaluate the answers
-            if st.button("Submit all answers"):
-                with st.spinner("🧠 Evaluating your answers..."):
-                    correct_count = 0
-                    results = []
-
-                    # Evaluate the answers
-                    for i, q in enumerate(st.session_state.questions):
-                        user_ans = st.session_state.user_answers[i]
-                        is_correct = user_ans.lower().strip() == q['answer'].lower().strip()
-                        explanation = f"Your answer: {user_ans}. Expected answer: {q['answer']}. Correct: {is_correct}"
-                        results.append({"is_correct": is_correct, "explanation": explanation})
-                        if is_correct:
-                            correct_count += 1
-
-                    # Display results
-                    for idx, result in enumerate(results):
-                        st.markdown(f"**Q{idx+1}:** {st.session_state.questions[idx]['question']}")
-                        if result["is_correct"]:
-                            st.success(f"✅ Correct!")
-                        else:
-                            st.error(f"❌ Incorrect. {result['explanation']}")
-
-                    # Streak logic
-                    if correct_count == 3:
-                        st.balloons()
-                        st.success("🥳💃 Perfect Score!! You're on fire, Buddy! Keep it up🤗")
-                        st.session_state.streak += 1
-                    else:
-                        st.warning(f"You got {correct_count}/3 correct. Keep practicing!! 🤝💪")
-                        st.session_state.streak = 0
-                    
-                    # Update quiz state after evaluation
-                    st.session_state.answered_today = True
-                    st.session_state.last_played = today
-                    st.session_state.language = None  # Reset language and difficulty
-                    st.session_state.difficulty = None
-                    st.session_state.questions = []  # Reset questions after quiz is completed
-
-        # Reset Quiz Button (Dev Mode)
-        if st.button("Reset Quiz (Dev Mode)"):
-            st.session_state.language = None
-            st.session_state.difficulty = None
-            st.session_state.questions = []
-            st.session_state.user_answers = []
-            st.session_state.score = 0
-            st.session_state.answered_today = False
-            st.rerun()
+            if st.session_state.language:
+                if not st.session_state.difficulty:
+                    st.session_state.difficulty = st.selectbox("Select difficulty level:", ["Easy", "Medium", "Hard"])
+                    if st.session_state.difficulty:
+                        if st.button("Start Quiz") and st.session_state.language and st.session_state.difficulty:
+                            if not st.session_state.questions:
+                             all_questions = quiz_data[st.session_state.language][st.session_state.difficulty.lower()]
+                             st.session_state.questions = random.sample(all_questions, 3)
+                             st.session_state.user_answers = ["", "", ""]
+                             st.session_state.score = 0
+                                for i, q in enumerate(st.session_state.questions):
+                                    st.markdown(f"**Question {i+1}:** {q['question']}")
+                                    st.session_state.user_answers[i] = st.text_input(
+                                      f"Your answer {i+1}", value = st.session_state.user_answers[i], key=f"user_answer_{i}"
+                                    )
+                                if st.button("Submit all answers"):
+                                    with st.spinner("🧠 Evaluating your answers......"):
+                                        prompts = []
+                                        for i in range(3):
+                                            q = st.session_state.questions[i]
+                                            user_ans = st.session_state.user_answers[i]
+                                            prompt = f"""
+                                            Evaluate the user's programming answer.
+                                            Question: {q['question']}
+                                            Expected Answer: {q['answer']}
+                                            User Answer: {user_ans}
+                                            Respond in JSON with:
+                                            - "is_correct": true/false
+                                            -"explanation": brief feedback or correction
+                                            """
+                                            prompts.append(prompt)
+                                            results = []
+                                            for p in prompts:
+                                                response = model.generate_content(p)
+                                                try:
+                                                    json_text = response.text.strip().split("''")[-1]
+                                                    result = json.loads(json_text)
+                                                except Exception as e:
+                                                    ressult = {"is_correct": False, "explanation": "Couldn't evaluate the answer properly."}
+                                                    results.append(result)
+                                                    correct_count = 0
+                                                    for i, r in enumerate(results):
+                                                        st.markdown(f"**Q{i+1}:** {st.session_state.questions[i]['question']}")
+                                                        if r["is_correct"]:
+                                                            st.success(f"✅ Correct!!")
+                                                            correct_count += 1
+                                                        else:
+                                                            st.error(f"❌ Incorrect.. {r['explanation']}")
+                                                            if correct_count == 3:
+                                                                st.ballons()
+                                                                st.success("🥳💃 Perfect Score!! You're on fire Buddy! Keep it up🤗")
+                                                                st.session_state.streak += 1
+                                                            else:
+                                                                st.warning(f"You got {correct_count}/3 correct. Keep practicing!! 🤝💪")
+                                                                st.session_state.streak = 0
+                                                                motivational_quotes = quiz_data.get("motivational_quotes", [])
+                                                                if motivational_quotes:
+                                                                    st.info(random.choice(motivational_quotes))
+                                                            st.session_state.answered_today = True
+                                                            st.session_state.last_played = today
+    if st.button("Reset Quiz (Dev Mode)"):
+        st.session_state.language = None
+        st.session_state.difficulty = None
+        st.session_state.questions = []
+        st.session_state.user_answers = []
+        st.session_state.score = 0
+        st.session_state.answered_today = False
+        st.rerun()
