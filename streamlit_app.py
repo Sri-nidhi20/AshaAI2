@@ -357,7 +357,7 @@ elif menu == "QUIZ TIME 🤩🥳":
 
             # Submit Answers Button (appears after all questions are displayed)
             if st.button("Submit all answers"):
-                result = evaluate_answer_with_gemini(question, st.session_state.user_answers[q_index])
+                result = evaluate_answer_with_gemini(questions, st.session_state.user_answers[q_index])
                 if result == "Correct":
                     st.success("✅ Correct!")
                     st.session_state.score += 1
