@@ -32,12 +32,14 @@ feedback_file = "feedback.csv"
 history_file = "chat_history.json"
 #--------------------------defining quiz data -----------------------------#
 def get_gemini_answer(question_text):
-    prompt_text = f"Answer the following question related to programming: {question_text}"
+    prompt_text = f"Answer the following question related to programming concisely, within 2000 characters: {question_text}"
     try:
         # Sending query to Gemini API
         response = model.generate_content([{"parts": [{"text": prompt_text}]}])
         if response.text:
-            return response.text
+            # Trimming response if necessary
+            trimmed_response = response.text[:2000]
+            return trimmed_response
         else:
             return "I'm sorry, I couldn't provide an answer at the moment."
     except Exception as e:
