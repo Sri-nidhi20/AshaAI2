@@ -311,7 +311,7 @@ elif menu == "QUIZ TIME 🤩🥳":
     if st.session_state.answered_today:
         st.success("✅ You've already taken today's quiz. Come Back Tomorrow to keep your streak alive! Till then keep practicing😉")
     else:
-        st.session_state.language = st.selectbox("Choose a programming language:", list(quiz_data.keys()), key="language")
+        st.selectbox("Choose a programming language:", list(quiz_data.keys()), key="language")
 
         # Difficulty Selection (only if language is selected)
         if st.session_state.language:
