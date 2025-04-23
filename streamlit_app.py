@@ -31,6 +31,23 @@ model = genai.GenerativeModel("models/gemini-2.0-flash")
 feedback_file = "feedback.csv"
 history_file = "chat_history.json"
 
+#---------------------------------- utilities--------------------#
+def evaluate_answer_with_gemini(question, user_answer):
+    prompt = f"""
+You are a coding interview evaluator. Evaluate whetherthe following answer is correct for the given question. Return only "Coreect" or "Incorrect".
+Question: {question}
+Answer: {user_answer}
+"""
+    try:
+        response = model.generate_content([{"parts": [{"text": prompt}]}])
+        if "correct" in response.text.lower():
+            return "Correct"
+        else:
+            return "Incorrect"
+    except Exception as e:
+        logging.error(f"f"[{timestamp}] Gemini evaluation error: {e}")
+        return "Error"
+
 #--------------------------defining quiz data -----------------------------#
 def load_quiz_data():
     with open("quiz_data.json", "r") as f:
@@ -340,43 +357,24 @@ elif menu == "QUIZ TIME 🤩🥳":
 
             # Submit Answers Button (appears after all questions are displayed)
             if st.button("Submit all answers"):
-                with st.spinner("🧠 Evaluating your answers..."):
-                    prompts = []
-                    for i in range(3):
-                        q = st.session_state.questions[i]
-                        user_ans = st.session_state.user_answers[i]
-                        prompt = f"""
-                        You are an expert programming tutor helping evaluate student quiz answers.
-                        Evaluate the following answer for technical correctness.
-                        Question: {q['question']}
-                        Student Answer: {user_ans}
-                        Reply ONLY in valid JSON with these fields:
-                        - "is_correct": true or false
-                        - "explanation": short, clear feedback or correction
-                        """
-                        prompts.append(prompt)
-
-                    results = []
-                    for p in prompts:
-                        response = model.generate_content(p)  # This call should use your AI model
-                        try:
-                            json_text = response.text.strip().split("''")[-1]
-                            result = json.loads(json_text)
-                        except Exception as e:
-                            result = {"is_correct": False, "explanation": "Couldn't evaluate the answer properly."}
-                        results.append(result)
-
-                    correct_count = 0
-                    for i, r in enumerate(results):
-                        st.markdown(f"**Q{i+1}:** {st.session_state.questions[i]['question']}")
-                        if r["is_correct"]:
-                            st.success(f"✅ Correct!!")
-                            correct_count += 1
-                        else:
-                            st.error(f"❌ Incorrect.. {r['explanation']}")
+                result = evaluate_answer_with_gemini(question, st.session_state.user_answers[q_index])
+                if result == "Correct":
+                    st.success("✅ Correct!")
+                    st.session_state.score += 1
+                elif result == "Incorrect":
+                    st.error("❌ Incorrect.")
+                else:
+                    st.warning("⚠ Gemini couldn't evaluate the answer.")
+                if q_index < 2:
+                    st.session_state.current_q += 1
+                else:
+                    # Show result
+                    st.session_state.answered_today = True
+                    st.session_state.last_played = today
+                    st.session_state.quiz_started = False
 
                     # Display Results and Update Streak
-                    if correct_count == 3:
+                    if st.session_state.score == 3:
                         st.balloons()
                         st.success("🥳💃 Perfect Score!! You're on fire Buddy! Keep it up🤗")
                         st.session_state.streak += 1
@@ -386,9 +384,6 @@ elif menu == "QUIZ TIME 🤩🥳":
                         motivational_quotes = quiz_data.get("motivational_quotes", [])
                         if motivational_quotes:
                             st.info(random.choice(motivational_quotes))
-                    st.session_state.answered_today = True
-                    st.session_state.last_played = today
-                    st.session_state.quiz_started = False  # Reset quiz started flag
 
     # Reset Quiz Button (for development)
     if st.button("Reset Quiz (Dev Mode)"):
