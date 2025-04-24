@@ -199,7 +199,7 @@ if menu == "New Chat ➕":
             typed_response = (
                 "❌ AshaAI is having trouble processing your request. Please try again in a few moments.\n\n"
                 "Till then you can refer to the following stories 😉 \n\n"
-                "**STORY 1: *\nOnce upon a time in a bustling city, Priya—a young woman with zero baking skills—decided to open a bakery. Her first attempt? Burnt muffins that could double as paperweights."
+                "**STORY 1: **\nOnce upon a time in a bustling city, Priya—a young woman with zero baking skills—decided to open a bakery. Her first attempt? Burnt muffins that could double as paperweights."
                 "Instead of giving up, she advertised them as “Unbreakable Bond Muffins”—a hit among clumsy folks who needed a snack that wouldn’t crumble. Her honesty, humor, and determination made her bakery a sensation."
                 "Priya proved that failure can be the best recipe for success. \n\n"
                 "**STORY 2:**\n In a small town, Radha started a taxi service—unusual for a woman in her area. On her first day, she got a skeptical passenger who asked, “Can you even change a tire?” Radha replied with a grin,"
