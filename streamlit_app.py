@@ -30,6 +30,46 @@ genai.configure(api_key=st.secrets.get("GEMINI_API_KEY"))
 model = genai.GenerativeModel("models/gemini-2.0-flash")
 feedback_file = "feedback.csv"
 history_file = "chat_history.json"
+# ------------------ Theme Toggle ------------------ #
+def toggle_theme():
+    """Toggle between Light and Dark Mode."""
+    if 'dark_mode' not in st.session_state:
+        st.session_state.dark_mode = False  # Default to light mode
+
+    # Toggle theme state
+    st.session_state.dark_mode = not st.session_state.dark_mode
+
+    # Apply the theme based on toggle
+    if st.session_state.dark_mode:
+        st.markdown(
+            """
+            <style>
+                .css-18e3p5p {
+                    background-color: #333;
+                    color: white;
+                }
+            </style>
+            """, unsafe_allow_html=True
+        )
+        st.session_state.theme = 'dark'
+    else:
+        st.markdown(
+            """
+            <style>
+                .css-18e3p5p {
+                    background-color: white;
+                    color: black;
+                }
+            </style>
+            """, unsafe_allow_html=True
+        )
+        st.session_state.theme = 'light'
+
+# Add the theme toggle button to the sidebar
+st.sidebar.markdown("### Settings")
+if st.sidebar.button("Toggle Light/Dark Mode"):
+    toggle_theme()
+
 #--------------------------defining quiz data -----------------------------#
 def get_gemini_answer(question_text):
     prompt_text = f"Answer the following question related to programming concisely, within 2000 characters: {question_text}"
