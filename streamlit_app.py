@@ -136,7 +136,7 @@ def query_gemini(prompt_text, timeout_seconds=60):
             response = model.generate_content(contents) 
             if response.text:
                 relevant_text = response.text[:2000]
-                relevany_text = ' '.join(relevant_text.spilt()[:250])
+                relevany_text = ' '.join(relevant_text.split()[:250])
                 logging.info(f"[{timestamp}] Gemini-2.0-flash career- related response (first 50 chars): {relevant_text[:50]}...")
                 return relevant_text
             else:
