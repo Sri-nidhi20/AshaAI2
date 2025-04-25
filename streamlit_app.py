@@ -186,10 +186,25 @@ def query_gemini(prompt_text, timeout_seconds=60):
                         return formatted_text.strip()
                 else: 
                     return "Hmm, I didn't get a clear response for that career query. Could you please rephrase?"
-            elif re.search(career_skills_query, prompt_text, re.IGNORECASE):
-                return (
-                    "That's a great question! To give you amore complete picture of the skills needed, could you be more specific? For example, are you interested in the technical skills, analytical skills, or soft skills required for a [the job title you asked about]?"
-                ).replace("[the job title you asked about]", prompt_text.lower().replace("skills needed for ", "").replace("requirements for ", "").replace("what skills do i need to be a ", "").replace("key skills for ", "").replace("essential skills for ", "").replace("important skills for ", "").replace("what are the skills of a ", "").replace("tell me the skills for ", "").replace("career skills for ", "").replace("job skills for ", "").replace("qualifications for ", "").replace("what do you need to know to be a ", "").replace("areas of expertise for ", "").replace("proficiencies for ", "").replace("competencies for ", "").replace("technical skills for ", "").replace("soft skills for ", "").replace("analytical skills for ", "").replace("transferable skills for ", "").replace("core skills for ", "").replace("foundational skills for ", "").replace("must-have skills for ", "").replace("top skills for ", "").replace("basic skills for ", "").replace("advanced skills for ", ""))
+           elif re.search(career_skills_query, prompt_text, re.IGNORECASE):
+                job_title = prompt_text.lower().replace("skills needed for ", "").replace("requirements for ", "").replace("what skills do i need to be a ", "").replace("key skills for ", "").replace("essential skills for ", "").replace("important skills for ", "").replace("what are the skills of a ", "").replace("tell me the skills for ", "").replace("career skills for ", "").replace("job skills for ", "").replace("qualifications for ", "").replace("what do you need to know to be a ", "").replace("areas of expertise for ", "").replace("proficiencies for ", "").replace("competencies for ", "").replace("technical skills for ", "").replace("soft skills for ", "").replace("analytical skills for ", "").replace("transferable skills for ", "").replace("core skills for ", "").replace("foundational skills for ", "").replace("must-have skills for ", "").replace("top skills for ", "").replace("basic skills for ", "").replace("advanced skills for ", "").strip()
+                skills_prompt = f"List the key skills required for a {job_title}. Provide a concise, point-by-point list."
+                logging.info(f"[{timestamp}] Sending direct skills query to Gemini: {skills_prompt}")
+                contents = [{"parts": [{"text": skills_prompt}]}]
+                response = model.generate_content(contents)
+                if response.text:
+                    relevant_text = response.text[:2000]
+                    if "\n" in relevant_text and len(relevant_text.split("\n")) > 1:
+                        return relevant_text + f"\n\nWould you like to know more about any of these skills?"
+                    else:
+                        lines = relevant_text.split(". ")
+                        formatted_text = ""
+                        for line in lines:
+                            if line.strip():
+                                formatted_text += f"* {line.strip()}.\n"
+                        return formatted_text.strip() + f"\n\nWould you like to know more about any of these skills?"
+                else:
+                    return f"Hmm, I didn't get a clear list of skills for {job_title}. Could you please rephrase?"
                 
             else:
                 logging.info(f"[{timestamp}] Sending general career query.")
