@@ -509,7 +509,7 @@ elif menu == "Chat History 🗨":
     st.subheader("📜 Chat History")
     saved_chat_names = get_saved_chat_names()
     if saved_chat_names:
-        st.session_state.selected_chat = st.selectbox("Select a chat:", saved_chat_names)
+        st.session_state.selected_chat = st.selectbox("Select a chat:", saved_chat_names, placeholder = "Select One")
         if st.session_state.selected_chat:
             st.subheader(f"Chat: {st.session_state.selected_chat}")
             selected_chat_history = load_saved_chat(st.session_state.selected_chat)
