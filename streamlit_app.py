@@ -99,7 +99,7 @@ def query_gemini(prompt_text, timeout_seconds=60):
     name = None
     name_match = re.search(r"(?:myself|I am | my name is |)\s+(\w+)", prompt_text, re.IGNORECASE)
     if name_match:
-        name = name+match.group(1)
+        name = name_match.group(1)
         st.session_state.user_profile = st.session_state.get("user_profile", {})
         st.session_state.user_profile["name"] = name
         return f"Hello {name}!! It's nice to meet you. How can I help you with your career journey today?"
