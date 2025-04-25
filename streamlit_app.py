@@ -96,11 +96,20 @@ def load_lottieurl(url):
 def query_gemini(prompt_text, timeout_seconds=60):
     logging.info(f"[{timestamp}] User prompt: {prompt_text}")
     refined_prompt_text = f"Answer the following questions concisely and completely within 2000 characters: {prompt_text}. Please prioritize finishing your thought or explanation within the character limit, even if it means covering slightly less ground."
-
+    name_match = re.search(r"(?:myself|I am | my name is |)\s+(\w+)", prompt_text, re.IGNORECASE)
+    if name_match:
+        name = name+match.group(1)
+        st.session_state.user_profile = st.session_state.get("user_profile", {})
+        st.session_state.user_profile["name"] = name
+        return f"Hello {name}!! It's nice to meet you. How can I help you with your career journey today?"
+        
     greetings = r"^(hello|hi|hey|greetings|good morning|good afternoon|good evening)\b.*"
     if re.match(greetings, prompt_text, re.IGNORECASE):
-        st.session_state.is_career_context = False
-        return "Hello there! How can I assist you with your career journey today?"
+        if "user_profile" in st.session_state and "name" in st.session_state.user_profile:
+            return f"Hello {st.session_state.user_profile['name']}!! How can I assist you with yourcareer journey today?"
+        else:
+            st.session_state.is_career_context = False
+            return "Hello there! How can I assist you with your career journey today?"
 
     analyzer = SentimentIntensityAnalyzer()
     vs = analyzer.polarity_scores(prompt_text)
@@ -174,7 +183,21 @@ def query_gemini(prompt_text, timeout_seconds=60):
 
     if "is_career_context" not in st.session_state:
         st.session_state.is_career_context = False
+    if "user_profile" not in st.session_state:
+        st.session_state.user_profile = {}
+    if re.search(r"\b(skills|requirements|become a|career path|job market|industry trends)\b", prompt_text, re.IGNORECASE):
+        st.session_state.user_profile["intent"] = "career_exploration"
+    elif re.search(r"\b(jobs|opportunities|hiring|placement|recruitment|internship)\b", prompt_text, re.IGNORECASE):
+        st.session_state.user_profile["intent"] = "job_search"
+    elif re.search(r"\b(resume|cv|cover letter|portfolio|linkedin)\b", prompt_text, re.IGNORECASE):
+        st.session_state.user_profile["intent"] = "application_help"
+    elif re.search(r"\b(learn|training|upskill|reskill|courses|certifications)\b", prompt_text, re.IGNORECASE):
+        st.session_state.user_profile["intent"] = "learning_development"
 
+    keywords = re.findall(r"\b(\w+)\b", prompt_text.lower())
+    st.session_state.user_profile["topics"] = st.session_state.user_profile.get("topics", set()).union(keywords)
+    logging.info(f"[{timestamp}] User Profile: {st.session_state.user_profile}")
+    
     if re.search(career_keywords_initial, prompt_text, re.IGNORECASE) or re.search(career_skills_query, prompt_text, re.IGNORECASE):
         logging.info(f"[{timestamp}] Initial career-related query detected.")
         st.session_state.is_career_context = True
@@ -233,7 +256,16 @@ def query_gemini(prompt_text, timeout_seconds=60):
                         return f"Could not explain '{term}' at the moment."
                     break
         logging.info(f"[{timestamp}] General career follow-up query (context: {st.session_state.is_career_context}).")
-        follow_up_prompt = f"Considering the previous question about '{st.session_state.chat[-2][1] if len(st.session_state.chat) >= 2 else 'career development'}', please answer '{prompt_text}' concisely within 2000 characters in the context of that discussion."
+        follow_up_prompt_base = f"Considering our previous discussion"
+        context_string = ""
+        if "user_profile" in st.session_state:
+            if "topics" in st.session_state.user_profile and st.session_state.user_profile["topics"]:
+                context_string += f" about {', '.join(st.session_state.user_profile['topics'])}"
+
+        if context_string:
+            follow_up_prompt = f"{follow_up_prompt_base} {context_string}, please answer '{prompt_text}' concisely within 2000 characters."
+        else:
+            follow_up_prompt = f"{follow_up_prompt_base}, please answer '{prompt_text}' concisely within 2000 characters."
         contents = [{"parts": [{"text": follow_up_prompt}]}]
         response = model.generate_content(contents)
         if response.text:
@@ -353,6 +385,8 @@ if menu == "New Chat ➕":
         st.session_state.chat_turn = 0
     if "is_career_context" not in st.session_state:
         st.session_state.is_career_context = False
+    if "user_profile" not in st.session_state:
+        st.session_state.user_profile = {}
 
     for i, (sender, msg) in enumerate(st.session_state.chat):
         if sender == "user":
