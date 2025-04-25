@@ -97,7 +97,7 @@ def query_gemini(prompt_text, timeout_seconds=60):
     logging.info(f"[{timestamp}] User prompt: {prompt_text}")
     refined_prompt_text = f"Answer the following questions concisely and completely within 2000 characters: {prompt_text}. Please prioritize finishing your thought or explanation within the character limit, even if it means covering slightly less ground."
     name = None  
-    if re.match(r"^myself is\s+([A-Za-z]+)(?:\s|$)", prompt_text, re.IGNORECASE):
+    if re.match(r"^myself \s+([A-Za-z]+)(?:\s|$)", prompt_text, re.IGNORECASE):
         name = re.match(r"^myself is\s+([A-Za-z]+)(?:\s|$)", prompt_text, re.IGNORECASE).group(1)
     elif re.match(r"^I am\s+([A-Za-z]+)(?:\s|$)", prompt_text, re.IGNORECASE):
         name = re.match(r"^I am\s+([A-Za-z]+)(?:\s|$)", prompt_text, re.IGNORECASE).group(1)
