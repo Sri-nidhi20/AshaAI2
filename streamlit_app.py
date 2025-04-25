@@ -696,8 +696,7 @@ elif menu == "Job Search 💼":
                         st.markdown(f"[Apply Now]({job['redirect_url']})")
                         st.divider()
                 else:
-                    else:
-                        st.info("No job listings found matching your criteria.")
+                    st.info("No job listings found matching your criteria.")
             except requests.exceptions.RequestException as e:
                 st.error(f"An error occurred during the API request: {e}")
             except json.JSONDecodeError:
