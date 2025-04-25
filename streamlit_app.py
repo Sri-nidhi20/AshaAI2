@@ -170,21 +170,36 @@ def get_job_listings(job_title, location, experience_level):
         "results_per_page": 10,
         "context_type": "application/json",
     }
+
+    # Check if Adzuna API supports experience level as a parameter
+    # (You'll need to consult their documentation for the exact parameter name)
+    # If it does, add it to the params dictionary:
+    # if experience_level == "Intern":
+    #     params["category"] = "internships" # Example - replace with actual Adzuna parameter
+    # elif experience_level == "Fresher":
+    #     params["category"] = "entry-level" # Example - replace with actual Adzuna parameter
+    # elif experience_level == "Experience":
+    #     params["category"] = "experienced" # Example - replace with actual Adzuna parameter
+
     logging.info(f"[{timestamp}] Adzuna API Request: URL={url}, Params={params}")
     response = requests.get(url, params=params)
     logging.info(f"[{timestamp}] Adzuna API Response Status Code: {response.status_code}")
-    logging.info(f"[{timestamp}] Adzuna API Response Content: {response.text}") # Log the full response
+    logging.info(f"[{timestamp}] Adzuna API Response Content: {response.text}")
+
     if response.status_code == 200:
         results = response.json().get("results", [])
-        # Temporarily comment out the filtering
-        # if experience_level == "Intern":
-        #     results = [job for job in results if "intern" in job["title"].lower()]
-        # elif experience_level == "Fresher":
-        #     results = [job for job in results if any(word in job["title"].lower() for word in ["junior", "graduate", "trainee"])]
-        # elif experience_level == "Experience":
-        #     results = [job for job in results if all(word not in job["title"].lower() for word in ["intern", "trainee"])]
         return results
+    elif response.status_code == 401:
+        logging.error(f"[{timestamp}] Adzuna API Error: Unauthorized. Check your APP_ID and APP_KEY.")
+        return []
+    elif response.status_code == 403:
+        logging.error(f"[{timestamp}] Adzuna API Error: Forbidden. Your API key might not have permission for this request.")
+        return []
+    elif response.status_code == 429:
+        logging.warning(f"[{timestamp}] Adzuna API Error: Too Many Requests. You might be hitting rate limits.")
+        return []
     else:
+        logging.error(f"[{timestamp}] Adzuna API Error: Status Code {response.status_code}")
         return []
 
 def show_job_search_ui():
@@ -467,7 +482,7 @@ elif menu == "QUIZ TIME 🤩🥳":
                 )
 
             # Submit Answers Button (appears after all questions are displayed)
-            if st.button("Submit all answers"):
+                if st.button("Submit all answers"):
                 with st.spinner("🧠 Evaluating your answers..."):
                     prompts = []
                     for i in range(3):
@@ -491,8 +506,10 @@ elif menu == "QUIZ TIME 🤩🥳":
 
                     results = []
                     for p in prompts:
+                        logging.info(f"[{timestamp}] Quiz Evaluation Prompt: {p}") # Log the prompt
                         try:
                             response = model.generate_content(p)
+                            logging.info(f"[{timestamp}] Gemini Raw Response for Evaluation: '{response.text}'") # Log the raw response
                             try:
                                 # Directly try to load the JSON from the response text
                                 result = json.loads(response.text.strip())
