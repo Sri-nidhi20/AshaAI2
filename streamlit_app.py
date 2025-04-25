@@ -141,8 +141,8 @@ def query_gemini(prompt_text, timeout_seconds=60):
         logging.info(f"[{timestamp}] Career-related query detected.")
         try:
             if re.search(career_keywords_format, prompt_text, re.IGNORECASE):
-                refined_prompt = f"Provide a point-by-point list of the key aspects or requirements for {prompt_text.lower()}. Keep each point concise."
-                logging.info(f"[{timestamp}] Sending refined career query for point-wise format: {refined_prompt}")
+                refined_prompt = f"Provide a concise, point-by-point list of the key aspects or requirements for {prompt_text.lower()}. Keep each point very brief, aiming for maximum information within a short sentence."
+                logging.info(f"[{timestamp}] Sending refined career query for concise point-wise format: {refined_prompt}")
                 contents = [{"parts": [{"text": refined_prompt}]}]
                 response = model.generate_content(contents)
             else:
