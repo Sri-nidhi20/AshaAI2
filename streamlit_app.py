@@ -508,7 +508,7 @@ elif menu == "QUIZ TIME 🤩🥳":
                                     logging.info(f"[{timestamp}] Gemini Raw Response for Evaluation: '{response.text}'") # Log the raw response
                                     try:
                                         result = json.loads(response.text.strip())
-                                        except json.JSONDecodeError as e:
+                                    except json.JSONDecodeError as e:
                                             logging.error(f"[{timestamp}] JSONDecodeError in quiz evaluation: {e}, Response: '{response.text}'")
                                             result = {"is_correct": False, "explanation": "There was an issue evaluating your answer. Please try again."}
                                     except Exception as e:
