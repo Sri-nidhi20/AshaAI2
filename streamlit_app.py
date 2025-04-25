@@ -171,7 +171,6 @@ def get_job_listings(job_title, location, experience_level):
             results = [job for job in results if all(word not in job["title"].lower() for word in ["intern", "trainee"])]
         return results
     else:
-        st.write("Error with the API request.")
         return[]
 def show_job_search_ui():
     if menu == "Job Search 💼":
