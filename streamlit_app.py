@@ -715,7 +715,7 @@ elif menu == "Job Search 💼":
 elif menu == "Resume Analysis 📄":
     st.subheader("📄 Upload Your Resume for Analysis")
 
-    uploaded_file = st.file_uploader("Upload your resume (PDF)", type=["pdf"]) # Limiting to PDF for simplicity in this step
+    uploaded_file = st.file_uploader("Upload your resume (PDF)", type=["pdf"]) 
 
     if uploaded_file is not None:
         file_type = uploaded_file.type
@@ -728,6 +728,7 @@ elif menu == "Resume Analysis 📄":
                     resume_text += page.extract_text()
             except Exception as e:
                 st.error(f"Error reading PDF: {e}")
+                print(f"PDF Reading Error: {e}")
                 
 
         if resume_text:
@@ -739,4 +740,5 @@ elif menu == "Resume Analysis 📄":
                 response = f"You asked: '{user_query}'. (AshaAI has received your resume text for analysis - further analysis capabilities will be added here.)"
                 st.markdown(f"👩 AshaAI:** {response}")
         else:
+            print("Uploaded file is None")
             st.info("Please upload a PDF resume to see its text content here.")
