@@ -195,7 +195,16 @@ if menu == "New Chat ➕":
             reply = query_gemini(prompt_text)
         placeholder = st.empty()
         typed_response = ""
-        if reply is None:
+        error_phrases = [
+            "couldn't provide an answer",
+            "having trouble retrieving",
+            "I'm experiencing a slight delay",
+            "trouble processing your request",
+            "please try again",
+            "Sorry! I'm having trouble"
+        ]
+
+        if (reply is None) or any (err in reply for err in error_phrases):
             typed_response = (
                 "❌ AshaAI is having trouble processing your request. Please try again in a few moments.\n\n"
                 "Till then you can refer to the following stories 😉 \n\n"
@@ -206,13 +215,16 @@ if menu == "New Chat ➕":
                 "“I can change tires, change routes, and even change your mind about women drivers!” By the end of the ride, her charm and smooth driving turned that skeptic into her biggest advocate."
                 "Radha's service thrived, proving that confidence and skill can break stereotypes with style!"
             )
+            placeholder.markdown(f"👩 AshaAI:** {typed_response}")
+            st.session_state.chat.append(("AshaAI", typed_response))
         else:
             for char in reply:
                 typed_response += char
                 placeholder.markdown(f"👩 AshaAI:** {typed_response}")
                 time.sleep(0.01)
+            placeholder.markdown(f"👩 AshaAI:** {typed_response}")
             st.session_state.chat.append(("AshaAI", reply))
-        placeholder.markdown(f"👩 AshaAI:** {typed_response}")
+            
         st.session_state.pending_input = None
 
 # ------------------ CHAT HISTORY ------------------ #
