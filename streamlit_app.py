@@ -728,7 +728,7 @@ elif menu == "Resume Analysis 📄":
                     resume_text += page.extract_text()
             except Exception as e:
                 st.error(f"Error reading PDF: {e}")
-                return
+                
 
         if resume_text:
             st.subheader("Resume Text:")
