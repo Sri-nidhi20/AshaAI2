@@ -15,6 +15,7 @@ import logging
 import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import nltk
+from urllib.parse import quote_plus
 import json
 try:
     nltk.data.find('sentiment/vader_lexicon.zip')
