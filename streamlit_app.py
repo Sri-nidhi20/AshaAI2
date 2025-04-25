@@ -482,8 +482,10 @@ elif menu == "QUIZ TIME 🤩🥳":
                 )
 
             # Submit Answers Button (appears after all questions are displayed)
-            if st.button("Submit all answers", key="submit_answers_button"): # Added unique key
+            if st.button("Submit all answers", key="submit_answers_button"): 
                 with st.spinner("🧠 Evaluating your answers..."):
+                    print("DEBUG: Inside the Submit all answers button logic")
+                    logging.basicConfig(filename="ashaai_debug.log", level = logging.INFO, format = '%(levelname)s - %(message)s')
                     prompts = []
                     for i in range(3):
                         q = st.session_state.questions[i]
@@ -506,21 +508,20 @@ elif menu == "QUIZ TIME 🤩🥳":
 
                     results = []
                     for p in prompts:
-                        logging.info(f"[{timestamp}] Quiz Evaluation Prompt: {p}") # Log the prompt
+                        logging.info(f" Quiz Evaluation Prompt: {p}") 
                         try:
                             response = model.generate_content(p)
-                            logging.info(f"[{timestamp}] Gemini Raw Response for Evaluation: '{response.text}'") # Log the raw response
+                            logging.info(f" Gemini Raw Response for Evaluation: '{response.text}'") 
                             try:
-                                # Directly try to load the JSON from the response text
                                 result = json.loads(response.text.strip())
                             except json.JSONDecodeError as e:
-                                logging.error(f"[{timestamp}] JSONDecodeError in quiz evaluation: {e}, Response: '{response.text}'")
+                                logging.error(f" JSONDecodeError in quiz evaluation: {e}, Response: '{response.text}'")
                                 result = {"is_correct": False, "explanation": "There was an issue evaluating your answer. Please try again."}
                             except Exception as e:
-                                logging.error(f"[{timestamp}] Unexpected error in quiz evaluation: {e}, Response: '{response.text}'")
+                                logging.error(f" Unexpected error in quiz evaluation: {e}, Response: '{response.text}'")
                                 result = {"is_correct": False, "explanation": "An unexpected error occurred during evaluation."}
                         except Exception as e:
-                            logging.error(f"[{timestamp}] Error generating content for quiz evaluation: {e}")
+                            logging.error(f" Error generating content for quiz evaluation: {e}")
                             result = {"is_correct": False, "explanation": "Failed to get an evaluation from the model."}
                         results.append(result)
 
