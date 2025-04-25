@@ -584,7 +584,19 @@ elif menu == "Admin Dashboard 📊":
 
 # ------------------ SEARCH CHATS (Coming Soon) ------------------ #
 elif menu == "Search Chats 🔍":
-    st.subheader("🔍 Search Your Chats (Coming Soon)")
+    st.subheader("🔍 Search Your Chats")
+    search_term = st.text_input("Enter chat name to search:")
+    if search_term:
+        found_chat = load_saved_chat(search_term)
+        if found_chat:
+            st.subheader(f"Conversation: {search_term}")
+            for sender, msg in found_chat:
+                if sender == "user":
+                    st.markdown(f"👩‍💼 You:** {msg}")
+                else:
+                    st.markdown(f"👩 AshaAI:** {msg}")
+        else:
+            st.info(f"No chat found with the name: '{search_term}'")
 
 # ------------------ ABOUT ------------------ #
 elif menu == "About AshaAI 👩‍🤖":
