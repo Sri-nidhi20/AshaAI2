@@ -715,21 +715,29 @@ elif menu == "Job Search 💼":
 elif menu == "Resume Analysis 📄":
     st.subheader("📄 Upload Your Resume for Analysis")
 
-    uploaded_file = st.file_uploader("Upload your resume (PDF)", type=["pdf"]) 
+    uploaded_file = st.file_uploader("Upload your resume (PDF)", type=["pdf"]) # Limiting to PDF for simplicity in this step
+
+    print(f"Uploaded File: {uploaded_file}")  # Debugging line
 
     if uploaded_file is not None:
         file_type = uploaded_file.type
+        print(f"File Type: {file_type}")  # Debugging line
         resume_text = ""
 
         if file_type == "application/pdf":
             try:
                 pdf_reader = PdfReader(uploaded_file)
+                num_pages = len(pdf_reader.pages)
+                print(f"Number of pages: {num_pages}") # Debugging line
                 for page in pdf_reader.pages:
-                    resume_text += page.extract_text()
+                    text = page.extract_text()
+                    resume_text += text
+                    print(f"Extracted text (first 50 chars): {text[:50] if text else 'No text'}") # Debugging line
             except Exception as e:
                 st.error(f"Error reading PDF: {e}")
-                print(f"PDF Reading Error: {e}")
-                
+                print(f"PDF Reading Error: {e}")  # Debugging line
+
+        print(f"Resume Text Length: {len(resume_text)}") # Debugging line
 
         if resume_text:
             st.subheader("Resume Text:")
@@ -740,5 +748,4 @@ elif menu == "Resume Analysis 📄":
                 response = f"You asked: '{user_query}'. (AshaAI has received your resume text for analysis - further analysis capabilities will be added here.)"
                 st.markdown(f"👩 AshaAI:** {response}")
         else:
-            print("Uploaded file is None")
             st.info("Please upload a PDF resume to see its text content here.")
