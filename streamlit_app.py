@@ -87,6 +87,40 @@ if "quiz_started" not in st.session_state:
     st.session_state.quiz_started = False
 
 # ------------------ UTILS ------------------ #
+SAVE_DIR = "saved_chats"
+
+def save_chat(chat_history, chat_name):
+    os.makedirs(SAVE_DIR, exist_ok=True)
+    filename = f"{chat_name.replace(' ', '_')}.json"
+    filepath = os.path.join(SAVE_DIR, filename)
+    try:
+        with open(filepath, 'w') as f:
+            json.dump(chat_history, f)
+        st.success(f"Chat saved as '{chat_name}'!")
+    except Exception as e:
+        st.error(f"Error saving chat: {e}")
+
+def load_saved_chat(chat_name):
+    filename = f"{chat_name.replace(' ', '_')}.json"
+    filepath = os.path.join(SAVE_DIR, filename)
+    try:
+        with open(filepath, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        st.error(f"Error loading chat '{chat_name}': {e}")
+        return None
+
+def get_saved_chat_names():
+    os.makedirs(SAVE_DIR, exist_ok=True)
+    names = []
+    for filename in os.listdir(SAVE_DIR):
+        if filename.endswith(".json"):
+            names.append(filename[:-5].replace('_', ' '))
+    return names
+    
+if "selected_chat" not in st.session_state:
+        st.session_state.selected_chat = None
+    
 def load_lottieurl(url):
     r = requests.get(url)
     if r.status_code != 200:
@@ -393,12 +427,25 @@ if menu == "New Chat ➕":
         st.session_state.is_career_context = False
     if "user_profile" not in st.session_state:
         st.session_state.user_profile = {}
+    if "chat_history_name" not in st.session_state:
+        st.session_state.chat_history_name = f"Chat {st.session_state.chat_turn}"
+
 
     for i, (sender, msg) in enumerate(st.session_state.chat):
         if sender == "user":
             st.markdown(f"👩‍💼 You:** {msg}")
         else:
             st.markdown(f"👩 AshaAI:** {msg}")
+    chat_name = st.session_state.chat_history_name
+    edited_chat_name = st.text_input("Chat Name:", chat_name)
+    st.session_state.chat_history_name = edited_chat_name 
+
+    if st.button("Save Chat"):
+        if st.session_state.chat:
+            save_chat(st.session_state.chat, st.session_state.chat_history_name)
+        else:
+            st.warning("No chat history to save.")
+            
     user_input = st.chat_input("Your Question...")
     if user_input:
         st.markdown(f"👩‍💼 You:** {user_input}")
@@ -448,41 +495,22 @@ if menu == "New Chat ➕":
 # ------------------ CHAT HISTORY ------------------ #
 elif menu == "Chat History 🗨":
     st.subheader("📜 Chat History")
-
-    if "chat_history" not in st.session_state:
-        try:
-            with open(history_file, "r") as f:
-                st.session_state.chat_history = json.load(f)
-        except FileNotFoundError:
-            st.session_state.chat_history = []
-
-    if "current_chat_saved" not in st.session_state:
-        st.session_state.current_chat_saved = False
-
-    if "chat" in st.session_state and st.session_state.chat and not st.session_state.current_chat_saved:
-        st.session_state.chat_history.append(st.session_state.chat.copy())
-        st.session_state.chat = []
-        st.session_state.current_chat_saved = True
-        try:
-            with open(history_file, "w") as f:
-                json.dump(st.session_state.chat_history, f)
-        except Exception as e:
-            st.error(f"Error saving chat history: {e}")
-
-    if not st.session_state.chat_history:
-        st.info("No previous chats available.")
+    saved_chat_names = get_saved_chat_names()
+    if saved_chat_names:
+        st.session_state.selected_chat = st.selectbox("Select a chat:", saved_chat_names)
+        if st.session_state.selected_chat:
+            st.subheader(f"Chat: {st.session_state.selected_chat}")
+            selected_chat_history = load_saved_chat(st.session_state.selected_chat)
+            if selected_chat_history:
+                for sender, msg in selected_chat_history:
+                    if sender == "user":
+                        st.markdown(f"👩‍💼 You:** {msg}")
+                    else:
+                        st.markdown(f"👩 AshaAI:** {msg}")
+            else:
+                st.info("Could not load selected chat.")
     else:
-        chat_titles = [f"Chat {i + 1}" for i in range(len(st.session_state.chat_history))]
-        selected_chat_title = st.radio("Select a previous chat to view:", chat_titles)
-
-        if selected_chat_title:
-            selected_chat_index = chat_titles.index(selected_chat_title)
-            selected_chat = st.session_state.chat_history[selected_chat_index]
-            st.subheader(f"Content of {selected_chat_title}:")
-            for role, content in selected_chat:
-                st.markdown(f"{'👩‍💼 You:' if role == 'user' else '👩 AshaAI:'}** {content}")
-
-#
+        st.info("No chats have been saved yet.")
 
 # ------------------ FEEDBACK ------------------ #
 elif menu == "Give Feedback 😊😐🙁":
