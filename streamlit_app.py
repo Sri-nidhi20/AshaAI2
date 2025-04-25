@@ -30,6 +30,8 @@ genai.configure(api_key=st.secrets.get("GEMINI_API_KEY"))
 model = genai.GenerativeModel("models/gemini-2.0-flash")
 feedback_file = "feedback.csv"
 history_file = "chat_history.json"
+logging.basicConfig(filename = "ashaai_log.txt", level=logging.INFO)
+
 #--------------------------defining quiz data -----------------------------#
 def get_gemini_answer(question_text):
     prompt_text = f"Answer the following question related to programming concisely, within 2000 characters: {question_text}"
@@ -45,7 +47,7 @@ def get_gemini_answer(question_text):
     except Exception as e:
         logging.error(f"Error fetching answer from Gemini: {e}")
         return "I'm having trouble retrieving the answer right now."
-        
+
 def load_quiz_data():
     try:
         with open("quiz_data.json", "r") as f:
@@ -58,6 +60,12 @@ def load_quiz_data():
         return {}
 
 quiz_data = load_quiz_data()
+if not quiz_data:
+    st.warning("⚠️ Quiz data could not be loaded. Please ensure 'quiz_data.json' exists and is valid.")
+elif "language" in st.session_state and st.session_state.language and st.session_state.language not in quiz_data:
+    st.warning(f"⚠️ No quiz questions found for the language: {st.session_state.language}")
+    st.session_state.language = None # Reset language to avoid further errors
+
 #========== Session State======
 if "streak" not in st.session_state:
     st.session_state.streak = 0
@@ -75,13 +83,16 @@ if "answered_today" not in st.session_state:
     st.session_state.answered_today = False
 if "user_answers" not in st.session_state:
     st.session_state.user_answers = []
+if "quiz_started" not in st.session_state:
+    st.session_state.quiz_started = False
+
 # ------------------ UTILS ------------------ #
 def load_lottieurl(url):
     r = requests.get(url)
     if r.status_code != 200:
         return None
     return r.json()
-logging.basicConfig(filename = "ashaai_log.txt", level=logging.INFO)
+
 def query_gemini(prompt_text, timeout_seconds=60):
     logging.info(f"[{timestamp}] User prompt: {prompt_text}")
 
@@ -97,7 +108,7 @@ def query_gemini(prompt_text, timeout_seconds=60):
         logging.info(f"[{timestamp}] Detected negative sentiment, sending encouragement query to Gemini-2.0-flash: {encouragement_query}")
         try:
             contents = [{"parts": [{"text": encouragement_query}]}]
-            response = model.generate_content(contents)  
+            response = model.generate_content(contents)
             if response.text:
                 logging.info(f"[{timestamp}] Gemini-2.0-flash encouragement response (first 50 chars): {response.text[:50]}...")
                 return response.text[:2000]
@@ -124,30 +135,29 @@ def query_gemini(prompt_text, timeout_seconds=60):
             return "I'm experiencing a slight delay. Please try your request again."
 
     career_keywords = r"\b(BTech|BE|BSC|BCA|MTECH|ME|MSC|MBA|PhD|IT|CS|ECE|EEE|ME|CE|Engineering|Biotechnology|data science|artificial intelligence(AI)|Machine learning(ML)|cybersecurity|software engineering|business analytics|management studies|BCOM|MCOM|BA|MA|BDes|BPharm|BArch|software engineer|data analyst|data scientist|web developer|front-end developer|back-end developer|full-stack developer|mobile app developer(iOS, Android)|cloud engineer|DevOps engineer|cybersecurity analyst|network engineer|database administrator|project manager|business analyst|marketing specialist|sales representative|human resources (HR) generalist|technical support engineer|quality assurance(QA) tester|UI/UX designer|Product Manager|Research Scientist|Management Consultant|Financial Analyst|Accountant|Operations Manager|Chief Technology Officer (CTO)|Chief Executive Officer (CEO)|Team Lead|Architect (Software, Solutions, Enterprise)|Specialist (in various domains)|Associate|Analyst|Engineer|Developer|Consultant|Manager|Director|VP (Vice President)|Programming Languages (Python, Java, C++, JavaScript, C#, Go, etc.)|Data Analysis Tools (Pandas, NumPy, SQL, R)|Machine Learning Algorithms (Regression, Classification, Clustering, Deep Learning)|Cloud Platforms (AWS, Azure, GCP)|DevOps Tools (Docker, Kubernetes, Jenkins, Git)|Cybersecurity Concepts (Network Security, Cryptography, Ethical Hacking)|Database Management (SQL, NoSQL)|Web Development Frameworks (React, Angular, Vue.js, Node.js, Django, Flask)|Mobile Development (Swift, Kotlin, Flutter, React Native)|Testing Frameworks (JUnit, Selenium, Cypress)|Operating Systems (Linux, Windows)|Networking Concepts (TCP/IP, DNS, Routing)|Big Data Technologies (Spark, Hadoop)|UI/UX Design Tools (Figma, Sketch, Adobe XD)|Data Visualization (Tableau, Power BI)|Communication (Written and Verbal)|Problem-Solving|Critical Thinking|Teamwork|Collaboration|Leadership|Time Management|Adaptability|Learning Agility|Interpersonal Skills|Presentation Skills|Negotiation|Creativity|Emotional Intelligence|Placement|Recruitment|Hiring|Internship|Training|Career Fair|Job Portal|Application|Interview (Technical, HR, Behavioral)|Resume|Curriculum Vitae (CV)|Cover Letter|Networking|LinkedIn|Portfolio|Personal Branding|Skill Development|Upskilling|Reskilling|Career Path|Job Market|Industry Trends|Company Culture|Compensation|Benefits|Growth Opportunities|Professional Development|Alumni Network|Placement Cell|Company|Job Description|Eligibility Criteria)\b"
-    def handle_career_query(prompt_text, model, timestamp):
-        if re.search(career_keywords, prompt_text, re.IGNORECASE) or "career" in prompt_text.lower() or "job" in prompt_text.lower():
-            logging.info(f"[{timestamp}] Career-related query detected. Sending refined response.")
-            try:
-                contents = [{"parts": [{"text": prompt_text}]}]
-                response = model.generate_content(contents)
-                if response.text:
-                    relevant_text = response.text[:2000]
-                    relevant_text = ' '.join(relevant_text.split()[:250]) 
-                    logging.info(f"[{timestamp}] Gemini-2.0-flash career-related response (first 50 chars): {relevant_text[:50]}...")
-                    return relevant_text
-                else:
-                    return "Hmm, I didn't get a clear response for that career query. Could you please rephrase?"
-            except Exception as e:
-                logging.error(f"[{timestamp}] Error in query_gemini (Gemini-2.0-flash) for career query: {e}")
-                return "Sorry! I'm having trouble processing your request right now. Please try again in a few moments."
-        else:
-            return (
-                "I'm designed to be a helpful companion for your career journey. While I appreciate your message, "
-                "I'm best equipped to answer questions related to careers, job opportunities, professional development, "
-                "and provide encouragement. How can I specifically help you with your career today?"
-            )
-#------------------ defining Job search api -----------------#
+    if re.search(career_keywords, prompt_text, re.IGNORECASE) or "career" in prompt_text.lower() or "job" in prompt_text.lower():
+        logging.info(f"[{timestamp}] Career-related query detected. Sending refined response.")
+        try:
+            contents = [{"parts": [{"text": prompt_text}]}]
+            response = model.generate_content(contents)
+            if response.text:
+                relevant_text = response.text[:2000]
+                relevant_text = ' '.join(relevant_text.split()[:250])
+                logging.info(f"[{timestamp}] Gemini-2.0-flash career-related response (first 50 chars): {relevant_text[:50]}...")
+                return relevant_text
+            else:
+                return "Hmm, I didn't get a clear response for that career query. Could you please rephrase?"
+        except Exception as e:
+            logging.error(f"[{timestamp}] Error in query_gemini (Gemini-2.0-flash) for career query: {e}")
+            return "Sorry! I'm having trouble processing your request right now. Please try again in a few moments."
+    else:
+        return (
+            "I'm designed to be a helpful companion for your career journey. While I appreciate your message, "
+            "I'm best equipped to answer questions related to careers, job opportunities, professional development, "
+            "and provide encouragement. How can I specifically help you with your career today?"
+        )
 
+#------------------ defining Job search api -----------------#
 APP_ID = st.secrets["adzuna"]["APP_ID"]
 APP_KEY = st.secrets["adzuna"]["APP_KEY"]
 def get_job_listings(job_title, location, experience_level):
@@ -160,18 +170,23 @@ def get_job_listings(job_title, location, experience_level):
         "results_per_page": 10,
         "context_type": "application/json",
     }
+    logging.info(f"[{timestamp}] Adzuna API Request: URL={url}, Params={params}")
     response = requests.get(url, params=params)
+    logging.info(f"[{timestamp}] Adzuna API Response Status Code: {response.status_code}")
+    logging.info(f"[{timestamp}] Adzuna API Response Content: {response.text}") # Log the full response
     if response.status_code == 200:
         results = response.json().get("results", [])
-        if experience_level == "Intern":
-            results = [job for job in results if "intern" in job["title"].lower()]
-        elif experience_level == "Fresher":
-            results = [job for job in results if any(word in job["title"].lower() for word in ["junior", "graduate", "trainee"])]
-        elif experience_level == "Experience":
-            results = [job for job in results if all(word not in job["title"].lower() for word in ["intern", "trainee"])]
+        # Temporarily comment out the filtering
+        # if experience_level == "Intern":
+        #     results = [job for job in results if "intern" in job["title"].lower()]
+        # elif experience_level == "Fresher":
+        #     results = [job for job in results if any(word in job["title"].lower() for word in ["junior", "graduate", "trainee"])]
+        # elif experience_level == "Experience":
+        #     results = [job for job in results if all(word not in job["title"].lower() for word in ["intern", "trainee"])]
         return results
     else:
-        return[]
+        return []
+
 def show_job_search_ui():
     if menu == "Job Search 💼":
         st.session_state.job_search_active = True
@@ -188,7 +203,7 @@ def show_job_search_ui():
                     st.success(f"Showing top {len(jobs)} jobs for '{job_title}' in '{location}' ({experience})")
                     for job in jobs:
                         st.markdown(f"### {job['title']}")
-                        st.markdown(f"**Comapny:** {job['company']['display_name']}")
+                        st.markdown(f"**Company:** {job['company']['display_name']}")
                         st.markdown(f"**Location:** {job['location']['display_name']}")
                         if job.get("salary_min") and job.get("salary_max"):
                             st.markdown(f"**Salary:** ₹{int(job['salary_min'])} - ₹{int(job['salary_max'])}")
@@ -198,7 +213,7 @@ def show_job_search_ui():
                     st.warning("No matching jobs found. Try different inputs.")
             else:
                 st.error("Please fill in both Job Role and Location.")
-                        
+
 # ------------------ HEADER ------------------ #
 try:
     logo = Image.open("ashaai_logo.jpg")
@@ -245,6 +260,7 @@ if menu == "New Chat ➕":
 
     if st.session_state.pending_input:
         prompt_text = st.session_state.pending_input
+        logging.info(f"[{timestamp}] Prompt sent to query_gemini: {prompt_text}") # Log the prompt
         with st.spinner("AshaAI is thinking..."):
             reply = query_gemini(prompt_text)
         placeholder = st.empty()
@@ -278,7 +294,7 @@ if menu == "New Chat ➕":
                 time.sleep(0.01)
             placeholder.markdown(f"👩 AshaAI:** {typed_response}")
             st.session_state.chat.append(("AshaAI", reply))
-            
+
         st.session_state.pending_input = None
 
 # ------------------ CHAT HISTORY ------------------ #
@@ -420,27 +436,29 @@ elif menu == "QUIZ TIME 🤩🥳":
     if st.session_state.answered_today:
         st.success("✅ You've already taken today's quiz. Come Back Tomorrow to keep your streak alive! Till then keep practicing😉")
     else:
-        st.selectbox("Choose a programming language:", list(quiz_data.keys()), key="language")
+        if not st.session_state.get('quiz_started'):
+            st.selectbox("Choose a programming language:", list(quiz_data.keys()), key="language")
 
-        # Difficulty Selection (only if language is selected)
-        if st.session_state.language:
-            st.selectbox("Select difficulty level:", ["Easy", "Medium", "Hard"], key="difficulty")
+            # Difficulty Selection (only if language is selected)
+            if st.session_state.language:
+                st.selectbox("Select difficulty level:", ["Easy", "Medium", "Hard"], key="difficulty")
 
-        # Start Quiz Button (appears after language and difficulty are selected)
-        if st.session_state.language and st.session_state.difficulty:
-            if st.button("Start Quiz"):
-                # Load questions if not already loaded
-                if not st.session_state.questions:
-                    all_questions = quiz_data[st.session_state.language][st.session_state.difficulty.lower()]
-                    st.session_state.questions = random.sample(all_questions, 3)
-                    st.session_state.user_answers = [""] * 3  # Initialize as a list of empty strings
-                    st.session_state.score = 0
-                    st.session_state.quiz_started = True  # Flag to indicate quiz has started
-                    st.session_state.answered_today = False  # Reset for fresh quiz day
-                    st.rerun()  # Force a rerun to display questions
-
-        # Allow switching between questions or languages after quiz is started
-        if st.session_state.get('quiz_started'):
+            # Start Quiz Button (appears after language and difficulty are selected)
+            if st.session_state.language and st.session_state.difficulty:
+                if st.button("Start Quiz"):
+                    # Load questions if not already loaded
+                    if not st.session_state.questions:
+                        all_questions = quiz_data.get(st.session_state.language, {}).get(st.session_state.difficulty.lower(), [])
+                        if len(all_questions) < 3:
+                            st.error(f"⚠️ Not enough questions available for {st.session_state.language} at {st.session_state.difficulty} difficulty.")
+                            st.stop()
+                        st.session_state.questions = random.sample(all_questions, 3)
+                        st.session_state.user_answers = [""] * 3  # Initialize as a list of empty strings
+                        st.session_state.score = 0
+                        st.session_state.quiz_started = True  # Flag to indicate quiz has started
+                        st.session_state.answered_today = False  # Reset for fresh quiz day
+                        st.rerun() # Still need rerun to show the questions
+        else:
             for i, q in enumerate(st.session_state.questions):
                 st.markdown(f"**Question {i+1}:** {q['question']}")
                 st.session_state.user_answers[i] = st.text_area(
@@ -455,24 +473,37 @@ elif menu == "QUIZ TIME 🤩🥳":
                         q = st.session_state.questions[i]
                         user_ans = st.session_state.user_answers[i]
                         prompt = f"""
-                        You are an expert programming tutor helping evaluate student quiz answers.
-                        Evaluate the following answer for technical correctness.
+                        You are an expert programming tutor. Evaluate the technical correctness of the student's answer to the following programming question.
+
                         Question: {q['question']}
                         Student Answer: {user_ans}
-                        Reply ONLY in valid JSON with these fields:
-                        - "is_correct": true or false
-                        - "explanation": short, clear feedback or correction
+
+                        Provide your evaluation as a JSON object with the following format:
+                        {{
+                          "is_correct": true or false,
+                          "explanation": "A short explanation or correction of the student's answer."
+                        }}
+
+                        Ensure the JSON object is the ONLY output.
                         """
                         prompts.append(prompt)
 
                     results = []
                     for p in prompts:
-                        response = model.generate_content(p)  # This call should use your AI model
                         try:
-                            json_text = response.text.strip().split("''")[-1]
-                            result = json.loads(json_text)
+                            response = model.generate_content(p)
+                            try:
+                                # Directly try to load the JSON from the response text
+                                result = json.loads(response.text.strip())
+                            except json.JSONDecodeError as e:
+                                logging.error(f"[{timestamp}] JSONDecodeError in quiz evaluation: {e}, Response: '{response.text}'")
+                                result = {"is_correct": False, "explanation": "There was an issue evaluating your answer. Please try again."}
+                            except Exception as e:
+                                logging.error(f"[{timestamp}] Unexpected error in quiz evaluation: {e}, Response: '{response.text}'")
+                                result = {"is_correct": False, "explanation": "An unexpected error occurred during evaluation."}
                         except Exception as e:
-                            result = {"is_correct": False, "explanation": "Couldn't evaluate the answer properly."}
+                            logging.error(f"[{timestamp}] Error generating content for quiz evaluation: {e}")
+                            result = {"is_correct": False, "explanation": "Failed to get an evaluation from the model."}
                         results.append(result)
 
                     correct_count = 0
@@ -512,5 +543,3 @@ elif menu == "QUIZ TIME 🤩🥳":
 #===================== Job Search ============================= #
 elif menu == "Job Search 💼":
     show_job_search_ui()
-            
-              
