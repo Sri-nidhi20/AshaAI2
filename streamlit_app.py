@@ -112,8 +112,10 @@ def query_gemini(prompt_text, timeout_seconds=60):
             response = model.generate_content(contents)
             if response.text:
                 logging.info(f"[{timestamp}] Gemini-2.0-flash encouragement response (first 50 chars): {response.text[:50]}...")
+                st.session_state.is_career_context = True
                 return response.text[:2000]
             else:
+                st.session_state.is_career_context = True
                 return "Sending you some positive vibes! Remember that career journeys have ups and downs. How can I help you navigate this?"
         except Exception as e:
             logging.error(f"[{timestamp}] Error fetching encouragement from Gemini-2.0-flash: {e}")
@@ -128,8 +130,10 @@ def query_gemini(prompt_text, timeout_seconds=60):
             response = model.generate_content(contents)  # Removed generation_config
             if response.text:
                 logging.info(f"[{timestamp}] Gemini-2.0-flash motivation response (first 50 chars): {response.text[:50]}...")
+                st.session_state.is_career_context = True
                 return response.text[:2000]
             else:
+                st.session_state.is_career_context = True
                 return "Here's a little something to keep you going: Every challenge is an opportunity to learn and grow."
         except Exception as e:
             logging.error(f"[{timestamp}] Error fetching motivation from Gemini-2.0-flash: {e}")
@@ -165,8 +169,11 @@ def query_gemini(prompt_text, timeout_seconds=60):
         "basic skills for [a-z\s]+|" + \
         "advanced skills for [a-z\s]+" + \
     ")\b"
+    if "is_career_context" not in st.session_state:
+        st.session_state.is_career_context = False
     if re.search(career_keywords_general, prompt_text, re.IGNORECASE) or "career" in prompt_text.lower() or "job" in prompt_text.lower():
-        logging.info(f"[{timestamp}] Career-related query detected.")
+        logging.info(f"[{timestamp}] Career-related query detected (context: {st.session_state.is_career_context}).")
+        st.session_state.is_career_context = True
         try:
             if re.search(career_keywords_format, prompt_text, re.IGNORECASE):
                 refined_prompt = f"Provide a concise, point-by-point list of the key aspects or requirements for {prompt_text.lower()}. Keep each point very brief, aiming for maximum information within a short sentence."
@@ -208,6 +215,7 @@ def query_gemini(prompt_text, timeout_seconds=60):
 
             else:
                 logging.info(f"[{timestamp}] Sending general career query.")
+                follow_up_prompt = f"Considering the previous question about '{st.session_state.chat[-1][1]}', please answer '{prompt_text}' concisely within 2000 characters in the context of career development."
                 contents = [{"parts": [{"text": refined_prompt_text}]}]
                 response = model.generate_content(contents)
 
@@ -229,6 +237,7 @@ def query_gemini(prompt_text, timeout_seconds=60):
             logging.error(f"[{timestamp}] Error in query_gemini (Gemini-2.0-flash) for career query: {e}")
             return "Sorry! I'm having trouble processing your request right now. Please try again in a few moments."
     else:
+        st.session_state.is_career_context = False
         return (
             "I'm designed to be a helpful companion for your career journey. While I appreciate your message, "
             "I'm best equipped to answer questions related to careers, job opportunities, professional development, "
@@ -339,6 +348,8 @@ if menu == "New Chat ➕":
         st.session_state.pending_input = None
     if "chat_turn" not in st.session_state:
         st.session_state.chat_turn = 0
+    if "is_career_context" not in st.session_state:
+        st.session_state.is_career_context = False
 
     for i, (sender, msg) in enumerate(st.session_state.chat):
         if sender == "user":
