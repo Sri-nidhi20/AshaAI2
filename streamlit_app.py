@@ -95,6 +95,7 @@ def load_lottieurl(url):
 
 def query_gemini(prompt_text, timeout_seconds=60):
     logging.info(f"[{timestamp}] User prompt: {prompt_text}")
+    refined_prompt_text = f"Answer the following questions concisely and completely within 2000 characters: {prompt_text}. Please prioritize finishing your thought or explanation within the character limit, even if it means covering slightly less ground."
 
     greetings = r"^(hello|hi|hey|greetings|good morning|good afternoon|good evening)\b.*"
     if re.match(greetings, prompt_text, re.IGNORECASE):
@@ -136,7 +137,34 @@ def query_gemini(prompt_text, timeout_seconds=60):
 
     career_keywords_format = r"\b(skills needed for|what are the requirements for|how to become a|key aspects of|important things about)\b"
     career_keywords_general = r"\b(BTech|BE|BSC|BCA|MTECH|ME|MSC|MBA|PhD|IT|CS|ECE|EEE|ME|CE|Engineering|Biotechnology|data science|artificial intelligence(AI)|Machine learning(ML)|cybersecurity|software engineering|business analytics|management studies|BCOM|MCOM|BA|MA|BDes|BPharm|BArch|software engineer|data analyst|data scientist|web developer|front-end developer|back-end developer|full-stack developer|mobile app developer(iOS, Android)|cloud engineer|DevOps engineer|cybersecurity analyst|network engineer|database administrator|project manager|business analyst|marketing specialist|sales representative|human resources (HR) generalist|technical support engineer|quality assurance(QA) tester|UI/UX designer|Product Manager|Research Scientist|Management Consultant|Financial Analyst|Accountant|Operations Manager|Chief Technology Officer (CTO)|Chief Executive Officer (CEO)|Team Lead|Architect (Software, Solutions, Enterprise)|Specialist (in various domains)|Associate|Analyst|Engineer|Developer|Consultant|Manager|Director|VP (Vice President)|Programming Languages (Python, Java, C++, JavaScript, C#, Go, etc.)|Data Analysis Tools (Pandas, NumPy, SQL, R)|Machine Learning Algorithms (Regression, Classification, Clustering, Deep Learning)|Cloud Platforms (AWS, Azure, GCP)|DevOps Tools (Docker, Kubernetes, Jenkins, Git)|Cybersecurity Concepts (Network Security, Cryptography, Ethical Hacking)|Database Management (SQL, NoSQL)|Web Development Frameworks (React, Angular, Vue.js, Node.js, Django, Flask)|Mobile Development (Swift, Kotlin, Flutter, React Native)|Testing Frameworks (JUnit, Selenium, Cypress)|Operating Systems (Linux, Windows)|Networking Concepts (TCP/IP, DNS, Routing)|Big Data Technologies (Spark, Hadoop)|UI/UX Design Tools (Figma, Sketch, Adobe XD)|Data Visualization (Tableau, Power BI)|Communication (Written and Verbal)|Problem-Solving|Critical Thinking|Teamwork|Collaboration|Leadership|Time Management|Adaptability|Learning Agility|Interpersonal Skills|Presentation Skills|Negotiation|Creativity|Emotional Intelligence|Placement|Recruitment|Hiring|Internship|Training|Career Fair|Job Portal|Application|Interview (Technical, HR, Behavioral)|Resume|Curriculum Vitae (CV)|Cover Letter|Networking|LinkedIn|Portfolio|Personal Branding|Skill Development|Upskilling|Reskilling|Career Path|Job Market|Skills|Industry Trends|Company Culture|Compensation|Benefits|Growth Opportunities|Professional Development|Alumni Network|Placement Cell|Company|Job Description|Eligibility Criteria)\b"
-
+    career_skills_query = r"\b(" + \
+        "skills needed for [a-z\s]+|" + \
+        "requirements for [a-z\s]+|" + \
+        "what skills do I need to be a [a-z\s]+|" + \
+        "key skills for [a-z\s]+|" + \
+        "essential skills for [a-z\s]+|" + \
+        "important skills for [a-z\s]+|" + \
+        "how to develop skills for [a-z\s]+|" + \
+        "what are the skills of a [a-z\s]+|" + \
+        "tell me the skills for [a-z\s]+|" + \
+        "career skills for [a-z\s]+|" + \
+        "job skills for [a-z\s]+|" + \
+        "qualifications for [a-z\s]+|" + \
+        "what do you need to know to be a [a-z\s]+|" + \
+        "areas of expertise for [a-z\s]+|" + \
+        "proficiencies for [a-z\s]+|" + \
+        "competencies for [a-z\s]+|" + \
+        "technical skills for [a-z\s]+|" + \
+        "soft skills for [a-z\s]+|" + \
+        "analytical skills for [a-z\s]+|" + \
+        "transferable skills for [a-z\s]+|" + \
+        "core skills for [a-z\s]+|" + \
+        "foundational skills for [a-z\s]+|" + \
+        "must-have skills for [a-z\s]+|" + \
+        "top skills for [a-z\s]+|" + \
+        "basic skills for [a-z\s]+|" + \
+        "advanced skills for [a-z\s]+" + \
+    ")\b"
     if re.search(career_keywords_general, prompt_text, re.IGNORECASE) or "career" in prompt_text.lower() or "job" in prompt_text.lower():
         logging.info(f"[{timestamp}] Career-related query detected.")
         try:
@@ -145,6 +173,24 @@ def query_gemini(prompt_text, timeout_seconds=60):
                 logging.info(f"[{timestamp}] Sending refined career query for concise point-wise format: {refined_prompt}")
                 contents = [{"parts": [{"text": refined_prompt}]}]
                 response = model.generate_content(contents)
+                if response.text:
+                    relevant_text = response.text[:2000]
+                    if "\n" in relevant_text and len(relevant_text.split("\n")) > 1:
+                        return relevant_text
+                    else:
+                        lines = relevant_text.split(". ")
+                        formatted_text = ""
+                        for line in lines:
+                            if line.strip():
+                                formatted_text += f"* {line.strip()}. \n"
+                        return formatted_text.strip()
+                else: 
+                    return "Hmm, I didn't get a clear response for that career query. Could you please rephrase?"
+            elif re.search(career_skills_query, prompt_text, re.IGNORECASE):
+                return (
+                    "That's a great question! To give you amore complete picture of the skills needed, could you be more specific? For example, are you interested in the technical skills, analytical skills, or soft skills required for a [the job title you asked about]?"
+                ).replace("[the job title you asked about]", prompt_text.lower().replace("skills needed for ", "").replace("requirements for ", "").replace("what skills do i need to be a ", "").replace("key skills for ", "").replace("essential skills for ", "").replace("important skills for ", "").replace("what are the skills of a ", "").replace("tell me the skills for ", "").replace("career skills for ", "").replace("job skills for ", "").replace("qualifications for ", "").replace("what do you need to know to be a ", "").replace("areas of expertise for ", "").replace("proficiencies for ", "").replace("competencies for ", "").replace("technical skills for ", "").replace("soft skills for ", "").replace("analytical skills for ", "").replace("transferable skills for ", "").replace("core skills for ", "").replace("foundational skills for ", "").replace("must-have skills for ", "").replace("top skills for ", "").replace("basic skills for ", "").replace("advanced skills for ", ""))
+                
             else:
                 logging.info(f"[{timestamp}] Sending general career query.")
                 contents = [{"parts": [{"text": prompt_text}]}]
@@ -152,12 +198,10 @@ def query_gemini(prompt_text, timeout_seconds=60):
 
             if response.text:
                 relevant_text = response.text[:2000]
-                # Attempt to split into points if it seems like a list
                 if "\n" in relevant_text and len(relevant_text.split("\n")) > 1:
                     return relevant_text
                 else:
-                    # If not a clear list, try to format it as a bulleted list
-                    lines = relevant_text.split(". ") # Split by potential sentence endings
+                    lines = relevant_text.split(". ") 
                     formatted_text = ""
                     for i, line in enumerate(lines):
                         if line.strip():
