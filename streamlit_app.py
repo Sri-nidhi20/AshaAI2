@@ -193,14 +193,15 @@ def show_job_search_ui():
     if st.session_state.get("job_search_active"):
         st.header("Snag dreams, land roles, shine bright!! ✨")
         st.subheader("Let's fetch Jobs🔍")
-        job_title = st.text_input("Job Role", placeholder = "e.g., Software Engineer")
-        location = st.text_input("Location", placeholder = "eg., Hyderabad")
+        job_title = st.text_input("Job Role", placeholder="e.g., Software Engineer")
+        location = st.text_input("Location", placeholder="eg., Hyderabad")
         experience = st.selectbox("Experience Level", ["Fresher", "Experience", "Intern"])
         if st.button("Fetch Jobs"):
             if job_title and location:
+                st.info(f"Searching for: Job Title = '{job_title}', Location = '{location}', Experience = '{experience}'") # Debug print
                 jobs = get_job_listings(job_title, location, experience)
                 if jobs:
-                    st.success(f"Showing top {len(jobs)} jobs for '{job_title}' in '{location}' ({experience})")
+                    st.success(f"Showing top {len(jobs)} jobs from Adzuna for '{job_title}' in '{location}' ({experience})")
                     for job in jobs:
                         st.markdown(f"### {job['title']}")
                         st.markdown(f"**Company:** {job['company']['display_name']}")
@@ -210,7 +211,7 @@ def show_job_search_ui():
                         st.markdown(f"[Apply Now]({job['redirect_url']})")
                         st.markdown("---")
                 else:
-                    st.warning("No matching jobs found. Try different inputs.")
+                    st.warning("No matching jobs found. Please try different keywords or a broader location.")
             else:
                 st.error("Please fill in both Job Role and Location.")
 
