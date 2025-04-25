@@ -96,13 +96,18 @@ def load_lottieurl(url):
 def query_gemini(prompt_text, timeout_seconds=60):
     logging.info(f"[{timestamp}] User prompt: {prompt_text}")
     refined_prompt_text = f"Answer the following questions concisely and completely within 2000 characters: {prompt_text}. Please prioritize finishing your thought or explanation within the character limit, even if it means covering slightly less ground."
-    name = None
-    name_match = re.search(r"(?:myself |I am |my name is |)\s+([A-Za-z]+)(?:\s|$)", prompt_text, re.IGNORECASE)
-    if name_match:
-        name = name_match.group(1)
+    name = None  
+    if re.match(r"^myself is\s+([A-Za-z]+)(?:\s|$)", prompt_text, re.IGNORECASE):
+        name = re.match(r"^myself is\s+([A-Za-z]+)(?:\s|$)", prompt_text, re.IGNORECASE).group(1)
+    elif re.match(r"^I am\s+([A-Za-z]+)(?:\s|$)", prompt_text, re.IGNORECASE):
+        name = re.match(r"^I am\s+([A-Za-z]+)(?:\s|$)", prompt_text, re.IGNORECASE).group(1)
+    elif re.match(r"^my name is\s+([A-Za-z]+)(?:\s|$)", prompt_text, re.IGNORECASE):
+        name = re.match(r"^my name is\s+([A-Za-z]+)(?:\s|$)", prompt_text, re.IGNORECASE).group(1)
+
+    if name:
         st.session_state.user_profile = st.session_state.get("user_profile", {})
         st.session_state.user_profile["name"] = name
-        return f"Hello {name}!! It's nice to meet you. How can I help you with your career journey today?"
+        return f"Hello {name}! It's nice to meet you. How can I help you with your career journey today?"
         
     greetings = r"^(hello|hi|hey|greetings|good morning|good afternoon|good evening)\b.*"
     if re.match(greetings, prompt_text, re.IGNORECASE):
