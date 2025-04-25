@@ -175,7 +175,7 @@ def get_job_listings(job_title, location, experience_level):
 def show_job_search_ui():
     if st.sidebar.button("Job Search 💼"):
         st.session_state.job_search_active = True
-    if st.session_state_get("job_search_active"):
+    if st.session_state.get("job_search_active"):
         st.header("Snag dreams, land roles, shine bright!! ✨")
         st.subheader("Let's fetch Jobs🔍")
         job_title = st.text_input("Job Role", placeholder = "e.g., Software Engineer")
