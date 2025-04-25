@@ -436,9 +436,21 @@ if menu == "New Chat ➕":
             st.markdown(f"👩‍💼 You:** {msg}")
         else:
             st.markdown(f"👩 AshaAI:** {msg}")
-    chat_name = st.session_state.chat_history_name
-    edited_chat_name = st.text_input("Chat Name:", chat_name)
-    st.session_state.chat_history_name = edited_chat_name 
+    col1, col2 = st.columns([3, 1]) 
+
+    with col1:
+        edited_chat_name = st.text_input("Chat Name:", st.session_state.chat_history_name)
+        st.session_state.chat_history_name = edited_chat_name
+
+    with col2:
+        if st.button("➕ New Chat", use_container_width=True):
+            st.session_state.chat = []
+            st.session_state.pending_input = None
+            st.session_state.chat_turn = 0
+            st.session_state.is_career_context = False
+            st.session_state.user_profile = {}
+            st.session_state.chat_history_name = f"Chat {st.session_state.chat_turn + 1}" 
+            st.rerun() 
 
     if st.button("Save Chat"):
         if st.session_state.chat:
