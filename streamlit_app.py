@@ -16,6 +16,7 @@ import re
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import nltk
 from urllib.parse import quote_plus
+from PyPDF2 import PdfReader
 import json
 try:
     nltk.data.find('sentiment/vader_lexicon.zip')
@@ -340,6 +341,7 @@ menu = st.sidebar.radio("AshaAI Menu", [
     "Chat History 🗨",
     "Search Chats 🔍",
     "Job Search 💼",
+    "Resume Analysis 📄",
     "Give Feedback 😊😐🙁",
     "Admin Dashboard 📊",
     "About AshaAI 👩‍🤖",
@@ -708,3 +710,33 @@ elif menu == "Job Search 💼":
                 st.error(f"Response content: {response.content if 'response' in locals() else 'No response received'}")
         else:
             st.warning("Please enter a job title to search.")
+
+#---------------------------- Resume Analysis --------------------------#
+elif menu == "Resume Analysis 📄":
+    st.subheader("📄 Upload Your Resume for Analysis")
+
+    uploaded_file = st.file_uploader("Upload your resume (PDF)", type=["pdf"]) # Limiting to PDF for simplicity in this step
+
+    if uploaded_file is not None:
+        file_type = uploaded_file.type
+        resume_text = ""
+
+        if file_type == "application/pdf":
+            try:
+                pdf_reader = PdfReader(uploaded_file)
+                for page in pdf_reader.pages:
+                    resume_text += page.extract_text()
+            except Exception as e:
+                st.error(f"Error reading PDF: {e}")
+                return
+
+        if resume_text:
+            st.subheader("Resume Text:")
+            st.text_area("Extracted Content", resume_text, height=300)
+
+            user_query = st.text_input("Ask me about your resume:")
+            if user_query:
+                response = f"You asked: '{user_query}'. (AshaAI has received your resume text for analysis - further analysis capabilities will be added here.)"
+                st.markdown(f"👩 AshaAI:** {response}")
+        else:
+            st.info("Please upload a PDF resume to see its text content here.")
