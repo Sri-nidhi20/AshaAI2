@@ -322,75 +322,7 @@ def query_gemini(prompt_text, timeout_seconds=60):
 #------------------ defining Job search api -----------------#
 APP_ID = st.secrets["adzuna"]["APP_ID"]
 APP_KEY = st.secrets["adzuna"]["APP_KEY"]
-def get_job_listings(job_title, location, experience_level):
-    url = "https://api.adzuna.com/v1/api/jobs/in/search/1"
-    params = {
-        "app_id": APP_ID,
-        "app_key": APP_KEY,
-        "what": job_title,
-        "where": location,
-        "results_per_page": 10,
-        "context_type": "application/json",
-    }
-
-    # Check if Adzuna API supports experience level as a parameter
-    # (You'll need to consult their documentation for the exact parameter name)
-    # If it does, add it to the params dictionary:
-    # if experience_level == "Intern":
-    #     params["category"] = "internships" # Example - replace with actual Adzuna parameter
-    # elif experience_level == "Fresher":
-    #     params["category"] = "entry-level" # Example - replace with actual Adzuna parameter
-    # elif experience_level == "Experience":
-    #     params["category"] = "experienced" # Example - replace with actual Adzuna parameter
-
-    logging.info(f"[{timestamp}] Adzuna API Request: URL={url}, Params={params}")
-    response = requests.get(url, params=params)
-    logging.info(f"[{timestamp}] Adzuna API Response Status Code: {response.status_code}")
-    logging.info(f"[{timestamp}] Adzuna API Response Content: {response.text}")
-
-    if response.status_code == 200:
-        results = response.json().get("results", [])
-        return results
-    elif response.status_code == 401:
-        logging.error(f"[{timestamp}] Adzuna API Error: Unauthorized. Check your APP_ID and APP_KEY.")
-        return []
-    elif response.status_code == 403:
-        logging.error(f"[{timestamp}] Adzuna API Error: Forbidden. Your API key might not have permission for this request.")
-        return []
-    elif response.status_code == 429:
-        logging.warning(f"[{timestamp}] Adzuna API Error: Too Many Requests. You might be hitting rate limits.")
-        return []
-    else:
-        logging.error(f"[{timestamp}] Adzuna API Error: Status Code {response.status_code}")
-        return []
-
-def show_job_search_ui():
-    if menu == "Job Search 💼":
-        st.session_state.job_search_active = True
-    if st.session_state.get("job_search_active"):
-        st.header("Snag dreams, land roles, shine bright!! ✨")
-        st.subheader("Let's fetch Jobs🔍")
-        job_title = st.text_input("Job Role", placeholder="e.g., Software Engineer")
-        location = st.text_input("Location", placeholder="eg., Hyderabad")
-        experience = st.selectbox("Experience Level", ["Fresher", "Experience", "Intern"])
-        if st.button("Fetch Jobs"):
-            if job_title and location:
-                st.info(f"Searching for: Job Title = '{job_title}', Location = '{location}', Experience = '{experience}'") # Debug print
-                jobs = get_job_listings(job_title, location, experience)
-                if jobs:
-                    st.success(f"Showing top {len(jobs)} jobs from Adzuna for '{job_title}' in '{location}' ({experience})")
-                    for job in jobs:
-                        st.markdown(f"### {job['title']}")
-                        st.markdown(f"**Company:** {job['company']['display_name']}")
-                        st.markdown(f"**Location:** {job['location']['display_name']}")
-                        if job.get("salary_min") and job.get("salary_max"):
-                            st.markdown(f"**Salary:** ₹{int(job['salary_min'])} - ₹{int(job['salary_max'])}")
-                        st.markdown(f"[Apply Now]({job['redirect_url']})")
-                        st.markdown("---")
-                else:
-                    st.warning("No matching jobs found. Please try different keywords or a broader location.")
-            else:
-                st.error("Please fill in both Job Role and Location.")
+BASE_URL = "https://api.adzuna.com/v1/api/jobs/gb/search/1"
 
 # ------------------ HEADER ------------------ #
 try:
@@ -745,4 +677,30 @@ elif menu == "QUIZ TIME 🤩🥳":
         st.rerun()
 #===================== Job Search ============================= #
 elif menu == "Job Search 💼":
-    show_job_search_ui()
+    st.subheader("💼 Fetch Jobs")
+    job_title = st.text_input("Enter job title:", placeholder = "eg., Cloud engineer")
+    location = st.text_input("Enter location (optional): ", placeholder = "Pune")
+    results_per_page = st.slider("Results per page: ", min_value = 5, max_value = 20, value = 10, step = 5)
+    if st.button("Let's Fetch"):
+        if job_title:
+            search_url = f"https://api.adzuna.com/v1/api/jobs/gb/search/1?app_id={APP_ID}&app_key={APP_KEY}&what={quote_plus(job_title)}&&where={quote_plus(location)}&results_per_page={results_per_page}&content-type=application/json"
+            try:
+                response = response.json()
+                if "results" in data and data["results"]:
+                    st.subheader(f"Search results for '{job_title}' in '{location if location else 'any location'}'")
+                    for job in data["results"]:
+                        st.markdown(f"**{job['title']}**")
+                        st.markdown(f"Company: {job['location']['display_name']}")
+                        st.markdown(f"Location: {job['location']['display_name']}")
+                        st.markdown(f"Salary: {job.get('salary_min', 'N/A')} - {job.get('salary_max', 'N/A')} {job.get('currency', '')}")
+                        st.markdown(f"[Apply Now]({job['redirect_url']})")
+                        st.divider()
+                else:
+                    else:
+                        st.info("No job listings found matching your criteria.")
+            except requests.exceptions.RequestException as e:
+                st.error(f"An error occurred during the API request: {e}")
+            except json.JSONDecodeError:
+                st.error("Error decoding the API response.")
+        else:
+            st.warning("Please enter a job title to search.")
