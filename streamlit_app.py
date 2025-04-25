@@ -99,12 +99,13 @@ def query_gemini(prompt_text, timeout_seconds=60):
 
     greetings = r"^(hello|hi|hey|greetings|good morning|good afternoon|good evening)\b.*"
     if re.match(greetings, prompt_text, re.IGNORECASE):
+        st.session_state.is_career_context = False
         return "Hello there! How can I assist you with your career journey today?"
 
     analyzer = SentimentIntensityAnalyzer()
     vs = analyzer.polarity_scores(prompt_text)
     logging.info(f"[{timestamp}] Sentiment scores: {vs}")
-    if vs['compound'] < -0.2:  # Adjust this threshold as needed
+    if vs['compound'] < -0.2:
         encouragement_query = f"The user is expressing negative feelings like '{prompt_text}'. Offer a short, encouraging and supportive message related to career challenges. Keep it concise and uplifting."
         logging.info(f"[{timestamp}] Detected negative sentiment, sending encouragement query to Gemini-2.0-flash: {encouragement_query}")
         try:
@@ -127,7 +128,7 @@ def query_gemini(prompt_text, timeout_seconds=60):
         logging.info(f"[{timestamp}] Sending motivation query to Gemini-2.0-flash: {motivation_query}")
         try:
             contents = [{"parts": [{"text": motivation_query}]}]
-            response = model.generate_content(contents)  # Removed generation_config
+            response = model.generate_content(contents)
             if response.text:
                 logging.info(f"[{timestamp}] Gemini-2.0-flash motivation response (first 50 chars): {response.text[:50]}...")
                 st.session_state.is_career_context = True
@@ -140,7 +141,8 @@ def query_gemini(prompt_text, timeout_seconds=60):
             return "I'm experiencing a slight delay. Please try your request again."
 
     career_keywords_format = r"\b(skills needed for|what are the requirements for|how to become a|key aspects of|important things about)\b"
-    career_keywords_general = r"\b(BTech|BE|BSC|BCA|MTECH|ME|MSC|MBA|PhD|IT|CS|ECE|EEE|ME|CE|Engineering|Biotechnology|data science|artificial intelligence(AI)|Machine learning(ML)|cybersecurity|software engineering|business analytics|management studies|BCOM|MCOM|BA|MA|BDes|BPharm|BArch|software engineer|data analyst|data scientist|web developer|front-end developer|back-end developer|full-stack developer|mobile app developer(iOS, Android)|cloud engineer|DevOps engineer|cybersecurity analyst|network engineer|database administrator|project manager|business analyst|marketing specialist|sales representative|human resources (HR) generalist|technical support engineer|quality assurance(QA) tester|UI/UX designer|Product Manager|Research Scientist|Management Consultant|Financial Analyst|Accountant|Operations Manager|Chief Technology Officer (CTO)|Chief Executive Officer (CEO)|Team Lead|Architect (Software, Solutions, Enterprise)|Specialist (in various domains)|Associate|Analyst|Engineer|Developer|Consultant|Manager|Director|VP (Vice President)|Programming Languages (Python, Java, C++, JavaScript, C#, Go, etc.)|Data Analysis Tools (Pandas, NumPy, SQL, R)|Machine Learning Algorithms (Regression, Classification, Clustering, Deep Learning)|Cloud Platforms (AWS, Azure, GCP)|DevOps Tools (Docker, Kubernetes, Jenkins, Git)|Cybersecurity Concepts (Network Security, Cryptography, Ethical Hacking)|Database Management (SQL, NoSQL)|Web Development Frameworks (React, Angular, Vue.js, Node.js, Django, Flask)|Mobile Development (Swift, Kotlin, Flutter, React Native)|Testing Frameworks (JUnit, Selenium, Cypress)|Operating Systems (Linux, Windows)|Networking Concepts (TCP/IP, DNS, Routing)|Big Data Technologies (Spark, Hadoop)|UI/UX Design Tools (Figma, Sketch, Adobe XD)|Data Visualization (Tableau, Power BI)|Communication (Written and Verbal)|Problem-Solving|Critical Thinking|Teamwork|Collaboration|Leadership|Time Management|Adaptability|Learning Agility|Interpersonal Skills|Presentation Skills|Negotiation|Creativity|Emotional Intelligence|Placement|Recruitment|Hiring|Internship|Training|Career Fair|Job Portal|Application|Interview (Technical, HR, Behavioral)|Resume|Curriculum Vitae (CV)|Cover Letter|Networking|LinkedIn|Portfolio|Personal Branding|Skill Development|Upskilling|Reskilling|Career Path|Job Market|Skills|Industry Trends|Company Culture|Compensation|Benefits|Growth Opportunities|Professional Development|Alumni Network|Placement Cell|Company|Job Description|Eligibility Criteria)\b"
+    career_keywords_initial = r"\b(BTech|BE|BSC|BCA|MTECH|ME|MSC|MBA|PhD|IT|CS|ECE|EEE|ME|CE|Engineering|Biotechnology|data science|artificial intelligence(AI)|Machine learning(ML)|cybersecurity|software engineering|business analytics|management studies|BCOM|MCOM|BA|MA|BDes|BPharm|BArch|software engineer|data analyst|data scientist|web developer|front-end developer|back-end developer|full-stack developer|mobile app developer(iOS, Android)|cloud engineer|DevOps engineer|cybersecurity analyst|network engineer|database administrator|project manager|business analyst|marketing specialist|sales representative|human resources (HR) generalist|technical support engineer|quality assurance(QA) tester|UI/UX designer|Product Manager|Research Scientist|Management Consultant|Financial Analyst|Accountant|Operations Manager|Chief Technology Officer (CTO)|Chief Executive Officer (CEO)|Team Lead|Architect (Software, Solutions, Enterprise)|Specialist (in various domains)|Associate|Analyst|Engineer|Developer|Consultant|Manager|Director|VP (Vice President)|Programming Languages (Python, Java, C++, JavaScript, C#, Go, etc.)|Data Analysis Tools (Pandas, NumPy, SQL, R)|Machine Learning Algorithms (Regression, Classification, Clustering, Deep Learning)|Cloud Platforms (AWS, Azure, GCP)|DevOps Tools (Docker, Kubernetes, Jenkins, Git)|Cybersecurity Concepts (Network Security, Cryptography, Ethical Hacking)|Database Management (SQL, NoSQL)|Web Development Frameworks (React, Angular, Vue.js, Node.js, Django, Flask)|Mobile Development (Swift, Kotlin, Flutter, React Native)|Testing Frameworks (JUnit, Selenium, Cypress)|Operating Systems (Linux, Windows)|Networking Concepts (TCP/IP, DNS, Routing)|Big Data Technologies (Spark, Hadoop)|UI/UX Design Tools (Figma, Sketch, Adobe XD)|Data Visualization (Tableau, Power BI)|Communication (Written and Verbal)|Problem-Solving|Critical Thinking|Teamwork|Collaboration|Leadership|Time Management|Adaptability|Learning Agility|Interpersonal Skills|Presentation Skills|Negotiation|Creativity|Emotional Intelligence|Placement|Recruitment|Hiring|Internship|Training|Career Fair|Job Portal|Application|Interview (Technical, HR, Behavioral)|Resume|Curriculum Vitae (CV)|Cover Letter|Networking|LinkedIn|Portfolio|Personal Branding|Skill Development|Upskilling|Reskilling|Career Path|Job Market|Skills|Industry Trends|Company Culture|Compensation|Benefits|Growth Opportunities|Professional Development|Alumni Network|Placement Cell|Company|Job Description|Eligibility Criteria)\b"
+
     career_skills_query = r"\b(" + \
         "skills needed for [a-z\s]+|" + \
         "requirements for [a-z\s]+|" + \
@@ -169,10 +171,12 @@ def query_gemini(prompt_text, timeout_seconds=60):
         "basic skills for [a-z\s]+|" + \
         "advanced skills for [a-z\s]+" + \
     ")\b"
+
     if "is_career_context" not in st.session_state:
         st.session_state.is_career_context = False
-    if re.search(career_keywords_general, prompt_text, re.IGNORECASE) or "career" in prompt_text.lower() or "job" in prompt_text.lower():
-        logging.info(f"[{timestamp}] Career-related query detected (context: {st.session_state.is_career_context}).")
+
+    if re.search(career_keywords_initial, prompt_text, re.IGNORECASE) or re.search(career_skills_query, prompt_text, re.IGNORECASE):
+        logging.info(f"[{timestamp}] Initial career-related query detected.")
         st.session_state.is_career_context = True
         try:
             if re.search(career_keywords_format, prompt_text, re.IGNORECASE):
@@ -193,49 +197,49 @@ def query_gemini(prompt_text, timeout_seconds=60):
                         return formatted_text.strip()
                 else:
                     return "Hmm, I didn't get a clear response for that career query. Could you please rephrase?"
-            elif re.search(career_skills_query, prompt_text, re.IGNORECASE):
-                job_title = prompt_text.lower().replace("skills needed for ", "").replace("requirements for ", "").replace("what skills do i need to be a ", "").replace("key skills for ", "").replace("essential skills for ", "").replace("important skills for ", "").replace("what are the skills of a ", "").replace("tell me the skills for ", "").replace("career skills for ", "").replace("job skills for ", "").replace("qualifications for ", "").replace("what do you need to know to be a ", "").replace("areas of expertise for ", "").replace("proficiencies for ", "").replace("competencies for ", "").replace("technical skills for ", "").replace("soft skills for ", "").replace("analytical skills for ", "").replace("transferable skills for ", "").replace("core skills for ", "").replace("foundational skills for ", "").replace("must-have skills for ", "").replace("top skills for ", "").replace("basic skills for ", "").replace("advanced skills for ", "").strip()
-                skills_prompt = f"List the key skills required for a {job_title}. Provide a concise, point-by-point list."
-                logging.info(f"[{timestamp}] Sending direct skills query to Gemini: {skills_prompt}")
-                contents = [{"parts": [{"text": skills_prompt}]}]
+            else:
+                logging.info(f"[{timestamp}] Sending general career query.")
+                contents = [{"parts": [{"text": refined_prompt_text}]}]
                 response = model.generate_content(contents)
                 if response.text:
                     relevant_text = response.text[:2000]
                     if "\n" in relevant_text and len(relevant_text.split("\n")) > 1:
-                        return relevant_text + f"\n\nWould you like to know more about any of these skills?"
+                        return relevant_text
                     else:
                         lines = relevant_text.split(". ")
                         formatted_text = ""
-                        for line in lines:
+                        for i, line in enumerate(lines):
                             if line.strip():
                                 formatted_text += f"* {line.strip()}.\n"
-                        return formatted_text.strip() + f"\n\nWould you like to know more about any of these skills?"
+                        return formatted_text.strip()
                 else:
-                    return f"Hmm, I didn't get a clear list of skills for {job_title}. Could you please rephrase?"
-
-            else:
-                logging.info(f"[{timestamp}] Sending general career query.")
-                follow_up_prompt = f"Considering the previous question about '{st.session_state.chat[-1][1]}', please answer '{prompt_text}' concisely within 2000 characters in the context of career development."
-                contents = [{"parts": [{"text": refined_prompt_text}]}]
-                response = model.generate_content(contents)
-
-            if response.text:
-                relevant_text = response.text[:2000]
-                if "\n" in relevant_text and len(relevant_text.split("\n")) > 1:
-                    return relevant_text
-                else:
-                    lines = relevant_text.split(". ")
-                    formatted_text = ""
-                    for i, line in enumerate(lines):
-                        if line.strip():
-                            formatted_text += f"* {line.strip()}.\n"
-                    return formatted_text.strip()
-
-            else:
-                return "Hmm, I didn't get a clear response for that career query. Could you please rephrase?"
+                    return "Hmm, I didn't get a clear response for that career query. Could you please rephrase?"
         except Exception as e:
-            logging.error(f"[{timestamp}] Error in query_gemini (Gemini-2.0-flash) for career query: {e}")
+            logging.error(f"[{timestamp}] Error in query_gemini (initial career query): {e}")
             return "Sorry! I'm having trouble processing your request right now. Please try again in a few moments."
+    elif st.session_state.is_career_context:
+        if st.session_state.chat and len(st.session_state.chat) >= 2:
+            last_ai_response = st.session_state.chat[-2][1]
+            extracted_terms = re.findall(r'\b(\w+)\b', last_ai_response)
+            for term in extracted_terms:
+                if re.search(rf"\b(what is|explain)\s+{term}\b", prompt_text, re.IGNORECASE):
+                    logging.info(f"[{timestamp}] Follow-up question detected about '{term}'.")
+                    follow_up_prompt = f"Briefly explain '{term}' in the context of {st.session_state.chat[-3][1] if len(st.session_state.chat) >= 3 else 'career development'}."
+                    contents = [{"parts": [{"text": follow_up_prompt}]}]
+                    response = model.generate_content(contents)
+                    if response.text:
+                        return response.text[:2000]
+                    else:
+                        return f"Could not explain '{term}' at the moment."
+                    break
+        logging.info(f"[{timestamp}] General career follow-up query (context: {st.session_state.is_career_context}).")
+        follow_up_prompt = f"Considering the previous question about '{st.session_state.chat[-2][1] if len(st.session_state.chat) >= 2 else 'career development'}', please answer '{prompt_text}' concisely within 2000 characters in the context of that discussion."
+        contents = [{"parts": [{"text": follow_up_prompt}]}]
+        response = model.generate_content(contents)
+        if response.text:
+            return response.text[:2000]
+        else:
+            return "Hmm, I'm having trouble answering that in the current context. Could you please rephrase?"
     else:
         st.session_state.is_career_context = False
         return (
@@ -243,7 +247,6 @@ def query_gemini(prompt_text, timeout_seconds=60):
             "I'm best equipped to answer questions related to careers, job opportunities, professional development, "
             "and provide encouragement. How can I specifically help you with your career today?"
         )
-
 #------------------ defining Job search api -----------------#
 APP_ID = st.secrets["adzuna"]["APP_ID"]
 APP_KEY = st.secrets["adzuna"]["APP_KEY"]
