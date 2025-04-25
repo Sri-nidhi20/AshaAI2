@@ -483,55 +483,49 @@ elif menu == "QUIZ TIME 🤩🥳":
 
             # Submit Answers Button (appears after all questions are displayed)
                 if st.button("Submit all answers"):
-                with st.spinner("🧠 Evaluating your answers..."):
-                    prompts = []
-                    for i in range(3):
-                        q = st.session_state.questions[i]
-                        user_ans = st.session_state.user_answers[i]
-                        prompt = f"""
-                        You are an expert programming tutor. Evaluate the technical correctness of the student's answer to the following programming question.
-
-                        Question: {q['question']}
-                        Student Answer: {user_ans}
-
-                        Provide your evaluation as a JSON object with the following format:
-                        {{
-                          "is_correct": true or false,
-                          "explanation": "A short explanation or correction of the student's answer."
-                        }}
-
-                        Ensure the JSON object is the ONLY output.
-                        """
-                        prompts.append(prompt)
-
-                    results = []
-                    for p in prompts:
-                        logging.info(f"[{timestamp}] Quiz Evaluation Prompt: {p}") # Log the prompt
-                        try:
-                            response = model.generate_content(p)
-                            logging.info(f"[{timestamp}] Gemini Raw Response for Evaluation: '{response.text}'") # Log the raw response
-                            try:
-                                # Directly try to load the JSON from the response text
-                                result = json.loads(response.text.strip())
-                            except json.JSONDecodeError as e:
-                                logging.error(f"[{timestamp}] JSONDecodeError in quiz evaluation: {e}, Response: '{response.text}'")
-                                result = {"is_correct": False, "explanation": "There was an issue evaluating your answer. Please try again."}
-                            except Exception as e:
-                                logging.error(f"[{timestamp}] Unexpected error in quiz evaluation: {e}, Response: '{response.text}'")
-                                result = {"is_correct": False, "explanation": "An unexpected error occurred during evaluation."}
-                        except Exception as e:
-                            logging.error(f"[{timestamp}] Error generating content for quiz evaluation: {e}")
-                            result = {"is_correct": False, "explanation": "Failed to get an evaluation from the model."}
-                        results.append(result)
-
-                    correct_count = 0
-                    for i, r in enumerate(results):
-                        st.markdown(f"**Q{i+1}:** {st.session_state.questions[i]['question']}")
-                        if r["is_correct"]:
-                            st.success(f"✅ Correct!!")
-                            correct_count += 1
-                        else:
-                            st.error(f"❌ Incorrect.. {r['explanation']}")
+                    with st.spinner("🧠 Evaluating your answers..."):
+                        prompts = []
+                        for i in range(3):
+                            q = st.session_state.questions[i]
+                            user_ans = st.session_state.user_answers[i]
+                            prompt = f"""
+                            You are an expert programming tutor. Evaluate the technical correctness of the student's answer to the following programming question.
+                            Question: {q['question']}
+                            Student Answer: {user_ans}
+                            Provide your evaluation as a JSON object with the following format:
+                            {{
+                            "is_correct": true or false,
+                            "explanation": "A short explanation or correction of the student's answer."
+                            }}
+                            Ensure the JSON object is the ONLY output.
+                            """
+                            prompts.append(prompt)
+                            results = []
+                            for p in prompts:
+                                logging.info(f"[{timestamp}] Quiz Evaluation Prompt: {p}") # Log the prompt
+                                try:
+                                    response = model.generate_content(p)
+                                    logging.info(f"[{timestamp}] Gemini Raw Response for Evaluation: '{response.text}'") # Log the raw response
+                                    try:
+                                        result = json.loads(response.text.strip())
+                                        except json.JSONDecodeError as e:
+                                            logging.error(f"[{timestamp}] JSONDecodeError in quiz evaluation: {e}, Response: '{response.text}'")
+                                            result = {"is_correct": False, "explanation": "There was an issue evaluating your answer. Please try again."}
+                                    except Exception as e:
+                                        logging.error(f"[{timestamp}] Unexpected error in quiz evaluation: {e}, Response: '{response.text}'")
+                                        result = {"is_correct": False, "explanation": "An unexpected error occurred during evaluation."}
+                                except Exception as e:
+                                    logging.error(f"[{timestamp}] Error generating content for quiz evaluation: {e}")
+                                    result = {"is_correct": False, "explanation": "Failed to get an evaluation from the model."}
+                                results.append(result)
+                            correct_count = 0
+                            for i, r in enumerate(results):
+                                st.markdown(f"**Q{i+1}:** {st.session_state.questions[i]['question']}")
+                                if r["is_correct"]:
+                                    st.success(f"✅ Correct!!")
+                                    correct_count += 1
+                                else:
+                                    st.error(f"❌ Incorrect.. {r['explanation']}")
 
                     # Display Results and Update Streak
                     if correct_count == 3:
