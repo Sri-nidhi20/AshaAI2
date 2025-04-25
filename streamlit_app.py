@@ -96,6 +96,7 @@ def load_lottieurl(url):
 def query_gemini(prompt_text, timeout_seconds=60):
     logging.info(f"[{timestamp}] User prompt: {prompt_text}")
     refined_prompt_text = f"Answer the following questions concisely and completely within 2000 characters: {prompt_text}. Please prioritize finishing your thought or explanation within the character limit, even if it means covering slightly less ground."
+    name = None
     name_match = re.search(r"(?:myself|I am | my name is |)\s+(\w+)", prompt_text, re.IGNORECASE)
     if name_match:
         name = name+match.group(1)
