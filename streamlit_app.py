@@ -145,7 +145,60 @@ def query_gemini(prompt_text, timeout_seconds=60):
                 "I'm designed to be a helpful companion for your career journey. While I appreciate your message, "
                 "I'm best equipped to answer questions related to careers, job opportunities, professional development, "
                 "and provide encouragement. How can I specifically help you with your career today?"
-            ) 
+            )
+#------------------ defining Job search api -----------------#
+
+APP_ID = st.secrets["adzuna"]["app_id"]
+APP_KEY = st.secrets["adzuna"]["app_key"]
+def get_job_listings(job_title, location, experience_level):
+    url = "https://api.adzuna.com/v1/api/jobs/in/search/1"
+    params = {
+        "app_id": APP_ID,
+        "app_key": APP_KEY,
+        "what": job_title,
+        "where": location,
+        "results_per_page": 10,
+        "context_type": "application/json",
+    }
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        results = response.json().get("results", [])
+        if experience_level == "Intern":
+            results = [job for job in results if "intern" in job["title"].lower()]
+        elif experience_level == "Fresher":
+            results = [job for job in results if any(word in job["title"].lower() for word in ["junior", "graduate", "trainee"])]
+        elif experience_level == "Experience":
+            results = [job for job in results if all(word not in job["title"].lower() for word in ["intern", "trainee"])]
+        return results
+    else:
+        return[]
+def show_job_search_ui():
+    if st.sidebar.button("Job Search 💼"):
+        st.session_state.job_search_active = True
+    if st.session_state_get("job_search_active"):
+        st.header("Snag dreams, land roles, shine bright!! ✨")
+        st.subheader("Let's fetch Jobs🔍")
+        job_title = st.text_input("Job Role", placeholder = "e.g., Software Engineer")
+        location = st.text_input("Location", placeholder = "eg., Hyderabad")
+        experience = st.selectbox("Experience Level", ["Fresher", "Experience", "Intern"])
+        if st.button("Fetch Jobs"):
+            if job_title and location:
+                jobs = get_job_listings(job_title, location, experience)
+                if jobs:
+                    st.success(f"Showing top {len(jobs)} jobs for '{job_title}' in '{location}' ({experience})")
+                    for job in jobs:
+                        st.markdown(f"### {job['title']}")
+                        st.markdown(f"**Comapny:** {job['company']['display_name']}")
+                        st.markdown(f"**Location:** {job['location']['display_name']}")
+                        if job.get("salary_min") and job.get("salary_max"):
+                            st.markdown(f"**Salary:** ₹{int(job['salary_min'])} - ₹{int(job['salary_max'])}")
+                        st.markdown(f"[Apply Now]({job['redirect_url']})")
+                        st.markdown("---")
+                else:
+                    st.warning("No matching jobs found. Try different inputs.")
+            else:
+                st.error("Please fill in both Job Role and Location.")
+                        
 # ------------------ HEADER ------------------ #
 try:
     logo = Image.open("ashaai_logo.jpg")
@@ -160,6 +213,7 @@ menu = st.sidebar.radio("AshaAI Menu", [
     "New Chat ➕",
     "Chat History 🗨",
     "Search Chats 🔍",
+    "Job Search 💼",
     "Give Feedback 😊😐🙁",
     "Admin Dashboard 📊",
     "About AshaAI 👩‍🤖",
@@ -263,6 +317,8 @@ elif menu == "Chat History 🗨":
             st.subheader(f"Content of {selected_chat_title}:")
             for role, content in selected_chat:
                 st.markdown(f"{'👩‍💼 You:' if role == 'user' else '👩 AshaAI:'}** {content}")
+
+#
 
 # ------------------ FEEDBACK ------------------ #
 elif menu == "Give Feedback 😊😐🙁":
@@ -453,3 +509,8 @@ elif menu == "QUIZ TIME 🤩🥳":
         st.session_state.answered_today = False
         st.session_state.quiz_started = False  # Ensure this is reset too
         st.rerun()
+#===================== Job Search ============================= #
+elif menu == "Job Search 💼":
+    show_job_search_ui()
+            
+              
