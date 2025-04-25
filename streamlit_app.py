@@ -134,17 +134,36 @@ def query_gemini(prompt_text, timeout_seconds=60):
             logging.error(f"[{timestamp}] Error fetching motivation from Gemini-2.0-flash: {e}")
             return "I'm experiencing a slight delay. Please try your request again."
 
-    career_keywords = r"\b(BTech|BE|BSC|BCA|MTECH|ME|MSC|MBA|PhD|IT|CS|ECE|EEE|ME|CE|Engineering|Biotechnology|data science|artificial intelligence(AI)|Machine learning(ML)|cybersecurity|software engineering|business analytics|management studies|BCOM|MCOM|BA|MA|BDes|BPharm|BArch|software engineer|data analyst|data scientist|web developer|front-end developer|back-end developer|full-stack developer|mobile app developer(iOS, Android)|cloud engineer|DevOps engineer|cybersecurity analyst|network engineer|database administrator|project manager|business analyst|marketing specialist|sales representative|human resources (HR) generalist|technical support engineer|quality assurance(QA) tester|UI/UX designer|Product Manager|Research Scientist|Management Consultant|Financial Analyst|Accountant|Operations Manager|Chief Technology Officer (CTO)|Chief Executive Officer (CEO)|Team Lead|Architect (Software, Solutions, Enterprise)|Specialist (in various domains)|Associate|Analyst|Engineer|Developer|Consultant|Manager|Director|VP (Vice President)|Programming Languages (Python, Java, C++, JavaScript, C#, Go, etc.)|Data Analysis Tools (Pandas, NumPy, SQL, R)|Machine Learning Algorithms (Regression, Classification, Clustering, Deep Learning)|Cloud Platforms (AWS, Azure, GCP)|DevOps Tools (Docker, Kubernetes, Jenkins, Git)|Cybersecurity Concepts (Network Security, Cryptography, Ethical Hacking)|Database Management (SQL, NoSQL)|Web Development Frameworks (React, Angular, Vue.js, Node.js, Django, Flask)|Mobile Development (Swift, Kotlin, Flutter, React Native)|Testing Frameworks (JUnit, Selenium, Cypress)|Operating Systems (Linux, Windows)|Networking Concepts (TCP/IP, DNS, Routing)|Big Data Technologies (Spark, Hadoop)|UI/UX Design Tools (Figma, Sketch, Adobe XD)|Data Visualization (Tableau, Power BI)|Communication (Written and Verbal)|Problem-Solving|Critical Thinking|Teamwork|Collaboration|Leadership|Time Management|Adaptability|Learning Agility|Interpersonal Skills|Presentation Skills|Negotiation|Creativity|Emotional Intelligence|Placement|Recruitment|Hiring|Internship|Training|Career Fair|Job Portal|Application|Interview (Technical, HR, Behavioral)|Resume|Curriculum Vitae (CV)|Cover Letter|Networking|LinkedIn|Portfolio|Personal Branding|Skill Development|Upskilling|Reskilling|Career Path|Job Market|Skills|Industry Trends|Company Culture|Compensation|Benefits|Growth Opportunities|Professional Development|Alumni Network|Placement Cell|Company|Job Description|Eligibility Criteria)\b"
-    if re.search(career_keywords, prompt_text, re.IGNORECASE) or "career" in prompt_text.lower() or "job" in prompt_text.lower():
-        logging.info(f"[{timestamp}] Career-related query detected. Sending refined response.")
+    career_keywords_format = r"\b(skills needed for|what are the requirements for|how to become a|key aspects of|important things about)\b"
+    career_keywords_general = r"\b(BTech|BE|BSC|BCA|MTECH|ME|MSC|MBA|PhD|IT|CS|ECE|EEE|ME|CE|Engineering|Biotechnology|data science|artificial intelligence(AI)|Machine learning(ML)|cybersecurity|software engineering|business analytics|management studies|BCOM|MCOM|BA|MA|BDes|BPharm|BArch|software engineer|data analyst|data scientist|web developer|front-end developer|back-end developer|full-stack developer|mobile app developer(iOS, Android)|cloud engineer|DevOps engineer|cybersecurity analyst|network engineer|database administrator|project manager|business analyst|marketing specialist|sales representative|human resources (HR) generalist|technical support engineer|quality assurance(QA) tester|UI/UX designer|Product Manager|Research Scientist|Management Consultant|Financial Analyst|Accountant|Operations Manager|Chief Technology Officer (CTO)|Chief Executive Officer (CEO)|Team Lead|Architect (Software, Solutions, Enterprise)|Specialist (in various domains)|Associate|Analyst|Engineer|Developer|Consultant|Manager|Director|VP (Vice President)|Programming Languages (Python, Java, C++, JavaScript, C#, Go, etc.)|Data Analysis Tools (Pandas, NumPy, SQL, R)|Machine Learning Algorithms (Regression, Classification, Clustering, Deep Learning)|Cloud Platforms (AWS, Azure, GCP)|DevOps Tools (Docker, Kubernetes, Jenkins, Git)|Cybersecurity Concepts (Network Security, Cryptography, Ethical Hacking)|Database Management (SQL, NoSQL)|Web Development Frameworks (React, Angular, Vue.js, Node.js, Django, Flask)|Mobile Development (Swift, Kotlin, Flutter, React Native)|Testing Frameworks (JUnit, Selenium, Cypress)|Operating Systems (Linux, Windows)|Networking Concepts (TCP/IP, DNS, Routing)|Big Data Technologies (Spark, Hadoop)|UI/UX Design Tools (Figma, Sketch, Adobe XD)|Data Visualization (Tableau, Power BI)|Communication (Written and Verbal)|Problem-Solving|Critical Thinking|Teamwork|Collaboration|Leadership|Time Management|Adaptability|Learning Agility|Interpersonal Skills|Presentation Skills|Negotiation|Creativity|Emotional Intelligence|Placement|Recruitment|Hiring|Internship|Training|Career Fair|Job Portal|Application|Interview (Technical, HR, Behavioral)|Resume|Curriculum Vitae (CV)|Cover Letter|Networking|LinkedIn|Portfolio|Personal Branding|Skill Development|Upskilling|Reskilling|Career Path|Job Market|Skills|Industry Trends|Company Culture|Compensation|Benefits|Growth Opportunities|Professional Development|Alumni Network|Placement Cell|Company|Job Description|Eligibility Criteria)\b"
+
+    if re.search(career_keywords_general, prompt_text, re.IGNORECASE) or "career" in prompt_text.lower() or "job" in prompt_text.lower():
+        logging.info(f"[{timestamp}] Career-related query detected.")
         try:
-            contents = [{"parts": [{"text": prompt_text}]}]
-            response = model.generate_content(contents)
+            if re.search(career_keywords_format, prompt_text, re.IGNORECASE):
+                refined_prompt = f"Provide a point-by-point list of the key aspects or requirements for {prompt_text.lower()}. Keep each point concise."
+                logging.info(f"[{timestamp}] Sending refined career query for point-wise format: {refined_prompt}")
+                contents = [{"parts": [{"text": refined_prompt}]}]
+                response = model.generate_content(contents)
+            else:
+                logging.info(f"[{timestamp}] Sending general career query.")
+                contents = [{"parts": [{"text": prompt_text}]}]
+                response = model.generate_content(contents)
+
             if response.text:
                 relevant_text = response.text[:2000]
-                relevant_text = ' '.join(relevant_text.split()[:250])
-                logging.info(f"[{timestamp}] Gemini-2.0-flash career-related response (first 50 chars): {relevant_text[:50]}...")
-                return relevant_text
+                # Attempt to split into points if it seems like a list
+                if "\n" in relevant_text and len(relevant_text.split("\n")) > 1:
+                    return relevant_text
+                else:
+                    # If not a clear list, try to format it as a bulleted list
+                    lines = relevant_text.split(". ") # Split by potential sentence endings
+                    formatted_text = ""
+                    for i, line in enumerate(lines):
+                        if line.strip():
+                            formatted_text += f"* {line.strip()}.\n"
+                    return formatted_text.strip()
+
             else:
                 return "Hmm, I didn't get a clear response for that career query. Could you please rephrase?"
         except Exception as e:
