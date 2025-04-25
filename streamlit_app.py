@@ -686,7 +686,9 @@ elif menu == "Job Search 💼":
         if job_title:
             search_url = f"https://api.adzuna.com/v1/api/jobs/gb/search/1?app_id={APP_ID}&app_key={APP_KEY}&what={quote_plus(job_title)}&&where={quote_plus(location)}&results_per_page={results_per_page}&content-type=application/json"
             try:
-                response = response.json()
+                response = requests.get(search_url)
+                response.raise_for_status()
+                data = response.json()
                 if "results" in data and data["results"]:
                     st.subheader(f"Search results for '{job_title}' in '{location if location else 'any location'}'")
                     for job in data["results"]:
@@ -700,7 +702,9 @@ elif menu == "Job Search 💼":
                     st.info("No job listings found matching your criteria.")
             except requests.exceptions.RequestException as e:
                 st.error(f"An error occurred during the API request: {e}")
+                st.error(f"Details: {e}")
             except json.JSONDecodeError:
                 st.error("Error decoding the API response.")
+                st.error(f"Response content: {response.content if 'response' in locals() else 'No response received'}")
         else:
             st.warning("Please enter a job title to search.")
