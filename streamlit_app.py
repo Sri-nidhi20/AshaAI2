@@ -148,8 +148,8 @@ def query_gemini(prompt_text, timeout_seconds=60):
             )
 #------------------ defining Job search api -----------------#
 
-APP_ID = st.secrets["adzuna"]["app_id"]
-APP_KEY = st.secrets["adzuna"]["app_key"]
+APP_ID = st.secrets["adzuna"]["APP_ID"]
+APP_KEY = st.secrets["adzuna"]["APP_KEY"]
 def get_job_listings(job_title, location, experience_level):
     url = "https://api.adzuna.com/v1/api/jobs/in/search/1"
     params = {
