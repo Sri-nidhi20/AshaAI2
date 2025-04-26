@@ -1,79 +1,28 @@
 {
   "C": {
     "easy": [
-      {
-        "question": "What is the difference between #include <stdio.h> and #include 'stdio.h'?",
-        "answer": "#include <stdio.h> tells the compiler to look in the system libraries, #include 'stdio.h' tells it to look in the current directory first, then system libraries."
-      }, 
-      {
-        "question": "Write a program to check if a number is odd or even.",
-        "answer": "#include <stdio.h> int main() { int num; printf('Enter a number: '); scanf('%d', &num); if (num % 2 == 0) printf('%d is Even.\n', num); else  printf('%d is Odd.\n', num); return 0; }"
-      },
-      {
-        "question": "Define a pointer and give an example.",
-        "answer": "A pointer is a variable that stores the memory address of another variable. example: #include <stdio.h> int main() { int num = 10; int *ptr = &num; printf('Value of num = num = %d\n', *ptr); printf('Address of num = %p\n', ptr); return 0; }"
-      },
-      {
-        "question": "What is the size of int, float, char and double in C ?",
-        "answer": "int = 4 bytes, float = 4 bytes, char = 1 byte, double = 8 bytes"
-      },
-      {"question": "Explain the purpose of scanf() and printf().", 
-        "answer": "scanf() reads input from the user, printf() displays output to the user."
-      },
-      {
-        "question": "What is a function in C ?",
-        "answer" : "A function in C is a block of code that performs a specific task and can be reused whenever needed."
-      }
+      {"question": "What is the difference between #include <stdio.h> and #include 'stdio.h'?"}, 
+      {"question": "Write a program to check if a number is odd or even."},
+      {"question": "Define a pointer and give an example."},
+      {"question": "What is the size of int, float, char and double in C ?"},
+      {"question": "Explain the purpose of scanf() and printf()."},
+      {"question": "What is a function in C ?"}
     ],
     "medium": [
-      {"question": "Write a function to find the factorial of a number using recursion.", 
-        "answer": "#include <stdio.h> int factorial(int n) { if (n == 0 || n == 1) return 1; else return n * factorial(n-1); } int main() { int num; printf('enter a number: '); scanf('%d', &num); printf('Factorial of %d is %d\n", num, factorial(num)); return 0; }"
-      },
-      {
-        "question": "Explain the difference between a structure and a union.", 
-        "answer": "A 'structure' stores data in separate memory locations for each member.  A 'union' shares the same memory location for all members, holding only one value at a time."
-      },
-      {
-        "question": "Implement a program to reverse a string without using a library function.", 
-        "answer": "#include <stdio.h> void reverseString(char str[]) { int start = 0, end = 0; while (str[end] != '\\0') { end++; } end--; while (start < end) { char temp = str[start]; str[start] = str[end]; str[end] = temp; start++; end--; } } int main() { char str[100]; printf(\"Enter a string: \"); gets(str); reverseString(str); printf(\"Reversed String: %s\\n\", str); return 0; }"
-      },
-      {
-        "question": "What are storage classes in C ?",
-        "answer": "Storage classes in C determine the scope, lifetime, and visibility of variables: 1.auto: Default local variable, automatic storage. 2.register: Suggests storing in a register for fast access. 3.static: Retains value between function calls, limited scope. 4. extern: Refers to variables defined outside the file."
-      },
-      {
-        "question": "Explain stack and heap memory.", 
-        "answer": "Stack: Stores local variables, fast, limited size. Heap: Stores dynamic variables, slower, larger size."
-      },
-      {
-        "question": "What is a segmentation fault?", 
-        "answer": "A segmentation fault occurs when a program tries to access memory it isn't allowed to, such as dereferencing a null pointer or accessing out-of-bounds array elements."
-      }
+      {"question": "Write a function to find the factorial of a number using recursion."},
+      {"question": "Explain the difference between a structure and a union."},
+      {"question": "Implement a program to reverse a string without using a library function."},
+      {"question": "What are storage classes in C ?"},
+      {"question": "Explain stack and heap memory."},
+      {"question": "What is a segmentation fault?"}
     ],
     "hard": [
-       {
-         "question": "Implement a stack using an array.", 
-         "answer": "#include <stdio.h> #define MAX 10 int stack[MAX]; int top = -1; void push(int value) { if (top< MAX - 1) { stack[++top] = value; } else { printf ('Stack Overflow\n'); } } int pop() { if (top > = 0) { return stack[top--]; } else { printf ('Stack underflow\n'); return -1; } } int peek() { if (top >= 0) { return stack[top]; } else { printf('Stack is empty\n'); return -1; } } int main() { push(10); push (20); printf('Top element: %d\n', peek()); printf('popped element: %d\n', pop()); return 0; }"
-       },
-       {
-         "question": "Explain memory leaks and how to avoid them in C ?", 
-         "answer": "A memory leak happens when memory is allocated but not freed. To avoid: Always use free().Check for null pointers. example: int *ptr = malloc(sizeof(int)); free(ptr);"
-       },
-       {
-         "question": "Write a program to sort an array using quicksort.", 
-         "answer": "#include <stdio.h> void swap(int *a, int *b) { int temp = *a; *a = *b; *b = temp; } int partition(int arr[], int low, int high) { int pivot = arr[high], i = low - 1; for (int j = low; j < high; j++) if (arr[j] < pivot) swap(&arr[++i], &arr[j]); swap(&arr[i + 1], &arr[high]); return i + 1; } void quicksort(int arr[], int low, int high) { if (low < high) { int pi = partition(arr, low, high); quicksort(arr, low, pi - 1); quicksort(arr, pi + 1, high); } } int main() { int arr[] = {10, 7, 8, 9, 1, 5}; quicksort(arr, 0, 5); for (int i = 0; i < 6; i++) printf('%d ', arr[i]); return 0; } "
-       },
-       {
-         "question": "What is pointer arithmetic?", 
-         "answer": "Pointer arithmetic in C allows you to manipulate pointers to navigate through memory, like incrementing (ptr++), decrementing (ptr--), and adding/subtracting with integers. It helps to move between array elements efficiently."
-       },
-       {"question": "How would you simulate object-oriented programming in C?", 
-         "answer": "#include <stdio.h> struct main() return 0; "
-       },
-       {
-         "question": "Explain the working of function pointers.", 
-         "answer" : "Function pointers store a function's address, enabling dynamic function calls. example: void greet() { printf('  '); } int main() {  return 0; }"
-       }
+       {"question": "Implement a stack using an array."},
+       {"question": "Explain memory leaks and how to avoid them in C ?"},
+       {"question": "Write a program to sort an array using quicksort."},
+       {"question": "What is pointer arithmetic?"},
+       {"question": "How would you simulate object-oriented programming in C?"},
+       {"question": "Explain the working of function pointers."}
     ]
   },
   "C++": {
