@@ -676,30 +676,54 @@ elif menu == "QUIZ TIME 🤩🥳":
                 )
 
             # Submit Answers Button (appears after all questions are displayed)
-            if st.button("Submit all answers", key="submit_answers_button"): 
-                correct_count = 0 
-                for i, q in enumerate(st.session_state.questions):
-                    expected_answer = q.get("answer", "").lower()
-                    user_answer = st.session_state.user_answers[i].strip().lower()
-                    if expected_answer and expected_answer in user_answer:
-                        st.success(f"✅ Correct Answer for Question {i+1}!")
-                        correct_count += 1
-                    else:
-                        st.error(f"❌ Incorrect Answer for Question {i+1}. Expected something like: '{expected_answer}'")
-                if correct_count == 3:
-                    st.balloons()
-                    st.success("🥳💃 Perfect Score!! You're on fire Buddy! Keep it up🤗")
-                    st.session_state.streak += 1
-                else:
-                    st.warning(f"You got {correct_count}/3 correct. Keep practicing!! 🤝💪")
-                    st.session_state.streak = 0
-                    motivational_quotes = quiz_data.get("motivational_quotes", [])
-                    if motivational_quotes:
-                        st.info(random.choice(motivational_quotes))
-                st.session_state.answered_today = True
-                st.session_state.last_played = today
-                st.session_state.quiz_started = False
+            if st.button("Submit all answers"):
+                with st.spinner("🧠 Evaluating your answers..."):
+                    prompts = []
+                    for i in range(3):
+                        q = st.session_state.questions[i]
+                        user_ans = st.session_state.user_answers[i]
+                        prompt = f"""
+                        Evaluate the user's programming answer.
+                        Question: {q['question']}
+                        User Answer: {user_ans}
+                        Respond in JSON with:
+                        - "is_correct": true/false
+                        - "explanation": brief feedback or correction
+                        """
+                        prompts.append(prompt)
 
+                    results = []
+                    for p in prompts:
+                        response = model.generate_content(p)  # This call should use your AI model
+                        try:
+                            json_text = response.text.strip().split("''")[-1]
+                            result = json.loads(json_text)
+                        except Exception as e:
+                            result = {"is_correct": False, "explanation": "Couldn't evaluate the answer properly."}
+                        results.append(result)
+                    correct_count = 0
+                    for i, r in enumerate(results):
+                        st.markdown(f"*Q{i+1}:* {st.session_state.questions[i]['question']}")
+                        if r["is_correct"]:
+                            st.success(f"✅ Correct!!")
+                            correct_count += 1
+                        else:
+                            st.error(f"❌ Incorrect.. {r['explanation']}")
+
+                    # Display Results and Update Streak
+                    if correct_count == 3:
+                        st.balloons()
+                        st.success("🥳💃 Perfect Score!! You're on fire Buddy! Keep it up🤗")
+                        st.session_state.streak += 1
+                    else:
+                        st.warning(f"You got {correct_count}/3 correct. Keep practicing!! 🤝💪")
+                        st.session_state.streak = 0
+                        motivational_quotes = quiz_data.get("motivational_quotes", [])
+                        if motivational_quotes:
+                            st.info(random.choice(motivational_quotes))
+                    st.session_state.answered_today = True
+                    st.session_state.last_played = today
+                    st.session_state.quiz_started = False
 
     # Reset Quiz Button (for development)
     if st.button("Reset Quiz (Dev Mode)", key="reset_quiz_button"): # Added unique key
