@@ -685,7 +685,7 @@ elif menu == "QUIZ TIME 🤩🥳":
                         st.success(f"✅ Correct Answer for Question {i+1}!")
                         correct_count += 1
                     else:
-                        st.error(f"❌ Incorrect Answer for Question {i+1}. Expected something like: '{expected_answer}'"
+                        st.error(f"❌ Incorrect Answer for Question {i+1}. Expected something like: '{expected_answer}'")
                 if correct_count == 3:
                     st.balloons()
                     st.success("🥳💃 Perfect Score!! You're on fire Buddy! Keep it up🤗")
