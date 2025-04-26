@@ -17,6 +17,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import nltk
 from urllib.parse import quote_plus
 from PyPDF2 import PdfReader
+from wordcloud import WordCloud
 import json
 try:
     nltk.data.find('sentiment/vader_lexicon.zip')
@@ -326,6 +327,80 @@ APP_ID = st.secrets["adzuna"]["APP_ID"]
 APP_KEY = st.secrets["adzuna"]["APP_KEY"]
 BASE_URL = "https://api.adzuna.com/v1/api/jobs/gb/search/1"
 
+#------------------ Helper functions---------------------#
+def extract_text_from_pdf(uploaded_file):
+    pdf_reader = PdfReader(uploaded_file)
+    resume_text = ""
+    for page in pdf_reader.pages:
+        text = page.extract_text()
+        if text:
+            resume_text += text
+    return resume_text
+
+def extract_skills(text):
+    skill_keywords = [
+        "python", "java", "c++", "data analysis", "machine learning", "deep learning", "AWS", "Azure", "GCP", "CI/CD", "Kubernetes", "Terraform", "prompt engineering", 
+        "sql", "excel", "communication", "leadership", "problem solving", "javascript" "react", "angular", "Vue.js", "full-stack development", "Tableau", 
+        "teamwork", "project management", "tensorflow", "pandas", "numpy", "django", "Power BI", "Tensorflow", "pytorch", "cloud security", "cybersecurity fundamentals" 
+    ]
+    skills_found = [skill.title() for skill in skill_keywords if skill.lower() in text.lower()]
+    return skills_found
+
+def detect_experience(text):
+    exp_patterns = re.findall(r'(\d+)\+?\s*(years|year)', text.lower())
+    if exp_patterns:
+        years = [int(y[0] for y in exp_patterns]
+        return max(years)
+    return 0
+
+def detect_degree(text):
+    degrees = ["Bachelor", "Master", "PhD", "B.tech", "M.Tech", "MBA"]
+    for degree in degrees:
+        if degree.lower() in text.lower():
+            return degree
+    return "Not Detected"
+
+def generate_score(skills, experience, degree):
+    score = 0
+    if skills:
+        score += 30
+    if experience >= 2:
+        score += 30
+    if degree != "Not Detected":
+        score += 30
+    score += 10 
+    return score
+
+def suggest_next_steps(skills, experience):
+    suggestions = []
+    if len(skills) < 3:
+        suggestion.append("Add more technical and soft skills.")
+    if experience < 2:
+        suggestions.append("Gain internship or project experience.")
+    if not suggestions:
+        suggestions.append("Your resume looks strong! Keep applying confidently!")
+    return suggestions
+def award_badges(skills):
+    badges = []
+    if "Python" in skills:
+        badges.append("🏅 Python Pro")
+    if any(skill in skills for skill in ["Machine Learning", "Data Analysis"]):
+        badges.append("🏅 Data Enthusiast")
+    if "Leadership" in skills:
+        badges.append("🏅 Team Leader")
+    if "Communication" in skills:
+        badges.append("🏅 Excellent Communicator")
+    if "Full-Stack Development" in skills or any(skill in skills for skill in ["React", "Angular", "Vue.js"]):
+        badges.append("🏅 Frontend Champ")
+    if any(skill in skills for skill in ["AWS", "Azure", "GCP"]):
+        badges.append("🏅 Cloud Explorer")
+    if "Cybersecurity Fundamentals" in skills:
+        badges.append("🏅 Security Aware")
+    return badges
+def generate_wordcloud(skills):
+    text = " ".join(skills)
+    wordcloud = WordCloud(width = 800, height = 400, background_color = 'pink').generate(text)
+    return wordcloud
 # ------------------ HEADER ------------------ #
 try:
     logo = Image.open("ashaai_logo.jpg")
@@ -714,38 +789,50 @@ elif menu == "Job Search 💼":
 #---------------------------- Resume Analysis --------------------------#
 elif menu == "Resume Analysis 📄":
     st.subheader("📄 Upload Your Resume for Analysis")
-
     uploaded_file = st.file_uploader("Upload your resume (PDF)", type=["pdf"]) # Limiting to PDF for simplicity in this step
-
     print(f"Uploaded File: {uploaded_file}")  # Debugging line
-
     if uploaded_file is not None:
-        file_type = uploaded_file.type
-        print(f"File Type: {file_type}")  # Debugging line
-        resume_text = ""
-
-        if file_type == "application/pdf":
-            try:
-                pdf_reader = PdfReader(uploaded_file)
-                num_pages = len(pdf_reader.pages)
-                print(f"Number of pages: {num_pages}") # Debugging line
-                for page in pdf_reader.pages:
-                    text = page.extract_text()
-                    resume_text += text
-                    print(f"Extracted text (first 50 chars): {text[:50] if text else 'No text'}") # Debugging line
-            except Exception as e:
-                st.error(f"Error reading PDF: {e}")
-                print(f"PDF Reading Error: {e}")  # Debugging line
-
-        print(f"Resume Text Length: {len(resume_text)}") # Debugging line
-
+        resume_text = extract_text_from_pdf(uploaded_file)
         if resume_text:
-            st.subheader("Resume Text:")
-            st.text_area("Extracted Content", resume_text, height=300)
-
-            user_query = st.text_input("Ask me about your resume:")
-            if user_query:
-                response = f"You asked: '{user_query}'. (AshaAI has received your resume text for analysis - further analysis capabilities will be added here.)"
-                st.markdown(f"👩 AshaAI:** {response}")
+            st.success("✅ Resume Text Extracted Successfully!")
+            skills = extract_skills(resume_text)
+            experience = detect_experience(resume_text)
+            degree = detect_degree(resume_text)
+            score = generate_score(skills, experience, degree)
+            next_steps = suggest_next_steps(skills, experience)
+            badges = award_badges(skills)
+            # --- Display Analysis --- #
+            st.header("📋 Resume Summary")
+            st.subheader("🎯 Key Skills")
+            st.write(", ".join(skills) if skills else "No major skills detected.")
+            st.subheader("📈 Experience Level")
+            st.write(f"{experience} years" if experience else "No experience mentioned.")
+            st.subheader("🎓 Degree")
+            st.write(degree)
+            st.subheader("🔍 Formatting Tips")
+            if any(keyword in resume_text.lower() for keyword in ["education", "skills", "experience", "contact"]):
+                st.write("Good formatting detected ✅")
+            else:
+                st.warning("Consider adding sections like Education, Skills, Experience!")
+            st.subheader("🏆 Overall Resume Score")
+            st.progress(score)
+            st.success(f"Your Resume Score: {score}/100")
+            st.subheader("🚀 Suggested Next Steps")
+            for tip in next_steps:
+                st.write(f"- {tip}")
+            st.subheader("🎖️ Badges Earned")
+            if badges:
+                for badge in badges:
+                    st.balloons()
+                    st.success(badge)
+            else:
+                st.info("No badges earned yet. Add more skills!")
+            st.subheader("🌟 Skill Cloud")
+            if skills:
+                wordcloud = generate_wordcloud(skills)
+                fig, ax = plt.subplots()
+                ax.imshow(wordcloud, interpolation='bilinear')
+                ax.axis('off')
+                st.pyplot(fig)
         else:
-            st.info("Please upload a PDF resume to see its text content here.")
+            st.error("⚠️ Could not extract any text from the uploaded PDF.")
