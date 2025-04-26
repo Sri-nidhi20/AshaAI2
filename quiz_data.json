@@ -307,21 +307,19 @@
     {"question": "Write a shell script that accepts input from the user and executes a command based on it."}
   ]
 },
-}
-{
-  "motivational_quotes": [
-    "The only way to do great work is to love what you do.",
-    "Success is not final, failure is not fatal: it is the courage to continue that counts.",
-    "Believe you can and you're halfway there.",
-    "Mistakes are proof that you are trying. Keep going!",
-    "Failure is not the opposite of success, it’s part of it.",
-    "Every expert was once a beginner. You’ve got this!",
-    "You didn’t lose, you learned. Come back stronger tomorrow!",
-    "Small progress is still progress. Your journey matters.",
-    "It’s not about being the best today. It’s about being better than yesterday.",
-    "One step back is just the setup for a stronger comeback.",
-    "Your potential is greater than one quiz result. Keep pushing!",
-    "You’re not failing. You’re becoming.",
-    "Great things take time. Stay consistent, and success will follow."
+"motivational_quotes": [
+  "The only way to do great work is to love what you do.",
+  "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+  "Believe you can and you're halfway there.",
+  "Mistakes are proof that you are trying. Keep going!",
+  "Failure is not the opposite of success, it’s part of it.",
+  "Every expert was once a beginner. You’ve got this!",
+  "You didn’t lose, you learned. Come back stronger tomorrow!",
+  "Small progress is still progress. Your journey matters.",
+  "It’s not about being the best today. It’s about being better than yesterday.",
+  "One step back is just the setup for a stronger comeback.",
+  "Your potential is greater than one quiz result. Keep pushing!",
+  "You’re not failing. You’re becoming.",
+  "Great things take time. Stay consistent, and success will follow."
 ]
 }
