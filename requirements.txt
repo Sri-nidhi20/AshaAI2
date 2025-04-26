@@ -8,3 +8,4 @@ google-generativeai
 nltk
 streamlit-oauth>=0.0.5
 PyPDF2
+wordcloud
