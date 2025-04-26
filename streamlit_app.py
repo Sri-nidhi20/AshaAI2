@@ -240,7 +240,7 @@ def query_gemini(prompt_text, timeout_seconds=60):
     keywords = re.findall(r"\b(\w+)\b", prompt_text.lower())
     st.session_state.user_profile["topics"] = st.session_state.user_profile.get("topics", set()).union(keywords)
     logging.info(f"[{timestamp}] User Profile: {st.session_state.user_profile}")
-    
+
     if re.search(career_keywords_initial, prompt_text, re.IGNORECASE) or re.search(career_skills_query, prompt_text, re.IGNORECASE):
         logging.info(f"[{timestamp}] Initial career-related query detected.")
         st.session_state.is_career_context = True
