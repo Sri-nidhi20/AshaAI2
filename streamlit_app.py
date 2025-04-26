@@ -677,71 +677,33 @@ elif menu == "QUIZ TIME 🤩🥳":
 
             # Submit Answers Button (appears after all questions are displayed)
             if st.button("Submit all answers", key="submit_answers_button"): 
-                with st.spinner("🧠 Evaluating your answers..."):
-                    print("DEBUG: Inside the Submit all answers button logic")
-                    logging.basicConfig(filename="ashaai_debug.log", level = logging.INFO, format = '%(levelname)s - %(message)s')
-                    prompts = []
-                    for i in range(3):
-                        q = st.session_state.questions[i]
-                        user_ans = st.session_state.user_answers[i]
-                        prompt = f"""
-                        You are an expert programming tutor. Evaluate the technical correctness of the student's answer to the following programming question.
+    correct_count = 0
+    for i, q in enumerate(st.session_state.questions):
+        expected_answer = q.get("answer", "").lower()
+        user_answer = st.session_state.user_answers[i].strip().lower()
 
-                        Question: {q['question']}
-                        Student Answer: {user_ans}
+        if expected_answer and expected_answer in user_answer:
+            st.success(f"✅ Correct Answer for Question {i+1}!")
+            correct_count += 1
+        else:
+            st.error(f"❌ Incorrect Answer for Question {i+1}. Expected something like: '{expected_answer}'")
 
-                        Provide your evaluation as a JSON object with the following format:
-                        {{
-                          "is_correct": true or false,
-                          "explanation": "A short explanation or correction of the student's answer."
-                        }}
+    # Final result
+    if correct_count == 3:
+        st.balloons()
+        st.success("🥳💃 Perfect Score!! You're on fire Buddy! Keep it up🤗")
+        st.session_state.streak += 1
+    else:
+        st.warning(f"You got {correct_count}/3 correct. Keep practicing!! 🤝💪")
+        st.session_state.streak = 0
+        motivational_quotes = quiz_data.get("motivational_quotes", [])
+        if motivational_quotes:
+            st.info(random.choice(motivational_quotes))
 
-                        Ensure the JSON object is the ONLY output.
-                        """
-                        prompts.append(prompt)
+    st.session_state.answered_today = True
+    st.session_state.last_played = today
+    st.session_state.quiz_started = False
 
-                    results = []
-                    for p in prompts:
-                        logging.info(f" Quiz Evaluation Prompt: {p}") 
-                        try:
-                            response = model.generate_content(p)
-                            logging.info(f" Gemini Raw Response for Evaluation: '{response.text}'") 
-                            try:
-                                result = json.loads(response.text.strip())
-                            except json.JSONDecodeError as e:
-                                logging.error(f" JSONDecodeError in quiz evaluation: {e}, Response: '{response.text}'")
-                                result = {"is_correct": False, "explanation": "There was an issue evaluating your answer. Please try again."}
-                            except Exception as e:
-                                logging.error(f" Unexpected error in quiz evaluation: {e}, Response: '{response.text}'")
-                                result = {"is_correct": False, "explanation": "An unexpected error occurred during evaluation."}
-                        except Exception as e:
-                            logging.error(f" Error generating content for quiz evaluation: {e}")
-                            result = {"is_correct": False, "explanation": "Failed to get an evaluation from the model."}
-                        results.append(result)
-
-                    correct_count = 0
-                    for i, r in enumerate(results):
-                        st.markdown(f"**Q{i+1}:** {st.session_state.questions[i]['question']}")
-                        if r["is_correct"]:
-                            st.success(f"✅ Correct!!")
-                            correct_count += 1
-                        else:
-                            st.error(f"❌ Incorrect.. {r['explanation']}")
-
-                    # Display Results and Update Streak
-                    if correct_count == 3:
-                        st.balloons()
-                        st.success("🥳💃 Perfect Score!! You're on fire Buddy! Keep it up🤗")
-                        st.session_state.streak += 1
-                    else:
-                        st.warning(f"You got {correct_count}/3 correct. Keep practicing!! 🤝💪")
-                        st.session_state.streak = 0
-                        motivational_quotes = quiz_data.get("motivational_quotes", [])
-                        if motivational_quotes:
-                            st.info(random.choice(motivational_quotes))
-                    st.session_state.answered_today = True
-                    st.session_state.last_played = today
-                    st.session_state.quiz_started = False  # Reset quiz started flag
 
     # Reset Quiz Button (for development)
     if st.button("Reset Quiz (Dev Mode)", key="reset_quiz_button"): # Added unique key
