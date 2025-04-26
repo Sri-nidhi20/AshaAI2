@@ -349,7 +349,7 @@ def extract_skills(text):
 def detect_experience(text):
     exp_patterns = re.findall(r'(\d+)\+?\s*(years|year)', text.lower())
     if exp_patterns:
-        years = [int(y[0] for y in exp_patterns]
+        years = [int(y[0]) for y in exp_patterns]
         return max(years)
     return 0
 
