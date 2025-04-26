@@ -677,32 +677,28 @@ elif menu == "QUIZ TIME 🤩🥳":
 
             # Submit Answers Button (appears after all questions are displayed)
             if st.button("Submit all answers", key="submit_answers_button"): 
-    correct_count = 0
-    for i, q in enumerate(st.session_state.questions):
-        expected_answer = q.get("answer", "").lower()
-        user_answer = st.session_state.user_answers[i].strip().lower()
-
-        if expected_answer and expected_answer in user_answer:
-            st.success(f"✅ Correct Answer for Question {i+1}!")
-            correct_count += 1
-        else:
-            st.error(f"❌ Incorrect Answer for Question {i+1}. Expected something like: '{expected_answer}'")
-
-    # Final result
-    if correct_count == 3:
-        st.balloons()
-        st.success("🥳💃 Perfect Score!! You're on fire Buddy! Keep it up🤗")
-        st.session_state.streak += 1
-    else:
-        st.warning(f"You got {correct_count}/3 correct. Keep practicing!! 🤝💪")
-        st.session_state.streak = 0
-        motivational_quotes = quiz_data.get("motivational_quotes", [])
-        if motivational_quotes:
-            st.info(random.choice(motivational_quotes))
-
-    st.session_state.answered_today = True
-    st.session_state.last_played = today
-    st.session_state.quiz_started = False
+                correct_count = 0 
+                for i, q in enumerate(st.session_state.questions):
+                    expected_answer = q.get("answer", "").lower()
+                    user_answer = st.session_state.user_answers[i].strip().lower()
+                    if expected_answer and expected_answer in user_answer:
+                        st.success(f"✅ Correct Answer for Question {i+1}!")
+                        correct_count += 1
+                    else:
+                        st.error(f"❌ Incorrect Answer for Question {i+1}. Expected something like: '{expected_answer}'"
+                if correct_count == 3:
+                    st.balloons()
+                    st.success("🥳💃 Perfect Score!! You're on fire Buddy! Keep it up🤗")
+                    st.session_state.streak += 1
+                else:
+                    st.warning(f"You got {correct_count}/3 correct. Keep practicing!! 🤝💪")
+                    st.session_state.streak = 0
+                    motivational_quotes = quiz_data.get("motivational_quotes", [])
+                    if motivational_quotes:
+                        st.info(random.choice(motivational_quotes))
+                st.session_state.answered_today = True
+                st.session_state.last_played = today
+                st.session_state.quiz_started = False
 
 
     # Reset Quiz Button (for development)
