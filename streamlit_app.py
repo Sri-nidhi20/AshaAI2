@@ -316,8 +316,6 @@ def query_gemini(prompt_text, timeout_seconds=60):
         else:
             return "Hmm, I'm having trouble answering that in the current context. Could you please rephrase?"
     else:
-        st.session_state.is_career_context = False
-        logging.info(f"[{timestamp}] No match found. Returning fallback response.")
         return (
             "I'm designed to be a helpful companion for your career journey. While I appreciate your message, "
             "I'm best equipped to answer questions related to careers, job opportunities, professional development, "
