@@ -403,7 +403,7 @@ def generate_wordcloud(skills):
     return wordcloud
 # ------------------ HEADER ------------------ #
 try:
-    logo = Image.open("ashaai_logo.jpg")
+    logo = Image.open("PADMYRA.png")
     st.image(logo, width=150)
 except FileNotFoundError:
     st.warning("⚠ 'ashaai_logo.jpg' not found in the current directory.")
